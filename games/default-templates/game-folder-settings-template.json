@@ -1,0 +1,7 @@
+{ 
+	"graphics": {
+		"screenWidth": 640, 
+		"screenHeight": 480, 
+		"renderDrawColor": [255, 0, 0, 255] 
+	}
+}

@@ -1,0 +1,44 @@
+{
+	"settings": {
+		"keyMap": "<input-name>",
+	},
+	
+	"states": [
+		{
+			"name": "<nameOfState>",
+			
+			"input": {
+				"<keyMapName>": "<callback-function>",
+				"<keyMapName>": "change-state-<nameOfState>",
+			},
+			
+			"event": {
+				"collision-<type>": "<callback-function>",
+				"collision-<type>": "change-state-<nameOfState>",
+			},
+			
+			"aways": [
+				"<callback-function>",
+				"<callback-function>",
+			]
+		},
+	 	{
+			"name": "<nameOfState>",
+
+			"input": {
+				"<keyMapName>": "<callback-function>",
+				"<keyMapName>": "change-state-<nameOfState>",
+			},
+			
+			"event": {
+				"collision-<type>": "<callback-function>",
+				"collision-<type>": "change-state-<nameOfState>",
+			},
+			
+			"aways": [
+				"<callback-function>",
+				"<callback-function>",
+			]
+		},
+	]
+}

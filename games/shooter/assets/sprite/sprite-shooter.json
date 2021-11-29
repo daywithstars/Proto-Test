@@ -1,0 +1,10 @@
+{
+	"image": "shooter",
+	"x": 100.0,
+	"y": 20.0,
+	"speedX": 0.10,
+	"speedY": 0.10,
+	"srcRect": [0, 0, 64, 64],
+	"dstRect": [128, 128],
+	"behavior": "shooter-behavior",
+} 

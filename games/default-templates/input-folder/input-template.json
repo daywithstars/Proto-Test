@@ -1,0 +1,12 @@
+{
+	"file": "<thisInputFileName>.json",
+	
+	"settings": {
+		"name": "<nameYourInputFile>"
+	},
+	
+	"buttons-map": [
+		{ "<nameYourButton>": "<see inputCommands.md>" },
+		{ "<nameYourButton>": "<see inputCommands.md>" },
+	]
+}

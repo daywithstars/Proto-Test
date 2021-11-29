@@ -1,0 +1,6 @@
+{
+	"screens": [
+		"<screenFileName>.json",
+		"<screenFileName>.json",
+	]
+}

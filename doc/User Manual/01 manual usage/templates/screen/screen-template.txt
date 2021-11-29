@@ -1,0 +1,90 @@
+# Do not copy lines that starts with '#' char, like this one.
+
+# Replace the this screen-template.txt file with your <screen-file-name>.json.
+
+# Do not omit required elements.
+
+# When a element is optional they required values is not required, but when you declare it
+# they required elements are required.
+
+# When multiples elements are placed in one single line, the order need to be followed like: 
+# "dx": <integer>, "dy": <integer>, "dw": <integer>, "dh": <integer>.
+# but you can split there's element in new lines like:
+# "dx": <integer>,
+# "dy": <integer>,
+# "dw": <integer>,
+# "dh": <integer>
+
+# Once you add elements to an template you can edit the template elements values via UI
+# in the Proto Test.
+# But you can do everything manually with any text editor, are you're doing now :). 
+
+# Json values with '<' '>' means you need replace it with your value. 
+
+{
+	# This element is required, it value must be an string with the name of this template file.
+	"file": "<screen-file-name-string>.json",
+
+	# This element is required once you need it to change between screens. 
+	# The <screen-name-string> can be different from <screen-file-name> and it need to be different from any
+	# other <screen-name-string> in others screen templates. 
+	"settings": {
+		"name": "<screen-name-string>"
+	},
+	
+	# This is optional 
+	"list-commands": {
+	
+		# This is optional 
+		# This command shows an image on screen, and you can move it around, rotate, flip with inputs. 
+		# To add more commands just put ',' on the end of this object and fill with elements. 
+		"show-image": { 
+		
+			# Once the command above is declared, this is required
+			# This is the image name from 'img' folder inserted into the list.json
+			"<utf8-image-name-string>": { 
+			
+				# Required
+				# This is the start position and scale from the image. The values are in pixels. 
+				# dx = position x on screen. dy = position y on screen.
+				# dw = destination width on screen, this can be the full width of your image or 
+				# any positive value that will be scaled.
+				# dh = destination height, the same as dw but this is for the height.
+				"dx": <integer>, "dy": <integer>, "dw": <integer>, "dh": <integer>, 
+				
+				# Required
+				# This is the start crop area of your image, this can be any value between 0 or to your
+				# image original width or height. The values are in pixels
+				# sx = source x or start crop left. sy = source y or start crop top
+				# sw = source width. sh = source height
+				"sx": <integer>, "sy": <integer>, "sw": <integer>, "sh": <integer>,
+				
+				# Required
+				# This is the angle of rotation image
+				"angle": <floating-point>, 
+				
+				# Required
+				# This is the center point of rotation, to be in the middle you need to put the
+				# half in pixel from your image width into cx and height into cy
+				# cx = center x. cy = center y
+				"cx": <integer>, "cy": <integer>,
+				
+				# Required
+				# This the image flip element, "h" means horizontally and "v" vertically.
+				"flip": "<string>",
+				
+				# Required
+				# This is the image handler with the input type.
+				# input can be: "none", "this" or "master".
+				# if "none" are choose the input-type is not required. 
+				# if "this" are choose you are the response the move, crop, rotate the image around. 
+				# if "master" are choose the server are the response to do that stuff, and the 
+				# input-type are ignored.
+				# input-type is for input: "this" and they values are:
+				# "keyboard" to handler the image with your keyboard. 
+				"input": "<string>", "input-type": "<string>"
+			} 
+		}
+	}
+}
+

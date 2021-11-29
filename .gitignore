@@ -1,0 +1,4 @@
+build/
+doc/API/html
+doc/API/latex
+doc/API/doxygen_warn.txt

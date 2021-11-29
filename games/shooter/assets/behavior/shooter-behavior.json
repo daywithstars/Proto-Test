@@ -1,0 +1,44 @@
+{
+	"settings": {
+		"keyMap": "Map-keyboard-1",
+	},
+	
+	"states": [
+		{
+			"name": "action",
+			
+			"input": {
+				"input-left": "sprite-move-left",
+				"input-right": "sprite-move-right",
+				"input-up": "sprite-move-up",
+				"input-down": "sprite-move-down",
+				"input-dodge": "change-state-dodge",
+			},
+			
+			"event": {
+				"collision-OutOfCenaryBottom": "death",
+			},
+			
+			"aways": [
+				"sprite-stop-horizontal",
+				"sprite-stop-vertical",
+			]
+		},
+	 	{
+			"name": "dodge",
+			
+			"input": {
+				"input-left": "sprite-move-left",
+				"input-right": "sprite-move-right",
+			},
+
+			"event": {
+				"collision-Ground": "change-state-walking",
+			},
+			
+			"aways": [
+				"sprite-move-down"
+			],
+		}
+	]
+}

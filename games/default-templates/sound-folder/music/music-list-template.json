@@ -1,0 +1,6 @@
+{
+	"musics": [
+		"<musicFileName>.<wav or mp3 or ogg>",
+		"<musicFileName>.<wav or mp3 or ogg>",
+	]
+}
