@@ -10,6 +10,7 @@
 		{ "move-left-1": "kyd-h-left" },
 		{ "move-left-2": "kyd-h-a" },
 		{ "move-right-1": "kyd-h-right" },
-		{ "move-down-1": "kyd-h-down" }
+		{ "move-down-1": "kyd-h-down" },
+		{ "grab": "mse-h-left" },
 	]
 }

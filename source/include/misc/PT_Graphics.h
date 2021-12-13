@@ -113,6 +113,9 @@ void PT_GraphicsRenderFillRect( const SDL_Rect* rect );
 */
 void PT_GraphicsDrawTexture( const char* utf8_name, const SDL_Rect* srcRect, const SDL_Rect* dstRect,
 	const double angle, const SDL_Point* center, const SDL_RendererFlip flip );
+	
+void PT_GraphicsDrawTextureF( const char* utf8_name, const SDL_Rect* srcRect, const SDL_FRect* dstRect,
+	const double angle, const SDL_FPoint* center, const SDL_RendererFlip flip );
 
 /**
 * \brief Clear the current rendering target with the drawing color. 

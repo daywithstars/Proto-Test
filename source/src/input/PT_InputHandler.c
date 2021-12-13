@@ -74,6 +74,7 @@ SDL_bool PT_InputHandlerGetButtonState( PT_InputHandler* _this, const char* mapN
 	const PT_InputHandlerInputTypes inputType = 
 	node->value->utf8_string[0] == 'k' && node->value->utf8_string[1] == 'y' && 
 	node->value->utf8_string[2] == 'd' ? PT_INPUT_HANDLER_INPUT_TYPE_KEYBOARD :
+	
 	node->value->utf8_string[0] == 'm' && node->value->utf8_string[1] == 's' &&
 	node->value->utf8_string[2] == 'e' ? PT_INPUT_HANDLER_INPUT_TYPE_MOUSE : 
 	PT_INPUT_HANDLER_INPUT_TYPE_NONE;
@@ -136,13 +137,15 @@ SDL_bool PT_InputHandlerGetButtonState( PT_InputHandler* _this, const char* mapN
 	return SDL_FALSE;
 }//PT_InputHandlerGetButtonState
 
-void PT_InputHandlerGetGrapPosition( PT_InputHandler* _this, const char* mapName, Sint32* x, 
-	Sint32* y ) {
+PT_InputHandlerGrab PT_InputHandlerGetGrabPosition( PT_InputHandler* _this, const char* mapName ) {
 	PT_StringList* node = PT_StringListGet(_this->keyMap, mapName);
+	
+	PT_InputHandlerGrab inputHandlerGrab;
+	SDL_memset(&inputHandlerGrab, 0, sizeof(PT_InputHandlerGrab));
 	
 	if ( !node )
 	{
-		return;
+		return inputHandlerGrab;
 	}
 	
 	const PT_InputHandlerInputTypes inputType = 
@@ -152,14 +155,63 @@ void PT_InputHandlerGetGrapPosition( PT_InputHandler* _this, const char* mapName
 	
 	if ( inputType == PT_INPUT_HANDLER_INPUT_TYPE_NONE )
 	{
-		return;
+		return inputHandlerGrab;
 	}
 	
-	if ( node->value->utf8_string[4] == 'g' )
+	
+	//button pressed and grab
+	if ( node->value->utf8_string[4] == 'p' &&  node->value->utf8_string[5] == 'g' )
 	{
-
+		if ( 
+			PT_InputManagerMouseGetButtonDown(
+			PT_MouseGetButtonByString((char*)(&node->value->utf8_string[7])))
+			)
+		{
+			Sint32 mx=0, my=0;
+			PT_InputManagerMouseGetPosition(&mx, &my);
+			
+			inputHandlerGrab.returnValue = SDL_TRUE;
+			inputHandlerGrab.mousePosition.x = mx;
+			inputHandlerGrab.mousePosition.y = my;
+		}	
 	}
-}//PT_InputHandlerGetGrapPosition
+	//button release and grab
+	else if ( node->value->utf8_string[4] == 'r' &&  node->value->utf8_string[5] == 'g' )
+	{
+		if ( 
+			PT_InputManagerMouseGetButtonUp(
+			PT_MouseGetButtonByString((char*)(&node->value->utf8_string[7])))
+			)
+		{
+			Sint32 mx=0, my=0;
+			
+			PT_InputManagerMouseGetPosition(&mx, &my);
+			
+			inputHandlerGrab.returnValue = SDL_TRUE;
+			inputHandlerGrab.mousePosition.x = mx;
+			inputHandlerGrab.mousePosition.y = my;
+		}	
+	}
+	//button hold and grab
+	else if ( node->value->utf8_string[4] == 'h' &&  node->value->utf8_string[5] == 'g' )
+	{
+		if ( 
+			PT_InputManagerMouseGetButtonHold(
+			PT_MouseGetButtonByString((char*)(&node->value->utf8_string[7])))
+			)
+		{
+			Sint32 mx=0, my=0;
+			
+			PT_InputManagerMouseGetPosition(&mx, &my);
+			
+			inputHandlerGrab.returnValue = SDL_TRUE;
+			inputHandlerGrab.mousePosition.x = mx;
+			inputHandlerGrab.mousePosition.y = my;
+		}
+	}
+	
+	return inputHandlerGrab;
+}//PT_InputHandlerGrab
 
 //===================================== PRIVATE Functions
 

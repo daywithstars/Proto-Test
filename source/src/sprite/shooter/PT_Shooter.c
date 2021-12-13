@@ -27,7 +27,7 @@ struct pt_shooter {
 
 //===================================== PRIVATE Functions
 
-SDL_bool PT_ShooterParse( void* _data, json_value* jsonValue );
+SDL_bool PT_ShooterParse( PT_Sprite* sprite, void* _data, json_value* jsonValue );
 
 
 //===================================== PUBLIC Functions
@@ -82,7 +82,7 @@ void PT_ShooterDraw( void* _data ) {
 
 //===================================== PRIVATE Functions
 
-SDL_bool PT_ShooterParse( void* _data, json_value* jsonValue ) {
+SDL_bool PT_ShooterParse( PT_Sprite* sprite, void* _data, json_value* jsonValue ) {
 	/*
 		see the template: games/default-templates/sprite-folder/sprite-template.json
 	*/

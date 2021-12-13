@@ -16,14 +16,29 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <json.h>
 
+#include <PT_String.h>
 #include <PT_Behavior.h>
 
 
-typedef struct pt_sprite PT_Sprite;
+
+typedef struct {
+	PT_String* imageName;	
+	int dirX, dirY;
+	float speedX, speedY;
+	SDL_Rect* srcRect;
+	SDL_FRect* dstRect;
+	PT_Behavior* behavior;
+	
+	
+	void* _data;
+	void (*update)(void* _data, Sint32);
+	void (*draw)(void* _data);
+	void (*destroy)(void* _data);
+} PT_Sprite;
 
 
 PT_Sprite* PT_SpriteCreate( const char* utf8_spriteTemplate, void* _data, 
-	SDL_bool (*dataParse)(void* _data, json_value* jsonValue) );
+	SDL_bool (*dataParse)(PT_Sprite* sprite, void* _data, json_value* jsonValue) );
 
 void PT_SpriteDestroy( PT_Sprite* _this );
 
@@ -32,6 +47,7 @@ void PT_SpriteAddUpdateCallback( PT_Sprite* _this, void (*callback)(void* _data,
 void PT_SpriteAddDrawCallback( PT_Sprite* _this, void (*callback)(void* _data) );
 void PT_SpriteAddDestroyCallback( PT_Sprite* _this, void (*callback)(void* _data) );
 
+//Simple callbacks declarations.
 void PT_SpriteMoveLeft( void* _data ); 
 void PT_SpriteMoveRight( void* _data ); 
 void PT_SpriteMoveUp( void* _data ); 
@@ -39,7 +55,9 @@ void PT_SpriteMoveDown( void* _data );
 void PT_SpriteStopMoveHorizontal( void* _data );
 void PT_SpriteStopMoveVertical( void* _data );
 
-PT_Behavior* PT_SpriteGetBehavior( PT_Sprite* _this );
+//Misc callbacks declarations.
+void PT_SpriteGrab( void* _data, SDL_FPoint mousePosition );
+
 
 void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime );
 void PT_SpriteDraw( PT_Sprite* _this );

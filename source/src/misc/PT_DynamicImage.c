@@ -23,12 +23,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 struct pt_dynamicimage {
-	PT_Sprite* pSprite;
+	int tmp;
 };
 
 //===================================== PRIVATE Functions
 
-SDL_bool PT_DynamicImageParse( void* _data, json_value* jsonValue );
+SDL_bool PT_DynamicImageParse( PT_Sprite* sprite, void* _data, json_value* jsonValue );
 
 
 PT_Sprite* PT_DynamicImageCreate( const char* utf8_spriteTemplate ) {
@@ -47,8 +47,6 @@ PT_Sprite* PT_DynamicImageCreate( const char* utf8_spriteTemplate ) {
 		return NULL;
 	}
 	
-	_this->pSprite = sprite;
-	
 	//add callbacks to sprite
 	PT_SpriteAddDestroyCallback(sprite, PT_DynamicImageDestroy);
 	PT_SpriteAddUpdateCallback(sprite, PT_DynamicImageUpdate);
@@ -64,7 +62,6 @@ void PT_DynamicImageDestroy( void* _data ) {
 	}
 
 	PT_DynamicImage* _this = (PT_DynamicImage*)_data;
-	_this->pSprite = NULL;
 	
 	free(_this);
 }//PT_DynamicImageDestroy
@@ -81,14 +78,22 @@ void PT_DynamicImageDraw( void* _data ) {
 
 //===================================== PRIVATE Functions
 
-SDL_bool PT_DynamicImageParse( void* _data, json_value* jsonValue ) {
+SDL_bool PT_DynamicImageParse( PT_Sprite* sprite, void* _data, json_value* jsonValue ) {
 	/*
 		see the template: games/default-templates/sprite-folder/dynamicImage-template.json
 	*/
 	PT_DynamicImage* _this = (PT_DynamicImage*)_data;
 	
-	//stuff like, if behavior exists if we have behavior on dynaicImage-tamplate.json
+	if ( !sprite->behavior )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_DynamicImageParse: Please set an behavior into template!\n");
+		
+		return SDL_FALSE;
+	}
 	
+	//prints "image"
+	//printf("%s\n", jsonValue->u.object.values[0].name);
+
 	
 	
 	return SDL_TRUE;

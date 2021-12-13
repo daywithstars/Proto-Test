@@ -15,27 +15,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <string.h>
 
 #include <PT_Sprite.h>
-#include <PT_String.h>
 #include <PT_Parse.h>
 #include <PT_Graphics.h>
 
 
-
-struct pt_sprite {
-	PT_String* imageName;	
-	double x, y;
-	int dirX, dirY;
-	double speedX, speedY;
-	SDL_Rect* srcRect;
-	SDL_Rect* dstRect;
-	PT_Behavior* behavior;
-	
-	
-	void* _data;
-	void (*update)(void* _data, Sint32);
-	void (*draw)(void* _data);
-	void (*destroy)(void* _data);
-};
 
 
 //===================================== PRIVATE Functions
@@ -46,14 +29,14 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue );
 //===================================== PUBLIC Functions
 
 PT_Sprite* PT_SpriteCreate( const char* utf8_spriteTemplate, void* _data, 
-	SDL_bool (*dataParse)(void* _data, json_value* jsonValue) ) {
+	SDL_bool (*dataParse)(PT_Sprite* sprite, void* _data, json_value* jsonValue) ) {
 	
-	PT_Sprite* _this = (PT_Sprite*)malloc(sizeof(struct pt_sprite));
+	PT_Sprite* _this = (PT_Sprite*)malloc(sizeof(PT_Sprite));
 	if ( !_this )
 	{
 		return NULL;
 	}
-	SDL_memset(_this, 0, sizeof(struct pt_sprite));
+	SDL_memset(_this, 0, sizeof(PT_Sprite));
 	
 	PT_String* path = PT_StringCreate();
 	PT_StringInsert(&path, ".json", 0);
@@ -79,7 +62,7 @@ PT_Sprite* PT_SpriteCreate( const char* utf8_spriteTemplate, void* _data,
 	
 	if ( dataParse )
 	{
-		if ( !dataParse(_data, _jsonValue) )
+		if ( !dataParse(_this, _data, _jsonValue) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreate!\n");
 			PT_SpriteDestroy(_this);
@@ -156,15 +139,30 @@ void PT_SpriteStopMoveVertical( void* _data ) {
 	_this->dirY = 0;
 }
 
-PT_Behavior* PT_SpriteGetBehavior( PT_Sprite* _this ) {
-	return _this->behavior;
+
+void PT_SpriteGrab( void* _data, SDL_FPoint mousePosition ) {
+	PT_Sprite* _this = (PT_Sprite*)_data;
+	
+	//Test collision then set positions
+	const SDL_Rect mouseRect = { (int)mousePosition.x, (int)mousePosition.y, 4, 4 };
+	const SDL_Rect spriteRect = { (int)_this->dstRect->x, (int)_this->dstRect->y,
+		(int)_this->dstRect->w, (int)_this->dstRect->h };
+	
+	if ( SDL_HasIntersection(&mouseRect, &spriteRect) )
+	{	
+		_this->dstRect->x = mousePosition.x - spriteRect.w / 2;
+		_this->dstRect->y = mousePosition.y - spriteRect.h / 2;
+	}
 }
 
 void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime ) {
+	PT_SpriteStopMoveHorizontal((void*)_this);
+	PT_SpriteStopMoveVertical((void*)_this);
+
 	PT_BehaviorUpdate(_this->behavior, (void*)_this);
 
-	_this->x += _this->speedX * elapsedTime * _this->dirX;
-	_this->y += _this->speedY * elapsedTime * _this->dirY;
+	_this->dstRect->x += _this->speedX * elapsedTime * _this->dirX;
+	_this->dstRect->y += _this->speedY * elapsedTime * _this->dirY;
 	
 	if ( _this->update )
 	{
@@ -175,12 +173,7 @@ void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime ) {
 void PT_SpriteDraw( PT_Sprite* _this ) {
 	if ( _this->imageName ) 
 	{
-		if ( _this->dstRect )
-		{
-			_this->dstRect->x = (int)_this->x;
-			_this->dstRect->y = (int)_this->y;
-		}
-		PT_GraphicsDrawTexture((char*)_this->imageName->utf8_string, _this->srcRect, _this->dstRect,
+		PT_GraphicsDrawTextureF((char*)_this->imageName->utf8_string, _this->srcRect, _this->dstRect,
 			0.0, NULL, SDL_FLIP_NONE);
 	}
 	if ( _this->draw )
@@ -205,14 +198,6 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 				_this->imageName = PT_StringCreate();
 				PT_StringInsert(&_this->imageName, jsonValue->u.object.values[i].value->u.string.ptr, 0);
 			}
-			else if ( !strcmp("x", jsonValue->u.object.values[i].name) )
-			{ 
-				_this->x = jsonValue->u.object.values[i].value->u.dbl;
-			}
-			else if ( !strcmp("y", jsonValue->u.object.values[i].name) )
-			{
-				_this->y = jsonValue->u.object.values[i].value->u.dbl;
-			}
 			else if ( !strcmp("speedX", jsonValue->u.object.values[i].name) )
 			{ 
 				_this->speedX = jsonValue->u.object.values[i].value->u.dbl;
@@ -236,12 +221,16 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 			}
 			else if ( !strcmp("dstRect", jsonValue->u.object.values[i].name) )
 			{
-				_this->dstRect = (SDL_Rect*)malloc(sizeof(SDL_Rect));
+				_this->dstRect = (SDL_FRect*)malloc(sizeof(SDL_Rect));
 				
+				_this->dstRect->x = 
+				jsonValue->u.object.values[i].value->u.array.values[0]->u.dbl;
+				_this->dstRect->y =
+				jsonValue->u.object.values[i].value->u.array.values[1]->u.dbl;
 				_this->dstRect->w = 
-				jsonValue->u.object.values[i].value->u.array.values[0]->u.integer;
+				jsonValue->u.object.values[i].value->u.array.values[2]->u.dbl;
 				_this->dstRect->h = 
-				jsonValue->u.object.values[i].value->u.array.values[1]->u.integer;
+				jsonValue->u.object.values[i].value->u.array.values[3]->u.dbl;
 			}
 			else if ( !strcmp("behavior", jsonValue->u.object.values[i].name) )
 			{
@@ -256,14 +245,17 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 					continue;
 				}
 				
-				PT_BehaviorAddSimpleCallback(_this->behavior, "sprite-move-left", PT_SpriteMoveLeft);
-				PT_BehaviorAddSimpleCallback(_this->behavior, "sprite-move-right", PT_SpriteMoveRight);
-				PT_BehaviorAddSimpleCallback(_this->behavior, "sprite-move-up", PT_SpriteMoveUp);
-				PT_BehaviorAddSimpleCallback(_this->behavior, "sprite-move-down", PT_SpriteMoveDown);
+				PT_BehaviorAddSimpleCallback(_this->behavior, "PT_SpriteMoveLeft", PT_SpriteMoveLeft);
+				PT_BehaviorAddSimpleCallback(_this->behavior, "PT_SpriteMoveRight", PT_SpriteMoveRight);
+				PT_BehaviorAddSimpleCallback(_this->behavior, "PT_SpriteMoveUp", PT_SpriteMoveUp);
+				PT_BehaviorAddSimpleCallback(_this->behavior, "PT_SpriteMoveDown", PT_SpriteMoveDown);
 				PT_BehaviorAddSimpleCallback(_this->behavior, 
-					"sprite-stop-horizontal", PT_SpriteStopMoveHorizontal);
+					"PT_SpriteStopMoveHorizontal", PT_SpriteStopMoveHorizontal);
 				PT_BehaviorAddSimpleCallback(_this->behavior, 
-					"sprite-stop-vertical", PT_SpriteStopMoveVertical);
+					"PT_SpriteStopMoveVertical", PT_SpriteStopMoveVertical);
+					
+					
+				PT_BehaviorAddSDL_FPointCallback(_this->behavior, "PT_SpriteGrab", PT_SpriteGrab);
 			}
 			else {
 				break;

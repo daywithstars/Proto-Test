@@ -294,6 +294,18 @@ void PT_GraphicsDrawTexture( const char* utf8_name, const SDL_Rect* srcRect, con
 	SDL_RenderCopyEx(ptGraphics->renderer, node->value, srcRect, dstRect, angle, center, flip);
 }//PT_GraphicsDrawTexture
 
+void PT_GraphicsDrawTextureF( const char* utf8_name, const SDL_Rect* srcRect, const SDL_FRect* dstRect,
+	const double angle, const SDL_FPoint* center, const SDL_RendererFlip flip ) {
+	
+	PT_TextureList* node = PT_TextureListGet(ptGraphics->textureList, utf8_name);
+	if ( !node )
+	{
+		return;
+	}
+	
+	SDL_RenderCopyExF(ptGraphics->renderer, node->value, srcRect, dstRect, angle, center, flip);
+}//PT_GraphicsDrawTextureF
+
 void PT_GraphicsRenderClear() {
 	SDL_SetRenderDrawColor(ptGraphics->renderer, 
 		ptGraphics->clearColor.r,

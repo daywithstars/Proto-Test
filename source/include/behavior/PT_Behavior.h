@@ -12,7 +12,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #ifndef _PT_BEHAVIOR_H_
 #define _PT_BEHAVIOR_H_
 
-#include <SDL_stdinc.h>
+#include <SDL.h>
 
 
 typedef struct pt_behavior PT_Behavior;
@@ -21,7 +21,10 @@ typedef struct pt_behavior PT_Behavior;
 PT_Behavior* PT_BehaviorCreate( const char* utf8_behaviorTemplate );
 void PT_BehaviorDestroy( PT_Behavior* _this );
 
-void PT_BehaviorAddSimpleCallback( PT_Behavior* _this, const char* utf8_callbackName, void (*callback)() );
+void PT_BehaviorAddSimpleCallback( PT_Behavior* _this, const char* utf8_callbackName, 
+	void (*callback)(void* _data) );
+void PT_BehaviorAddSDL_FPointCallback( PT_Behavior* _this, const char* utf8_callbackName, 
+	void (*callback)(void* _data, SDL_FPoint) );
 
 void PT_BehaviorUpdate( PT_Behavior* _this, void* target );
 

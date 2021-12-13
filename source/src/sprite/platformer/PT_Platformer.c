@@ -27,7 +27,7 @@ struct pt_platformer {
 
 //===================================== PRIVATE Functions
 
-SDL_bool PT_PlatformerParse( void* _data, json_value* jsonValue );
+SDL_bool PT_PlatformerParse( PT_Sprite* sprite, void* _data, json_value* jsonValue );
 
 
 //===================================== PUBLIC Functions
@@ -82,7 +82,7 @@ void PT_PlatformerDraw( void* _data ) {
 
 //===================================== PRIVATE Functions
 
-SDL_bool PT_PlatformerParse( void* _data, json_value* jsonValue ) {
+SDL_bool PT_PlatformerParse( PT_Sprite* sprite, void* _data, json_value* jsonValue ) {
 	/*
 		see the template: games/default-templates/sprite-folder/sprite-template.json
 	*/

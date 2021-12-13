@@ -22,13 +22,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Parse.h>
 #include <PT_Graphics.h>
 #include <PT_InputManager.h>
-#include <PT_Sprite.h>
+#include <PT_DynamicImage.h>
 
 
 struct pt_screen {
 	PT_String* name;
 	PT_String* fileName;
-	PT_Sprite* sprite;
+	PT_Sprite* dynamicImage;
 };
 
 static SDL_Rect dst = { 0, 0, 270, 480 };
@@ -94,7 +94,7 @@ PT_Screen* PT_ScreenCreate( json_value* jsonValue ) {
 	
 	PT_ScreenParseSettings(_this, jsonValue);
 	
-	_this->sprite = PT_SpriteCreate("sprite-shooter", NULL, NULL);
+	_this->dynamicImage = PT_DynamicImageCreate("sprite-dynamic-image-1");
 	
 	SDL_Log("===== PT: PT_ScreenCreate =====\n");
 	SDL_Log("* Screen: %s: created\n", (char*)_this->name->utf8_string);
@@ -109,7 +109,7 @@ void PT_ScreenDestroy( PT_Screen* _this ) {
 		return;
 	}
 	
-	PT_SpriteDestroy(_this->sprite);
+	PT_SpriteDestroy(_this->dynamicImage);
 	
 	SDL_Log("===== PT: PT_ScreenDestroy =====\n");
 	SDL_Log("* Screen: %s: destroyed\n", (char*)_this->name->utf8_string);
@@ -121,7 +121,7 @@ void PT_ScreenDestroy( PT_Screen* _this ) {
 }//PT_ScreenDestroy
 
 void PT_ScreenUpdate( PT_Screen* _this, Sint32 elapsedTime ) {
-	PT_SpriteUpdate(_this->sprite, elapsedTime);
+	PT_SpriteUpdate(_this->dynamicImage, elapsedTime);
 
 	static float dir = 0.020;
 	static float x = 0.f;
@@ -149,7 +149,7 @@ void PT_ScreenDraw( PT_Screen* _this ) {
 	PT_GraphicsDrawTexture("background-proto-test", NULL, NULL, 0.0, NULL, SDL_FLIP_NONE);
 	PT_GraphicsDrawTexture("background-proto-test", NULL, &dst, 0.0, NULL, SDL_FLIP_NONE);
 	
-	PT_SpriteDraw(_this->sprite);
+	PT_SpriteDraw(_this->dynamicImage);
 	
 	if ( PT_InputManagerKeyboardGetKeyDown(SDL_SCANCODE_R) )
 	{

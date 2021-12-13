@@ -18,6 +18,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <json.h>
 
 #include <PT_StringList.h>
+#include <PT_Sprite.h>
 
 
 typedef struct { 
@@ -26,14 +27,18 @@ typedef struct {
 	PT_StringList* keyMap;
 }PT_InputHandler;
 
+typedef struct {
+	SDL_bool returnValue;
+	SDL_FPoint mousePosition;
+}PT_InputHandlerGrab;
+
 
 PT_InputHandler* PT_InputHandlerCreate( json_value* jsonValue );
 
 void PT_InputHandlerDestroy( PT_InputHandler* _this );
 
 SDL_bool PT_InputHandlerGetButtonState( PT_InputHandler* _this, const char* mapName );
-void PT_InputHandlerGetGrapPosition( PT_InputHandler* _this, const char* mapName, Sint32* x, 
-	Sint32* y );
+PT_InputHandlerGrab PT_InputHandlerGetGrabPosition( PT_InputHandler* _this, const char* mapName );
 
 
 #endif /* _PT_INPUTHANDLER_H_ */

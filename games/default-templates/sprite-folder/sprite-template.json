@@ -1,10 +1,8 @@
 {
 	"image": "<nameYourImage>",
-	"x": 10.0,
-	"y": 20.0,
 	"speedX": 0.1,
 	"speedY": 0.2,
 	"srcRect": [0, 0, 64, 64],
-	"dstRect": [128, 128],
+	"dstRect": [0.0, 0.0, 128.0, 128.0],
 	"behavior": "<behaviorName>",
 } 

@@ -13,6 +13,7 @@
 				"input-up": "PT_SpriteMoveUp",
 				"input-down": "PT_SpriteMoveDown",
 				"input-dodge": "change-state-dodge",
+				"input-grab-test": "PT_SpriteGrab",
 			},
 			
 			"event": {

@@ -20,6 +20,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #define _PT_CALLBACK_LIST_H_
 
 
+#include <SDL.h>
+
 #include <PT_String.h>
 
 
@@ -27,6 +29,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 typedef struct pt_callback_list {
 	PT_String* index;
 	void (*simpleCallback)(void* _data);
+	void (*SDL_FPointCallback)(void* _data, SDL_FPoint);
 	
 	struct pt_callback_list* next;
 }PT_CallbackList;
@@ -68,6 +71,9 @@ void PT_CallbackListDestroy( PT_CallbackList* _this );
 */
 PT_CallbackList* PT_CallbackListAddSimple( PT_CallbackList* _this, const char* utf8_index, 
 	void (*callback)(void* _data) );
+	
+PT_CallbackList* PT_CallbackListAddSDL_FPoint( PT_CallbackList* _this, const char* utf8_index,
+	void (*callback)(void* _data, SDL_FPoint) );
 
 /**
 * \brief Get the pointer to an specific node, based on its index.

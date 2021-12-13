@@ -104,8 +104,13 @@ void PT_BehaviorDestroy( PT_Behavior* _this ) {
 	free(_this);
 }
 
-void PT_BehaviorAddSimpleCallback( PT_Behavior* _this, const char* utf8_callbackName, void (*callback)() ) {
+void PT_BehaviorAddSimpleCallback( PT_Behavior* _this, const char* utf8_callbackName, 
+	void (*callback)(void* _data) ) {
 	_this->callbackList = PT_CallbackListAddSimple(_this->callbackList, utf8_callbackName, callback);
+}
+void PT_BehaviorAddSDL_FPointCallback( PT_Behavior* _this, const char* utf8_callbackName, 
+	void (*callback)(void* _data, SDL_FPoint) ) {
+	_this->callbackList = PT_CallbackListAddSDL_FPoint(_this->callbackList, utf8_callbackName, callback);
 }
 
 void PT_BehaviorUpdate( PT_Behavior* _this, void* target ) {
@@ -308,6 +313,25 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, PT_Behavior* behavior
 				if ( node->simpleCallback )
 				{
 					node->simpleCallback(target);
+				}
+			}
+		}
+		else if ( 
+				PT_InputHandlerGetGrabPosition(inputHandler, (char*)pList->index->utf8_string) 
+				.returnValue
+			)
+		{
+			//callback
+			PT_InputHandlerGrab grab = 
+			PT_InputHandlerGetGrabPosition(inputHandler, (char*)pList->index->utf8_string);
+			
+			PT_CallbackList* node = PT_CallbackListGet(behavior->callbackList, 
+				(char*)pList->value->utf8_string);
+			if ( node )
+			{
+				if ( node->SDL_FPointCallback )
+				{
+					node->SDL_FPointCallback(target, grab.mousePosition);
 				}
 			}
 		}
