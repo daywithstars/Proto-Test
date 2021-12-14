@@ -90,7 +90,7 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* utf8_string, Uint64 ins
 /**
 * \brief Clear all the chars from the PT_String.
 *
-* @param _this The pointer to an PT_String struct.
+* @param _this The pointer to pointer an PT_String struct.
 *
 * \sa PT_StringInsert
 * \sa PT_StringCount
@@ -99,7 +99,7 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* utf8_string, Uint64 ins
 * \sa PT_StringMatch
 * \sa PT_StringPrintLine
 */
-void PT_StringClear( PT_String* _this );
+void PT_StringClear( PT_String** _this );
 
 /**
 * \brief This function return the number of character unicode.

@@ -22,7 +22,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Graphics.h>
 
 
-struct pt_dynamicimage {
+struct pt_dynamic_image {
 	int tmp;
 };
 
@@ -33,12 +33,12 @@ SDL_bool PT_DynamicImageParse( PT_Sprite* sprite, void* _data, json_value* jsonV
 
 PT_Sprite* PT_DynamicImageCreate( const char* utf8_spriteTemplate ) {
 	
-	PT_DynamicImage* _this = (PT_DynamicImage*)malloc(sizeof(struct pt_dynamicimage));
+	PT_DynamicImage* _this = (PT_DynamicImage*)malloc(sizeof(struct pt_dynamic_image));
 	if ( !_this )
 	{
 		return NULL;
 	}
-	SDL_memset(_this, 0, sizeof(struct pt_dynamicimage));
+	SDL_memset(_this, 0, sizeof(struct pt_dynamic_image));
 	
 	PT_Sprite* sprite = PT_SpriteCreate(utf8_spriteTemplate, (void*)_this, PT_DynamicImageParse);
 	if ( !sprite )

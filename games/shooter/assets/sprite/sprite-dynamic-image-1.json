@@ -1,4 +1,5 @@
 {
+	"type": "PT_DynamicImage",
 	"image": "misc-78-37",
 	"speedX": 0.120,
 	"speedY": 0.120,
@@ -6,8 +7,6 @@
 	"dstRect": [10.0, 10.0, 270.0, 480.0],
 	"behavior": "dynamic-image-behavior-1",
 	
-	"object": {
-		"move-speed-x": 0.120,
-		"move-speed-y": 0.120,
+	"misc": {
 	}
 } 

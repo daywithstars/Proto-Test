@@ -19,6 +19,7 @@ file(GLOB project_src
 	"source/src/sprite/*.c"
 	"source/src/sprite/platformer/*.c"
 	"source/src/sprite/shooter/*.c"
+	"source/src/sprite/misc/*.c"
 	)
 	
 #Add the path to new folders with files and go to the folder build and call cmake ..
@@ -33,6 +34,7 @@ include_directories(
 	"source/include/sprite"
 	"source/include/sprite/platformer"
 	"source/include/sprite/shooter"
+	"source/include/sprite/misc"
 )
 	
 	

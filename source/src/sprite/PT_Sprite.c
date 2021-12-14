@@ -257,9 +257,6 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 					
 				PT_BehaviorAddSDL_FPointCallback(_this->behavior, "PT_SpriteGrab", PT_SpriteGrab);
 			}
-			else {
-				break;
-			}
 		}
 	}
 	

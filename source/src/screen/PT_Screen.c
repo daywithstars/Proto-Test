@@ -22,16 +22,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Parse.h>
 #include <PT_Graphics.h>
 #include <PT_InputManager.h>
-#include <PT_DynamicImage.h>
+#include <PT_SpriteFabric.h>
 
 
 struct pt_screen {
 	PT_String* name;
 	PT_String* fileName;
-	PT_Sprite* dynamicImage;
+	
+	PT_Sprite** sprites;
+	unsigned int numSprites;
 };
 
-static SDL_Rect dst = { 0, 0, 270, 480 };
+
 Uint8 colorTar = 1;
 Uint8 colorValue = 0;
 
@@ -78,6 +80,56 @@ SDL_bool PT_ScreenParseSettings( PT_Screen* _this, json_value* jsonValue ) {
 	return SDL_TRUE;
 }//PT_ScreenParseSettings
 
+SDL_bool PT_ScreenLoadSprites( PT_Screen* _this, json_value* jsonValue ) {
+	if ( !_this || !jsonValue )
+	{
+		return SDL_FALSE;
+	}
+	
+	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "sprites");
+	if ( entry.name )
+	{
+		_this->sprites = (PT_Sprite**)malloc(sizeof(PT_Sprite*) * entry.value->u.array.length);
+		_this->numSprites = entry.value->u.array.length;
+		
+		PT_Parse *parse = PT_ParseCreate();
+		PT_String* spriteTemplatePath = PT_StringCreate();
+		
+		for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
+		{
+			_this->sprites[i] = NULL;
+			
+			//Reads sprite template to see it's type.
+			PT_StringInsert(&spriteTemplatePath, ".json", 0);
+			PT_StringInsert(&spriteTemplatePath, entry.value->u.array.values[i]->u.string.ptr, 0);
+			PT_StringInsert(&spriteTemplatePath, "assets/sprite/", 0);
+			
+			if ( !PT_ParseOpenFile(parse, (char*)spriteTemplatePath->utf8_string, SDL_TRUE) )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenLoadSprites!\n");
+			}
+			else {
+				json_object_entry spriteTemplateEntry = PT_ParseGetObjectEntry(parse, "type");
+				if ( spriteTemplateEntry.name )
+				{
+					_this->sprites[i] = PT_SpriteFabricGet(
+						entry.value->u.array.values[i]->u.string.ptr,
+						spriteTemplateEntry.value->u.string.ptr
+					);
+				}
+			}
+			
+			PT_StringClear(&spriteTemplatePath);
+		}
+		
+		PT_StringDestroy(spriteTemplatePath);
+		PT_ParseDestroy(parse);
+	}
+	
+	
+	return SDL_TRUE;
+}//PT_ScreenLoadSprites
+
 //===================================== PUBLIC Functions
 
 PT_Screen* PT_ScreenCreate( json_value* jsonValue ) {
@@ -93,11 +145,14 @@ PT_Screen* PT_ScreenCreate( json_value* jsonValue ) {
 	_this->fileName = PT_StringCreate();
 	
 	PT_ScreenParseSettings(_this, jsonValue);
-	
-	_this->dynamicImage = PT_DynamicImageCreate("sprite-dynamic-image-1");
+	if ( !PT_ScreenLoadSprites(_this, jsonValue) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenCreate: Cannot load sprites\n");
+	}
 	
 	SDL_Log("===== PT: PT_ScreenCreate =====\n");
 	SDL_Log("* Screen: %s: created\n", (char*)_this->name->utf8_string);
+	SDL_Log("* --File: %s\n", (char*)_this->fileName->utf8_string);
 	SDL_Log("=====\n");
 	
 	return _this;
@@ -109,47 +164,48 @@ void PT_ScreenDestroy( PT_Screen* _this ) {
 		return;
 	}
 	
-	PT_SpriteDestroy(_this->dynamicImage);
-	
 	SDL_Log("===== PT: PT_ScreenDestroy =====\n");
 	SDL_Log("* Screen: %s: destroyed\n", (char*)_this->name->utf8_string);
+	SDL_Log("* --File: %s\n", (char*)_this->fileName->utf8_string);
 	SDL_Log("=====\n");
 	
 	PT_StringDestroy(_this->name);
 	PT_StringDestroy(_this->fileName);
+	
+	if ( _this->sprites )
+	{
+		for ( unsigned int i = 0; i < _this->numSprites; i++ )
+		{
+			if ( _this->sprites[i] )
+			{
+				PT_SpriteDestroy(_this->sprites[i]);
+			}
+		} 
+		
+		free(_this->sprites);
+	}
+	
 	free(_this);
 }//PT_ScreenDestroy
 
 void PT_ScreenUpdate( PT_Screen* _this, Sint32 elapsedTime ) {
-	PT_SpriteUpdate(_this->dynamicImage, elapsedTime);
-
-	static float dir = 0.020;
-	static float x = 0.f;
-	x += elapsedTime * dir;
 	
+	for ( unsigned int i = 0; i < _this->numSprites; i++ )
+	{
+		PT_SpriteUpdate(_this->sprites[i], elapsedTime);
+	}
 	if ( PT_InputManagerKeyboardGetKeyDown(SDL_SCANCODE_S) )
 	{
 		PT_SoundManagerPlaySample("jump", 0);
 	}
-	
-	if ( x <= 0 )
-	{
-		dir = 0.020;
-	}
-	else if ( x + dst.w >= 640 )
-	{
-		dir = -0.020;
-	}
-	
-	dst.x = (int)x;
 }//PT_ScreenUpdate
 
 void PT_ScreenDraw( PT_Screen* _this ) {
 	
-	PT_GraphicsDrawTexture("background-proto-test", NULL, NULL, 0.0, NULL, SDL_FLIP_NONE);
-	PT_GraphicsDrawTexture("background-proto-test", NULL, &dst, 0.0, NULL, SDL_FLIP_NONE);
-	
-	PT_SpriteDraw(_this->dynamicImage);
+	for ( unsigned int i = 0; i < _this->numSprites; i++ )
+	{
+		PT_SpriteDraw(_this->sprites[i]);
+	}
 	
 	if ( PT_InputManagerKeyboardGetKeyDown(SDL_SCANCODE_R) )
 	{

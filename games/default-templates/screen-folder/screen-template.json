@@ -1,0 +1,14 @@
+{
+	"file": "<thisScreenFileName>.json",
+
+	"settings": {
+		"name": "<nameYourScreen>",
+		"tag": "<tagType>",
+	},
+	
+	"sprites": [
+		"<sprite-template>",
+		"<sprite-template>",
+	]
+}
+

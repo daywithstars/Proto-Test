@@ -84,27 +84,23 @@ SDL_bool PT_ScreenManagerCreate( ) {
 	return SDL_TRUE;
 }//PT_ScreenManagerCreate
 
-void PT_ScreenListDestroy( PT_ScreenList* _this ) {
-	if ( !_this )
+void PT_ScreenManagerDestroy( ) {
+	if ( !ptScreenManager )
 	{
 		return;
 	}
+	
+	ptScreenManager->firstScreen = NULL;
+	ptScreenManager->secondScreen = NULL;
+	
+	PT_ScreenListDestroy(ptScreenManager->screenList);
+	PT_StringListDestroy(ptScreenManager->screenListToFree);
+	
+	PT_JsonListDestroy(ptScreenManager->jsonList);
 
-
-	while ( _this )
-	{
-		PT_ScreenList* tmp = _this->next;
-		
-		if ( _this->value )
-		{
-			PT_ScreenDestroy(_this->value);
-		}
-		PT_StringDestroy(_this->index);
-		
-		free(_this);
-		_this = tmp;
-	}
-}//PT_ScreenListDestroy
+	free(ptScreenManager);
+	ptScreenManager = NULL;
+}//PT_ScreenManagerDestroy
 
 void PT_ScreenManagerSetup( ) {
 	/*
@@ -160,6 +156,26 @@ void PT_ScreenManagerSetup( ) {
 
 						ptScreenManager->jsonList = PT_JsonListAdd(ptScreenManager->jsonList, 
 							entry.value->u.string.ptr, jsonValue);	
+							
+						entry =
+						PT_ParseGetObjectEntry_json_value(jsonValue, "settings tag");
+						if ( entry.name )
+						{
+							if ( PT_StringMatchFast((char*)entry.value->u.string.ptr, "first-screen") )
+							{
+								entry = 
+								PT_ParseGetObjectEntry_json_value(jsonValue, "settings name");
+							
+								if ( !PT_ScreenManagerLoadScreen(entry.value->u.string.ptr) )
+								{
+									SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+									"PT: PT_ScreenManagerSetup\n");
+								}
+								else {
+									PT_ScreenManagerSetFirstScreen(entry.value->u.string.ptr);
+								}
+							}
+						}
 					}
 
 					
@@ -225,7 +241,7 @@ void PT_ScreenManagerSetFirstScreen( const char* utf8_screenName ) {
 	}
 	else {
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_ScreenManagerSetFirstScreen: Can't find screen: %s\n", utf8_screenName);
+		"PT: PT_ScreenManagerSetFirstScreen: Can't find loaded screen: %s\n", utf8_screenName);
 	}
 }//PT_ScreenManagerSetFirstScreen
 
@@ -372,24 +388,6 @@ void PT_ScreenManagerFreeScreens( ) {
 	ptScreenManager->screenListToFree = NULL;	
 }//PT_ScreenManagerFreeScreens
 
-void PT_ScreenManagerDestroy( ) {
-	if ( !ptScreenManager )
-	{
-		return;
-	}
-	
-	ptScreenManager->firstScreen = NULL;
-	ptScreenManager->secondScreen = NULL;
-	
-	PT_ScreenListDestroy(ptScreenManager->screenList);
-	PT_StringListDestroy(ptScreenManager->screenListToFree);
-	
-	PT_JsonListDestroy(ptScreenManager->jsonList);
-
-	free(ptScreenManager);
-	ptScreenManager = NULL;
-}//PT_ScreenManagerDestroy
-
 //===================================== PRIVATE Functions implementations 
 //================= PT_ScreenList
 PT_ScreenList* PT_ScreenListCreate( const char* utf8_index, PT_Screen* value ) {
@@ -407,6 +405,28 @@ PT_ScreenList* PT_ScreenListCreate( const char* utf8_index, PT_Screen* value ) {
 	return ptScreenList;
 }//PT_ScreenListCreate
 
+void PT_ScreenListDestroy( PT_ScreenList* _this ) {
+	if ( !_this )
+	{
+		return;
+	}
+
+
+	while ( _this )
+	{
+		PT_ScreenList* tmp = _this->next;
+		
+		if ( _this->value )
+		{
+			PT_ScreenDestroy(_this->value);
+		}
+		PT_StringDestroy(_this->index);
+		
+		free(_this);
+		_this = tmp;
+	}
+}//PT_ScreenListDestroy
+
 PT_ScreenList* PT_ScreenListAdd( PT_ScreenList* _this, const char* utf8_index, PT_Screen* value ) {
 	
 	if ( !_this )
@@ -423,6 +443,8 @@ PT_ScreenList* PT_ScreenListAdd( PT_ScreenList* _this, const char* utf8_index, P
 		{
 			if ( value )
 			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+				"PT: PT_ScreenListAdd: Screen already added: %s\n", utf8_index);
 				PT_ScreenDestroy(value);
 			}
 			return _this;

@@ -544,12 +544,18 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 	return returnValue;
 }//PT_StringInsert
 
-void PT_StringClear( PT_String* _this ) {
-	if ( _this->utf8_string )
+void PT_StringClear( PT_String** _this ) {
+	if ( !_this || !(*_this)) 
 	{
-		free(_this->utf8_string);
-		_this->length = 0;
-		_this->_size = 0;
+		return;
+	}
+
+	if ( (*_this)->utf8_string )
+	{
+		free((*_this)->utf8_string);
+		(*_this)->length = 0;
+		(*_this)->_size = 0;
+		(*_this)->utf8_string = NULL;
 	}	
 }//PT_StringClear
 

@@ -138,8 +138,7 @@ SDL_bool PT_ParseLoadTemplate( PT_Parse* _this, const json_char* jsonString ) {
 		return SDL_FALSE;
 	}
 	
-	PT_StringDestroy(_this->jsonString);
-	_this->jsonString = PT_StringCreate();
+	PT_StringClear(&_this->jsonString);
 	if ( !PT_StringInsert(&(_this->jsonString), (char*)jsonString, 0) )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseLoadTemplate!\n");

@@ -1,7 +1,6 @@
 {
 	"screens": [
-		"screen-1.json",
-		"screen-2.json",
-		"screen-3.json"
+		"screen-main-menu.json",
+		"screen-play.json",
 	]
 }

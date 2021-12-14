@@ -173,11 +173,6 @@ SDL_bool PT_ApplicationCreate( ) {
 
 	PT_ScreenManagerSetup();
 	
-	PT_ScreenManagerLoadScreen("Play Screen");
-	PT_ScreenManagerLoadScreen("Settings Screen");
-	PT_ScreenManagerLoadScreen("Menu Screen");
-	PT_ScreenManagerSetFirstScreen("Play Screen");
-	
 	PT_SoundManagerCreate();
 	if ( !PT_SoundManagerLoadSamples() )
 	{
@@ -188,7 +183,7 @@ SDL_bool PT_ApplicationCreate( ) {
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate!\n");
 	}
 	
-	PT_SoundManagerPlayMusic("SS2-intro", 1);
+	PT_SoundManagerPlayMusic("SS2-intro", 2);
 	
 	SDL_Log("PT: PT_ApplicationCreate: Game: \"%s\", successful initialized\n", 
 	(char*)ptApplication->gameName->utf8_string);
