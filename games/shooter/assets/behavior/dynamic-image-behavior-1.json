@@ -1,6 +1,6 @@
 {
 	"settings": {
-		"keyMap": "Map-keyboard-1",
+		"keyMap": "InputMap show-image",
 	},
 	
 	"states": [
@@ -8,12 +8,7 @@
 			"name": "action",
 			
 			"input": {
-				"input-left": "PT_SpriteMoveLeft",
-				"input-right": "PT_SpriteMoveRight",
-				"input-up": "PT_SpriteMoveUp",
-				"input-down": "PT_SpriteMoveDown",
-				"input-dodge": "change-state-dodge",
-				"input-grab-test": "PT_SpriteGrab",
+				"mouse-grab": "PT_SpriteGrab",
 			},
 			
 			"event": {

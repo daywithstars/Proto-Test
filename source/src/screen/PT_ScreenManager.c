@@ -136,6 +136,11 @@ void PT_ScreenManagerSetup( ) {
 					json_char* templatePath = entry.value->u.array.values[i]->u.string.ptr;
 					
 					PT_String* jsonScreenPath = PT_StringCreate();
+					
+					if ( !PT_StringInsert(&jsonScreenPath, ".json", 0) )
+					{
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenManagerSetup!\n");
+					}
 					if ( !PT_StringInsert(&jsonScreenPath, templatePath, 0) )
 					{
 						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenManagerSetup!\n");

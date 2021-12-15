@@ -245,19 +245,16 @@ void PT_StringDestroy( PT_String* _this ) {
 }//PT_StringDestroy
 
 SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 insertPosition ) {
-	SDL_bool returnValue = SDL_TRUE;
 	
-	if ( _this == NULL )
+	if ( !_this )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringIinsertString: Invalid PT_String\n");
-		returnValue = SDL_FALSE;
-		return returnValue;
+		return SDL_FALSE;
 	}
 	if ( !_utf8_string )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringIinsertString: Invalid _utf8_string\n");
-		returnValue = SDL_FALSE;
-		return returnValue;
+		return SDL_FALSE;
 	}
 
 	Uint8* utf8_string = (Uint8*)_utf8_string;
@@ -277,7 +274,6 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 					
 				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "* please format in UTF-8, the wrong char will be replaced by U+FFFD unicode code point into your string \n");
 				
-				returnValue = SDL_FALSE;
 				
 					
 				PT_String* wrongStr = PT_StringCreate();
@@ -296,7 +292,7 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 				
 				PT_StringDestroy(*_this);
 				(*_this) = wrongStr;
-				return returnValue;
+				return SDL_FALSE;
 			}
 		}
 	}
@@ -328,8 +324,6 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringIinsertString case 2: this char: %d is not supported!\n", (int)utf8_string[j]);
 						
 					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "* please format in UTF-8, the wrong char will be replaced by U+FFFD unicode code point into your string \n");
-					
-					returnValue = SDL_FALSE;
 						
 						
 					PT_String* wrongStr = PT_StringCreate();
@@ -350,7 +344,7 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 					PT_StringDestroy(newString);
 					(*_this) = wrongStr;
 					
-					return returnValue;
+					return SDL_FALSE;
 				}
 				i++;
 				j++;
@@ -392,7 +386,6 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 						
 					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "* please format in UTF-8, the wrong char will be replaced by U+FFFD unicode code point into your string \n");
 					
-					returnValue = SDL_FALSE;
 						
 					PT_String* wrongStr = PT_StringCreate();
 					resizeString(wrongStr, j + i + 3);
@@ -421,7 +414,7 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 					PT_StringDestroy(newString);
 					(*_this) = wrongStr;
 					
-					return returnValue;
+					return SDL_FALSE;
 				}
 				
 				i++;
@@ -478,7 +471,6 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 						
 					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "* please format in UTF-8, the wrong char will be replaced by U+FFFD unicode code point into your string \n");
 					
-					returnValue = SDL_FALSE;
 					
 					PT_String* wrongStr = PT_StringCreate();
 					resizeString(wrongStr, prevStringLength + i + 3);
@@ -519,7 +511,7 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 					PT_StringDestroy(*_this);
 					
 					(*_this) = wrongStr;
-					return returnValue;
+					return SDL_FALSE;
 				}
 				
 				j++;
@@ -541,7 +533,7 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 		}
 	}
 	
-	return returnValue;
+	return SDL_TRUE;
 }//PT_StringInsert
 
 void PT_StringClear( PT_String** _this ) {

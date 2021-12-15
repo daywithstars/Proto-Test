@@ -22,6 +22,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Parse.h>
 #include <PT_Graphics.h>
 #include <PT_InputManager.h>
+#include <PT_Keyboard.h>
 #include <PT_SpriteFabric.h>
 
 
@@ -100,9 +101,18 @@ SDL_bool PT_ScreenLoadSprites( PT_Screen* _this, json_value* jsonValue ) {
 			_this->sprites[i] = NULL;
 			
 			//Reads sprite template to see it's type.
-			PT_StringInsert(&spriteTemplatePath, ".json", 0);
-			PT_StringInsert(&spriteTemplatePath, entry.value->u.array.values[i]->u.string.ptr, 0);
-			PT_StringInsert(&spriteTemplatePath, "assets/sprite/", 0);
+			if ( !PT_StringInsert(&spriteTemplatePath, ".json", 0) )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenLoadSprites!\n");
+			}
+			if ( !PT_StringInsert(&spriteTemplatePath, entry.value->u.array.values[i]->u.string.ptr, 0) )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenLoadSprites!\n");
+			}
+			if ( !PT_StringInsert(&spriteTemplatePath, "assets/sprite/", 0) )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenLoadSprites!\n");
+			}
 			
 			if ( !PT_ParseOpenFile(parse, (char*)spriteTemplatePath->utf8_string, SDL_TRUE) )
 			{
@@ -205,68 +215,6 @@ void PT_ScreenDraw( PT_Screen* _this ) {
 	for ( unsigned int i = 0; i < _this->numSprites; i++ )
 	{
 		PT_SpriteDraw(_this->sprites[i]);
-	}
-	
-	if ( PT_InputManagerKeyboardGetKeyDown(SDL_SCANCODE_R) )
-	{
-		colorTar = 1;
-	}
-	if ( PT_InputManagerKeyboardGetKeyDown(SDL_SCANCODE_G) )
-	{
-		colorTar = 2;
-	}
-	if ( PT_InputManagerKeyboardGetKeyDown(SDL_SCANCODE_B) )
-	{
-		colorTar = 3;
-	}
-	if ( PT_InputManagerKeyboardGetKeyDown(SDL_SCANCODE_A) )
-	{
-		colorTar = 4;
-	}
-	if ( PT_InputManagerKeyboardGetKeyDown(SDL_SCANCODE_D) )
-	{
-		colorTar = 5;
-	}
-	
-	static SDL_Color color = { 0, 0, 0, 100 };
-	static Uint8 gDir = 1;
-	PT_GraphicsSetRenderDrawColor(color);
-	PT_GraphicsRenderFillRect(NULL);
-	
-	switch ( colorTar )
-	{
-		case 1:
-		color.r = colorValue;
-		break;
-		
-		case 2:
-		color.g = colorValue;
-		break;
-		
-		case 3:
-		color.b = colorValue;
-		break;
-		
-		case 4:
-		color.a = colorValue;
-		break;
-		
-		case 5:
-		color.r = 0;
-		color.g = 0;
-		color.b = 0;
-		color.a = 100;
-		break;
-	}
-	
-	colorValue += gDir;
-	if ( colorValue > 200 )
-	{
-		gDir = -1;
-	}
-	else if ( colorValue <= 0 )
-	{
-		gDir = 1;
 	}
 }//PT_ScreenDraw
 

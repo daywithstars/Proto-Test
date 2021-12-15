@@ -13,6 +13,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stdlib.h>
 #include <malloc.h>
 
+#include <SDL_image.h>
+
 #include <PT_Graphics.h>
 #include <PT_TextureList.h>
 #include <PT_Parse.h>
@@ -165,6 +167,12 @@ SDL_bool PT_GraphicsCreate( ) {
 		return SDL_TRUE;
 	}
 	
+	if ( !IMG_Init(IMG_INIT_PNG) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_GraphicsCreate: Cannot load support to PNG image, use the default .bmp\n");
+	}
+	
 	ptGraphics = (PT_Graphics*)malloc(sizeof(struct pt_graphics));
 	if ( !ptGraphics )
 	{
@@ -226,6 +234,8 @@ void PT_GraphicsDestroy() {
 	free(ptGraphics);
 	
 	ptGraphics = NULL;
+	
+	IMG_Quit();
 }//PT_GraphicsDestroy
 
 int PT_GraphicsShowSimpleMessageBox(Uint32 flags, const char *utf8_title, const char *utf8_message) {
@@ -239,7 +249,7 @@ void PT_GraphicsLoadTexture( const char* utf8_filePath, const char* utf8_name ) 
 	PT_StringInsert(&path, utf8_filePath, 0);
 	PT_StringInsert(&path, (char*)gRootDir->utf8_string, 0);
 	
-	SDL_Surface* loadedSurface = SDL_LoadBMP((char*)path->utf8_string);
+	SDL_Surface* loadedSurface = IMG_Load((char*)path->utf8_string);
 	if ( !loadedSurface )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 

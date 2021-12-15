@@ -2,6 +2,6 @@
 	"graphics": {
 		"screenWidth": 640, 
 		"screenHeight": 480, 
-		"renderDrawColor": [255, 0, 0, 255] 
+		"renderDrawColor": [220, 0, 0, 255] 
 	}
 }

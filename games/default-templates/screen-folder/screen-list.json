@@ -1,6 +1,6 @@
 {
 	"screens": [
-		"<screenFileName>.json",
-		"<screenFileName>.json",
+		"<screenFileName>",
+		"<screenFileName>",
 	]
 }

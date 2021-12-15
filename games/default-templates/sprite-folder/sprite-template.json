@@ -1,6 +1,6 @@
 {
 	"type": "<SpriteType>",
-	"image": "<nameYourImage>",
+	"image": "<ImageToUse>",
 	"speedX": 0.1,
 	"speedY": 0.2,
 	"srcRect": [0, 0, 64, 64],

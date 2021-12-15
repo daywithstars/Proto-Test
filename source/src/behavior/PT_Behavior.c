@@ -298,6 +298,8 @@ void PT_BehaviorStateDestroy( PT_BehaviorState* _this ) {
 }
 
 void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, PT_Behavior* behavior, void* target ) {
+	SDL_PumpEvents();
+
 	PT_InputHandler* inputHandler = behavior->inputHandler;
 	
 	PT_StringList* pList = _this->inputMap;
@@ -342,16 +344,21 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, PT_Behavior* behavior
 	/*
 		we treat in separated loop, to not process any previous state input. 
 	*/
+
 	pList = _this->inputChangeStateMap;
+
 	while ( pList )
 	{
+
 		if ( PT_InputHandlerGetButtonState(inputHandler, (char*)pList->index->utf8_string) )
 		{
 			//callback call
+			
 			PT_BehaviorChangeState(behavior, (char*)pList->value->utf8_string);
 		}
 		
 		pList = pList->next;
+
 	}
 }
 void PT_BehaviorStateUpdateAways( PT_BehaviorState* _this, PT_Behavior* behavior, void* target ) {

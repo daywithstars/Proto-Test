@@ -83,6 +83,7 @@ SDL_bool PT_KeyboardGetKeyHold( PT_Keyboard* _this, SDL_Scancode key ) {
 
 SDL_Scancode PT_KeyboardGetScancodeByString( const char* string ) {
 
+
 	if ( !string )
 	{
 		return SDL_SCANCODE_UNKNOWN;
@@ -423,8 +424,213 @@ SDL_Scancode PT_KeyboardGetScancodeByString( const char* string ) {
 		return SDL_SCANCODE_NUMLOCKCLEAR;
 	}	
 	
+	
+	if ( PT_StringMatchFast(string, "kpdivide") )
+	{
+		return SDL_SCANCODE_KP_DIVIDE;
+	}
+	if ( PT_StringMatchFast(string, "kpmultiply") )
+	{
+		return SDL_SCANCODE_KP_MULTIPLY;
+	}
+	if ( PT_StringMatchFast(string, "kpminus") )
+	{
+		return SDL_SCANCODE_KP_MINUS;
+	}
+	if ( PT_StringMatchFast(string, "kpplus") )
+	{
+		return SDL_SCANCODE_KP_PLUS;
+	}
+	if ( PT_StringMatchFast(string, "kpenter") )
+	{
+		return SDL_SCANCODE_KP_ENTER;
+	}
+	if ( PT_StringMatchFast(string, "kp1") )
+	{
+		return SDL_SCANCODE_KP_1;
+	}
+	if ( PT_StringMatchFast(string, "kp2") )
+	{
+		return SDL_SCANCODE_KP_2;
+	}
+	if ( PT_StringMatchFast(string, "kp3") )
+	{
+		return SDL_SCANCODE_KP_3;
+	}
+	if ( PT_StringMatchFast(string, "kp4") )
+	{
+		return SDL_SCANCODE_KP_4;
+	}
+	if ( PT_StringMatchFast(string, "kp5") )
+	{
+		return SDL_SCANCODE_KP_5;
+	}
+	if ( PT_StringMatchFast(string, "kp6") )
+	{
+		return SDL_SCANCODE_KP_6;
+	}
+	if ( PT_StringMatchFast(string, "kp7") )
+	{
+		return SDL_SCANCODE_KP_7;
+	}
+	if ( PT_StringMatchFast(string, "kp8") )
+	{
+		return SDL_SCANCODE_KP_8;
+	}
+	if ( PT_StringMatchFast(string, "kp9") )
+	{
+		return SDL_SCANCODE_KP_9;
+	}	
+	if ( PT_StringMatchFast(string, "kp0") )
+	{
+		return SDL_SCANCODE_KP_0;
+	}
+	if ( PT_StringMatchFast(string, "kpperiod") )
+	{
+		return SDL_SCANCODE_KP_PERIOD;
+	}
+	if ( PT_StringMatchFast(string, "nonusbackslash") )
+	{
+		return SDL_SCANCODE_NONUSBACKSLASH;
+	}
+	if ( PT_StringMatchFast(string, "application") )
+	{
+		return SDL_SCANCODE_APPLICATION;
+	}
+	if ( PT_StringMatchFast(string, "power") )
+	{
+		return SDL_SCANCODE_POWER;
+	}
+	if ( PT_StringMatchFast(string, "kpequals") )
+	{
+		return SDL_SCANCODE_KP_EQUALS;
+	}
+	
+	
+	if ( PT_StringMatchFast(string, "f13") )
+	{
+		return SDL_SCANCODE_F13;
+	}
+	if ( PT_StringMatchFast(string, "f14") )
+	{
+		return SDL_SCANCODE_F14;
+	}
+	if ( PT_StringMatchFast(string, "f15") )
+	{
+		return SDL_SCANCODE_F15;
+	}
+	if ( PT_StringMatchFast(string, "f16") )
+	{
+		return SDL_SCANCODE_F16;
+	}
+	if ( PT_StringMatchFast(string, "f17") )
+	{
+		return SDL_SCANCODE_F17;
+	}
+	if ( PT_StringMatchFast(string, "f18") )
+	{
+		return SDL_SCANCODE_F18;
+	}
+	if ( PT_StringMatchFast(string, "f19") )
+	{
+		return SDL_SCANCODE_F19;
+	}
+	if ( PT_StringMatchFast(string, "f20") )
+	{
+		return SDL_SCANCODE_F20;
+	}
+	if ( PT_StringMatchFast(string, "f21") )
+	{
+		return SDL_SCANCODE_F21;
+	}
+	if ( PT_StringMatchFast(string, "f22") )
+	{
+		return SDL_SCANCODE_F22;
+	}
+	if ( PT_StringMatchFast(string, "f23") )
+	{
+		return SDL_SCANCODE_F23;
+	}
+	if ( PT_StringMatchFast(string, "f24") )
+	{
+		return SDL_SCANCODE_F24;
+	}
+	if ( PT_StringMatchFast(string, "execute") )
+	{
+		return SDL_SCANCODE_EXECUTE;
+	}
+	if ( PT_StringMatchFast(string, "help") )
+	{
+		return SDL_SCANCODE_HELP;
+	}
+	if ( PT_StringMatchFast(string, "menu") )
+	{
+		return SDL_SCANCODE_MENU;
+	}
+	if ( PT_StringMatchFast(string, "select") )
+	{
+		return SDL_SCANCODE_SELECT;
+	}
+	if ( PT_StringMatchFast(string, "stop") )
+	{
+		return SDL_SCANCODE_STOP;
+	}
+	if ( PT_StringMatchFast(string, "again") )
+	{
+		return SDL_SCANCODE_AGAIN;
+	}
+	if ( PT_StringMatchFast(string, "undo") )
+	{
+		return SDL_SCANCODE_UNDO;
+	}
+	if ( PT_StringMatchFast(string, "cut") )
+	{
+		return SDL_SCANCODE_CUT;
+	}
+	if ( PT_StringMatchFast(string, "copy") )
+	{
+		return SDL_SCANCODE_COPY;
+	}
+	if ( PT_StringMatchFast(string, "paste") )
+	{
+		return SDL_SCANCODE_PASTE;
+	}
+	if ( PT_StringMatchFast(string, "find") )
+	{
+		return SDL_SCANCODE_FIND;
+	}
+	if ( PT_StringMatchFast(string, "mute") )
+	{
+		return SDL_SCANCODE_MUTE;
+	}
+	if ( PT_StringMatchFast(string, "volumeup") )
+	{
+		return SDL_SCANCODE_VOLUMEUP;
+	}
+	if ( PT_StringMatchFast(string, "volumedown") )
+	{
+		return SDL_SCANCODE_VOLUMEDOWN;
+	}
+	
+	if ( PT_StringMatchFast(string, "kpcomma") )
+	{
+		return SDL_SCANCODE_KP_COMMA;
+	}
+	if ( PT_StringMatchFast(string, "kpequalsas400") )
+	{
+		return SDL_SCANCODE_KP_EQUALSAS400;
+	}
+	
 	return SDL_SCANCODE_UNKNOWN;
 }//PT_KeyboardGetScancodeByString
+
+
+
+
+
+
+
+
 
 
 
