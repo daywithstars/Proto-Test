@@ -11,10 +11,6 @@
 				"mouse-grab": "PT_SpriteGrab",
 			},
 			
-			"event": {
-				"collision-OutOfCenaryBottom": "death",
-			},
-			
 			"aways": [
 				"sprite-stop-horizontal",
 				"sprite-stop-vertical",
@@ -26,10 +22,6 @@
 			"input": {
 				"input-left": "PT_SpriteMoveLeft",
 				"input-right": "PT_SpriteMoveRight",
-			},
-
-			"event": {
-				"collision-Ground": "change-state-walking",
 			},
 			
 			"aways": [

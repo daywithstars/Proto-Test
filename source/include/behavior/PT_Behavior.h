@@ -14,6 +14,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <SDL.h>
 
+#include <PT_String.h>
+
 
 typedef struct pt_behavior PT_Behavior;
 
@@ -25,6 +27,8 @@ void PT_BehaviorAddSimpleCallback( PT_Behavior* _this, const char* utf8_callback
 	void (*callback)(void* _data) );
 void PT_BehaviorAddSDL_FPointCallback( PT_Behavior* _this, const char* utf8_callbackName, 
 	void (*callback)(void* _data, SDL_FPoint) );
+void PT_BehaviorAddPlaySoundCallback( PT_Behavior* _this, const char* utf8_callbackName,
+	void (*callback)(PT_String* sound, int loop, Uint8 type) );
 
 void PT_BehaviorUpdate( PT_Behavior* _this, void* target );
 

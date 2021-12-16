@@ -16,7 +16,9 @@
 			},
 			
 			"event": {
-				"collision-OutOfCenaryBottom": "death",
+				"typeCollision-OutOfCenaryBottom": "death",
+				
+				"typeInput-shot-button": "play-sample-jump",
 			},
 			
 			"aways": [
@@ -30,10 +32,6 @@
 			"input": {
 				"input-left": "PT_SpriteMoveLeft",
 				"input-right": "PT_SpriteMoveRight",
-			},
-
-			"event": {
-				"collision-Ground": "change-state-walking",
 			},
 			
 			"aways": [

@@ -17,6 +17,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Sprite.h>
 #include <PT_Parse.h>
 #include <PT_Graphics.h>
+#include <PT_SoundManager.h>
 
 
 
@@ -153,7 +154,18 @@ void PT_SpriteGrab( void* _data, SDL_FPoint mousePosition ) {
 		_this->dstRect->x = mousePosition.x - spriteRect.w / 2;
 		_this->dstRect->y = mousePosition.y - spriteRect.h / 2;
 	}
-}
+}//PT_SpriteGrab
+
+void PT_SpritePlaySound( PT_String* sound, int loop, Uint8 type ) {
+	if ( type == 0 )
+	{
+		PT_SoundManagerPlaySample((char*)sound->utf8_string, loop);
+	}
+	else if ( type == 1 )
+	{
+		PT_SoundManagerPlayMusic((char*)sound->utf8_string, loop);
+	}
+}//PT_SpritePlaySound
 
 void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime ) {
 	PT_SpriteStopMoveHorizontal((void*)_this);
@@ -256,6 +268,8 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 					
 					
 				PT_BehaviorAddSDL_FPointCallback(_this->behavior, "PT_SpriteGrab", PT_SpriteGrab);
+				
+				PT_BehaviorAddPlaySoundCallback(_this->behavior, "PT_SpritePlaySound", PT_SpritePlaySound);
 			}
 		}
 	}

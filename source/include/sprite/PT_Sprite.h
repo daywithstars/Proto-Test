@@ -58,6 +58,9 @@ void PT_SpriteStopMoveVertical( void* _data );
 //Misc callbacks declarations.
 void PT_SpriteGrab( void* _data, SDL_FPoint mousePosition );
 
+//Sound callbacks declarations.
+//type = 0 to sample, 1 to music.
+void PT_SpritePlaySound( PT_String* sound, int loop, Uint8 type );
 
 void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime );
 void PT_SpriteDraw( PT_Sprite* _this );

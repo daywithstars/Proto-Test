@@ -21,6 +21,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Behavior.h>
 #include <PT_BehaviorState.h>
 #include <PT_BehaviorStateList.h>
+#include <PT_BehaviorStateEvent.h>
 #include <PT_InputManager.h>
 #include <PT_CallbackList.h>
 #include <PT_StringList.h>
@@ -28,13 +29,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 
+typedef struct {
+	
+	PT_StringList* inputMap;
+	unsigned int eventsNum;
+	PT_BehaviorStateEvent** events;
+	PT_BehaviorStateEventQueue* queue;
+	
+}PT_StateEvent;
+
 struct pt_behavior_state {
 
 	PT_StringList* inputMap;
 	PT_StringList* inputChangeStateMap;
-	//PT_StringList* eventMap;
 	
-	unsigned int awaysNumIndex;
+	PT_StateEvent event;
+	
+	unsigned int awaysNum;
 	char** aways;
 };
 
@@ -112,6 +123,10 @@ void PT_BehaviorAddSDL_FPointCallback( PT_Behavior* _this, const char* utf8_call
 	void (*callback)(void* _data, SDL_FPoint) ) {
 	_this->callbackList = PT_CallbackListAddSDL_FPoint(_this->callbackList, utf8_callbackName, callback);
 }
+void PT_BehaviorAddPlaySoundCallback( PT_Behavior* _this, const char* utf8_callbackName,
+	void (*callback)(PT_String* sound, int loop, Uint8 type) ) {
+	_this->callbackList = PT_CallbackListAddPlaySound(_this->callbackList, utf8_callbackName, callback);
+}
 
 void PT_BehaviorUpdate( PT_Behavior* _this, void* target ) {
 	if ( _this->currentState )
@@ -187,6 +202,7 @@ void PT_BehaviorChangeState( PT_Behavior* _this, const char* utf8_stateName ) {
 
 SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue ) {
 
+	//input
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "input");
 	if ( entry.name )
 	{
@@ -209,7 +225,7 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 			else {
 				PT_String* stateName = PT_StringCreate();
 				
-				SDL_bool _return = PT_StringCopyFrom(
+				const SDL_bool _return = PT_StringCopyFrom(
 					stateName,
 					entry.value->u.object.values[i].value->u.string.ptr,
 					changeStateLastCharPosition,
@@ -229,19 +245,113 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 			}
 		}
 	}
+	//END input
 	
+	//event
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "event");
-	if ( entry.name )
+	if ( entry.name && entry.value->type == json_object )
 	{
-		//printf("Yes we have events!\n");
-		//printf("\t so, implement it\n");
+		unsigned int numEvents = entry.value->u.object.length;
+		
+		_this->event.events = (PT_BehaviorStateEvent**)malloc(
+			sizeof(PT_BehaviorStateEvent*) * numEvents
+		);
+		_this->event.eventsNum = numEvents;
+			
+		_this->event.queue = PT_BehaviorStateEventQueueCreate(numEvents, _this->event.events);
+		
+		for ( unsigned int i = 0; i < entry.value->u.object.length; i++ )
+		{
+			PT_BehaviorStateEvent* eventState =
+			(PT_BehaviorStateEvent*)malloc(sizeof(PT_BehaviorStateEvent));
+		
+			//Search for the event type
+			Uint64 typeLastCharPosition = PT_StringGetOccurrencePositionBasicString(
+				entry.value->u.object.values[i].name,
+				"typeInput-",
+				1
+			);
+			
+			//proceed with input type
+			if ( typeLastCharPosition != 0 )
+			{
+				PT_String* inputMapName = PT_StringCreate();
+				
+				SDL_bool _return = PT_StringCopyFrom(
+					inputMapName,
+					entry.value->u.object.values[i].name,
+					typeLastCharPosition,
+					PT_StringCountBasicString(entry.value->u.object.values[i].name),
+					0
+				);
+				
+				if ( !_return )
+				{
+					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateParse!");
+					PT_StringDestroy(inputMapName);
+					free(eventState);
+					_this->event.events[i] = NULL;
+					continue;
+				}
+				
+				//Search for the input event type
+				Uint64 inputEventTypeLastCharPosition = PT_StringGetOccurrencePositionBasicString(
+					entry.value->u.object.values[i].value->u.string.ptr,
+					"play-sample-",
+					1
+				);
+				
+				//proceed with input play-sample event
+				if ( inputEventTypeLastCharPosition != 0 )
+				{
+					PT_String* sampleName = PT_StringCreate();
+					
+					_return = PT_StringCopyFrom(
+						sampleName,
+						entry.value->u.object.values[i].value->u.string.ptr,
+						inputEventTypeLastCharPosition,
+						PT_StringCountBasicString(entry.value->u.object.values[i].value->u.string.ptr),
+						0
+					);
+					
+					if ( !_return )
+					{
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateParse!");
+						PT_StringDestroy(inputMapName);
+						PT_StringDestroy(sampleName);
+						free(eventState);
+						_this->event.events[i] = NULL;
+						continue;
+					}
+				
+					eventState->type = PT_BEHAVIORSTATE_EVENT_TYPE_PLAYSAMPLE;
+					eventState->sound.playSample.audioName = sampleName;
+					eventState->sound.playSample.audioLoop = 0;
+					
+					PT_String* callback = PT_StringCreate();
+					PT_StringInsert(&callback, "PT_SpritePlaySound", 0);
+					
+					_this->event.inputMap = PT_StringListAdd(
+						_this->event.inputMap, 
+						(char*)inputMapName->utf8_string,
+						callback
+					);
+				}
+
+				PT_StringDestroy(inputMapName);
+			}
+			
+			_this->event.events[i] = eventState;
+		}
 	}
+	//END event
 	
+	//aways
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "aways");
 	if ( entry.name )
 	{
-		_this->awaysNumIndex = entry.value->u.array.length;
-		_this->aways = (char**)malloc(_this->awaysNumIndex);
+		_this->awaysNum = entry.value->u.array.length;
+		_this->aways = (char**)malloc(_this->awaysNum);
 		if ( !_this->aways )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateParse: Not enough memory\n");
@@ -255,6 +365,7 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 			}
 		}
 	}
+	//END aways
 	
 
 	return SDL_TRUE;
@@ -287,18 +398,38 @@ void PT_BehaviorStateDestroy( PT_BehaviorState* _this ) {
 	PT_StringListDestroy(_this->inputChangeStateMap);
 	if ( _this->aways )
 	{
-		for ( unsigned int i = 0; i < _this->awaysNumIndex; i++ )
+		for ( unsigned int i = 0; i < _this->awaysNum; i++ )
 		{
 			free(_this->aways[i]);
 		}
 		free(_this->aways);
+	}
+	PT_BehaviorStateEventQueueDestroy(_this->event.queue);
+	if ( _this->event.events )
+	{
+		for ( unsigned int i = 0; i < _this->event.eventsNum; i++ )
+		{
+			if ( _this->event.events[i] )
+			{
+				if ( _this->event.events[i]->type == PT_BEHAVIORSTATE_EVENT_TYPE_PLAYSAMPLE )
+				{
+					PT_StringDestroy(_this->event.events[i]->sound.playSample.audioName);
+				}
+				if ( _this->event.events[i]->type == PT_BEHAVIORSTATE_EVENT_TYPE_PLAYMUSIC )
+				{
+					PT_StringDestroy(_this->event.events[i]->sound.playMusic.audioName);
+				}
+				
+				free(_this->event.events[i]);
+			}
+		}
+		free(_this->event.events);
 	}
 	
 	free(_this);
 }
 
 void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, PT_Behavior* behavior, void* target ) {
-	SDL_PumpEvents();
 
 	PT_InputHandler* inputHandler = behavior->inputHandler;
 	
@@ -344,7 +475,6 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, PT_Behavior* behavior
 	/*
 		we treat in separated loop, to not process any previous state input. 
 	*/
-
 	pList = _this->inputChangeStateMap;
 
 	while ( pList )
@@ -353,7 +483,6 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, PT_Behavior* behavior
 		if ( PT_InputHandlerGetButtonState(inputHandler, (char*)pList->index->utf8_string) )
 		{
 			//callback call
-			
 			PT_BehaviorChangeState(behavior, (char*)pList->value->utf8_string);
 		}
 		
@@ -361,9 +490,35 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, PT_Behavior* behavior
 
 	}
 }
+void PT_BehaviorStateUpdateEvent( PT_BehaviorState* _this, PT_Behavior* behavior ) {
+
+	PT_InputHandler* inputHandler = behavior->inputHandler;
+	
+	PT_StringList* pList = _this->event.inputMap;
+	while ( pList )
+	{
+		if ( PT_InputHandlerGetButtonState(inputHandler, (char*)pList->index->utf8_string) )
+		{
+			//callback call
+			PT_CallbackList* node = PT_CallbackListGet(behavior->callbackList, 
+				(char*)pList->value->utf8_string);
+			if ( node )
+			{
+				if ( node->playSoundCallback )
+				{
+					/*node->playSoundCallback( 
+						
+					);*/
+				}
+			}
+		}
+		
+		pList = pList->next;
+	}
+}
 void PT_BehaviorStateUpdateAways( PT_BehaviorState* _this, PT_Behavior* behavior, void* target ) {
 
-	for ( unsigned int i = 0; i < _this->awaysNumIndex; i++ )
+	for ( unsigned int i = 0; i < _this->awaysNum; i++ )
 	{
 		//callback call
 		PT_CallbackList* node = PT_CallbackListGet(behavior->callbackList, _this->aways[i]);
@@ -385,6 +540,7 @@ void PT_BehaviorStateUpdate( PT_BehaviorState* _this, void* behaviorData, void* 
 	PT_Behavior* behavior = (PT_Behavior*)behaviorData;
 
 	
+	PT_BehaviorStateUpdateEvent(_this, behavior);
 	PT_BehaviorStateUpdateAways(_this, behavior, target);
 	PT_BehaviorStateUpdateInput(_this, behavior, target);
 }

@@ -10,6 +10,6 @@
 		{ "input-right": "kyd-h-right" },
 		{ "input-up": "kyd-h-up" },
 		{ "input-down": "kyd-h-down" },
-		{ "input-dodge": "kyd-p-space" }, 
+		{ "shot-button": "kyd-p-space" }, 
 	]
 }
