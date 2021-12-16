@@ -16,7 +16,12 @@
 				"typeCollision-<type>": "<callback-function>",
 				"typeCollision-<type>": "change-state-<nameOfState>",
 				
-				"typeInput-<keyMapName>": "play-sample-<nameOfSample>-<loop>",
+				"playSound": {
+					"input": "<keyMap>",
+					"type": "<type>",
+					"name": "<name>",
+					"loop": 1
+				}
 			},
 			
 			"aways": [

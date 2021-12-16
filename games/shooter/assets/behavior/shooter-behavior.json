@@ -16,9 +16,7 @@
 			},
 			
 			"event": {
-				"typeCollision-OutOfCenaryBottom": "death",
 				
-				"typeInput-shot-button": "play-sample-jump",
 			},
 			
 			"aways": [

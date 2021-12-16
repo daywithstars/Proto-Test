@@ -30,7 +30,6 @@ typedef struct pt_callback_list {
 	PT_String* index;
 	void (*simpleCallback)(void* _data);
 	void (*SDL_FPointCallback)(void* _data, SDL_FPoint);
-	void (*playSoundCallback)(PT_String* sound, int loop, Uint8 type);
 	
 	struct pt_callback_list* next;
 }PT_CallbackList;
@@ -75,9 +74,6 @@ PT_CallbackList* PT_CallbackListAddSimple( PT_CallbackList* _this, const char* u
 	
 PT_CallbackList* PT_CallbackListAddSDL_FPoint( PT_CallbackList* _this, const char* utf8_index,
 	void (*callback)(void* _data, SDL_FPoint) );
-	
-PT_CallbackList* PT_CallbackListAddPlaySound( PT_CallbackList* _this, const char* utf8_index,
-	void (*callback)(PT_String* sound, int loop, Uint8 type) );
 
 /**
 * \brief Get the pointer to an specific node, based on its index.

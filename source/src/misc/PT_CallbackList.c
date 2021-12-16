@@ -110,33 +110,6 @@ PT_CallbackList* PT_CallbackListAddSDL_FPoint( PT_CallbackList* _this, const cha
 	return newNode;
 }//PT_CallbackListAddSDL_FPoint
 
-PT_CallbackList* PT_CallbackListAddPlaySound( PT_CallbackList* _this, const char* utf8_index,
-	void (*callback)(PT_String* sound, int loop, Uint8 type) ) {
-	
-	if ( !_this )
-	{
-		PT_CallbackList* head = PT_CallbackListCreate(utf8_index);
-		head->playSoundCallback = callback;
-		return head;
-	}
-	
-	PT_CallbackList* pList = _this;
-	while ( pList )
-	{
-		if ( PT_StringMatch(pList->index, utf8_index) )
-		{
-			return _this;
-		}
-		pList = pList->next;
-	}
-
-	PT_CallbackList* newNode = PT_CallbackListCreate(utf8_index);
-	newNode->playSoundCallback = callback;
-	newNode->next = _this;
-	
-	return newNode;
-}//PT_CallbackListAddPlaySound
-
 PT_CallbackList* PT_CallbackListGet( PT_CallbackList* _this, const char* utf8_index ) {
 	while ( _this )
 	{
