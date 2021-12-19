@@ -277,38 +277,50 @@ json_object_entry PT_ParseGetObjectEntry_json_value( json_value* _json_value, co
 		return entry;
 	}
 	
-	if ( _json_value->type == json_object )
-	{
-		char entryName[PT_PARSE_MAX_ENTRY_NAME_SIZE];
+	json_value* pJsonValue = _json_value;
+	char entryName[PT_PARSE_MAX_ENTRY_NAME_SIZE];
+	int nextArrayIt = 0;
 		
-		for ( Uint64 i = 0, j = 0; ( i < strlen(nameSequence) + 1 ) && _json_value; i++, j++ )
+	for ( Uint64 i = 0, j = 0; ( i < strlen(nameSequence) + 1 ) && pJsonValue; i++, j++ )
+	{
+		if ( nameSequence[i] == ' ' || nameSequence[i] == '\0' )
 		{
-			if ( nameSequence[i] == ' ' || nameSequence[i] == '\0' )
+			entryName[j] = '\0';
+			j = 0;
+			i += 1;//jump the ' ' char
+			
+			if ( pJsonValue )
 			{
-				
-				entryName[j] = '\0';
-				j = 0;
-				i += 1;//jump the ' ' char
-				
-				if ( _json_value )
+				if ( pJsonValue->type == json_object )
 				{
-					for ( json_int_t k = 0; k < _json_value->u.object.length; k++ )
+					for ( json_int_t k = 0; k < pJsonValue->u.object.length; k++ )
 					{
-						if ( !strcmp(entryName, _json_value->u.object.values[k].name) )
+						if ( !strcmp(entryName, pJsonValue->u.object.values[k].name) )
 						{
-							entry = _json_value->u.object.values[k];
-							_json_value = _json_value->u.object.values[k].value;
+							entry = pJsonValue->u.object.values[k];
+							pJsonValue = pJsonValue->u.object.values[k].value;
+							break;
+						}
+					}
+				}
+				else if ( pJsonValue->type == json_array )
+				{	
+					for ( json_int_t k = nextArrayIt; k < pJsonValue->u.array.length; k++ )
+					{
+						if ( pJsonValue->u.array.values[k]->type == json_object )
+						{
+							pJsonValue = pJsonValue->u.array.values[k];
+							nextArrayIt ++;
+							i = j = 0;
 							break;
 						}
 					}
 				}
 			}
-			entryName[j] = nameSequence[i];
 		}
+		entryName[j] = nameSequence[i];
 	}
-	else {
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseGetObjectEntry_json_value: This is not an json_object: %d\n", _json_value->type);
-	}
+	
 	
 	return entry;
 }//PT_ParseGetObjectEntry_json_value

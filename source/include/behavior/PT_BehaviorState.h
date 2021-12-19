@@ -14,13 +14,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <json.h>
 
+#include <PT_Behavior.h>
+
 typedef struct pt_behavior_state PT_BehaviorState;
 
 
-PT_BehaviorState* PT_BehaviorStateCreate( json_value* jsonValue );
+PT_BehaviorState* PT_BehaviorStateCreate( json_value* jsonValue, PT_Behavior* pBehavior );
 void PT_BehaviorStateDestroy( PT_BehaviorState* _this );
 
-void PT_BehaviorStateUpdate( PT_BehaviorState* _this, void* behaviorData, void* target );
+void PT_BehaviorStateUpdate( PT_BehaviorState* _this, void* target, Sint32 elapsedTime );
+
+PT_Behavior* PT_BehaviorStateGetBehavior( PT_BehaviorState* _this );
 
 #endif /* _PT_BEHAVIOR_STATE_H_ */
 

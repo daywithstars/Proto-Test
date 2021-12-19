@@ -9,42 +9,37 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-#include <SDL_log.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <malloc.h>
 
 #include <PT_BehaviorState.h>
-#include <PT_BehaviorStateList.h>
-#include <PT_StringList.h>
+#include <PT_BehaviorStateEvent.h>
 #include <PT_Parse.h>
-#include <PT_InputHandler.h>
-#include <PT_CallbackList.h>
 
 
 struct pt_behavior_state {
 
+	PT_Behavior* pBehavior;
+
 	PT_StringList* inputMap;
 	PT_StringList* inputChangeStateMap;
 	
-	unsigned int awaysNumIndex;
+	unsigned int eventsNum;
+	PT_BehaviorStateEvent** events;
+	
+	unsigned int awaysNum;
 	char** aways;
-};
-
-struct pt_behavior {
-	PT_InputHandler* inputHandler;
-	PT_CallbackList* callbackList;
-	PT_BehaviorStateList* behaviorStateList;
-	PT_BehaviorState* currentState;
 };
 
 
 //===================================== PRIVATE Functions
 SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue );
-void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, struct pt_behavior* behavior, void* target );
-void PT_BehaviorStateUpdateAways( PT_BehaviorState* _this, struct pt_behavior* behavior, void* target );
-
-void PT_BehaviorChangeState( PT_Behavior* _this, const char* utf8_stateName );
+void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target );
+void PT_BehaviorStateUpdateAways( PT_BehaviorState* _this, void* target );
 
 //===================================== PUBLIC Functions
-PT_BehaviorState* PT_BehaviorStateCreate( json_value* jsonValue ) {
+PT_BehaviorState* PT_BehaviorStateCreate( json_value* jsonValue, PT_Behavior* pBehavior ) {
 	PT_BehaviorState* _this = (PT_BehaviorState*)malloc(sizeof(PT_BehaviorState));
 	if ( !_this )
 	{
@@ -52,6 +47,7 @@ PT_BehaviorState* PT_BehaviorStateCreate( json_value* jsonValue ) {
 	}
 	SDL_memset(_this, 0, sizeof(PT_BehaviorState));
 	
+	_this->pBehavior = pBehavior;
 	if ( !PT_BehaviorStateParse(_this, jsonValue) )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateCreate: Cannot parse!\n");
@@ -72,30 +68,45 @@ void PT_BehaviorStateDestroy( PT_BehaviorState* _this ) {
 	PT_StringListDestroy(_this->inputChangeStateMap);
 	if ( _this->aways )
 	{
-		for ( unsigned int i = 0; i < _this->awaysNumIndex; i++ )
+		for ( unsigned int i = 0; i < _this->awaysNum; i++ )
 		{
 			free(_this->aways[i]);
 		}
 		free(_this->aways);
 	}
+	if ( _this->events )
+	{
+		for ( unsigned int i = 0; i < _this->eventsNum; i++ )
+		{
+			PT_BehaviorStateEventDestroy(_this->events[i]);
+		}
+		free(_this->events);
+	}
 	
 	free(_this);
 }//PT_BehaviorStateDestroy
 
-void PT_BehaviorStateUpdate( PT_BehaviorState* _this, void* behaviorData, void* target ) {
+void PT_BehaviorStateUpdate( PT_BehaviorState* _this, void* target, Sint32 elapsedTime ) {
 	/*
 		the "input" need to be an action from any input type.
 		the "aways" need to accour before any other and need to be aways executed in each state.
-		the "event" need to be something happend that is out of control from the *target "input".
 	*/
-	struct pt_behavior* behavior = (struct pt_behavior*)behaviorData;
-
 	
-	PT_BehaviorStateUpdateAways(_this, behavior, target);
-	PT_BehaviorStateUpdateInput(_this, behavior, target);
+	PT_BehaviorStateUpdateAways(_this, target);
+	PT_BehaviorStateUpdateInput(_this, target);
+	
+	for ( unsigned int i = 0; i < _this->eventsNum; i++ )
+	{
+		if ( _this->events[i] )
+		{
+			PT_BehaviorStateEventUpdate(_this->events[i], elapsedTime);
+		}
+	}
 }//PT_BehaviorStateUpdate
 
-
+PT_Behavior* PT_BehaviorStateGetBehavior( PT_BehaviorState* _this ) {
+	return _this->pBehavior;
+}
 
 //===================================== PRIVATE Functions
 
@@ -144,18 +155,51 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 		}
 	}
 	
-	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "event");
+	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "events");
 	if ( entry.name )
 	{
-		//printf("Yes we have events!\n");
-		//printf("\t so, implement it\n");
+		if ( !(entry.value->type == json_array) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+			"PT: PT_BehaviorStateEventParse: Invalid \"events\", see: behavior-template.json \n");
+		}
+		else {
+			const unsigned int arrayLength = entry.value->u.array.length;
+			_this->eventsNum = arrayLength;
+			
+			_this->events = (PT_BehaviorStateEvent**)malloc(sizeof(PT_BehaviorStateEvent*));
+			if ( !_this->events )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+				"PT: PT_BehaviorStateParse: Not enough memory for events!\n");
+			}
+			else {
+				
+				for ( unsigned int i = 0; i < arrayLength; i++ )
+				{
+					/*
+						we parse the array position json_object to the create function, 
+						to not restart the internal search from PT_BehaviorStateEventParse and get 
+						aways the first array element. 
+					*/
+					_this->events[i] = PT_BehaviorStateEventCreate(_this,
+						entry.value->u.array.values[i]);
+					if ( !_this->events[i] )
+					{
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+						"PT: PT_BehaviorStateParse: Not enough memory for event[%d]\n", i);
+						break;
+					}
+				}
+			}
+		}
 	}
 	
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "aways");
 	if ( entry.name )
 	{
-		_this->awaysNumIndex = entry.value->u.array.length;
-		_this->aways = (char**)malloc(_this->awaysNumIndex);
+		_this->awaysNum = entry.value->u.array.length;
+		_this->aways = (char**)malloc(_this->awaysNum);
 		if ( !_this->aways )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateParse: Not enough memory\n");
@@ -174,18 +218,22 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 	return SDL_TRUE;
 }//PT_BehaviorStateParse
 
-void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, struct pt_behavior* behavior, void* target ) {
-	SDL_PumpEvents();
+void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target ) {
+	if ( !_this || !_this->pBehavior )
+	{
+		return;
+	}
 
-	PT_InputHandler* inputHandler = behavior->inputHandler;
+	PT_InputHandler* inputHandler = PT_BehaviorGetInputHandler(_this->pBehavior);
 	
 	PT_StringList* pList = _this->inputMap;
 	while ( pList )
 	{
 		if ( PT_InputHandlerGetButtonState(inputHandler, (char*)pList->index->utf8_string) )
 		{
-			//callback call
-			PT_CallbackList* node = PT_CallbackListGet(behavior->callbackList, 
+			//use the callback
+			PT_CallbackList* node = PT_CallbackListGet(
+			PT_BehaviorGetCallbackList(_this->pBehavior), 
 				(char*)pList->value->utf8_string);
 			if ( node )
 			{
@@ -200,11 +248,12 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, struct pt_behavior* b
 				.returnValue
 			)
 		{
-			//callback
+			//use the callback
 			PT_InputHandlerGrab grab = 
 			PT_InputHandlerGetGrabPosition(inputHandler, (char*)pList->index->utf8_string);
 			
-			PT_CallbackList* node = PT_CallbackListGet(behavior->callbackList, 
+			PT_CallbackList* node = PT_CallbackListGet(
+			PT_BehaviorGetCallbackList(_this->pBehavior), 
 				(char*)pList->value->utf8_string);
 			if ( node )
 			{
@@ -221,17 +270,14 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, struct pt_behavior* b
 	/*
 		we treat in separated loop, to not process any previous state input. 
 	*/
-
 	pList = _this->inputChangeStateMap;
-
 	while ( pList )
 	{
 
 		if ( PT_InputHandlerGetButtonState(inputHandler, (char*)pList->index->utf8_string) )
 		{
-			//callback call
-			
-			PT_BehaviorChangeState(behavior, (char*)pList->value->utf8_string);
+			//use the callback 
+			PT_BehaviorChangeState(_this->pBehavior, (char*)pList->value->utf8_string);
 		}
 		
 		pList = pList->next;
@@ -239,12 +285,17 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, struct pt_behavior* b
 	}
 }//PT_BehaviorStateUpdateInput
 
-void PT_BehaviorStateUpdateAways( PT_BehaviorState* _this, struct pt_behavior* behavior, void* target ) {
-
-	for ( unsigned int i = 0; i < _this->awaysNumIndex; i++ )
+void PT_BehaviorStateUpdateAways( PT_BehaviorState* _this, void* target ) {
+	if ( !_this || !_this->pBehavior )
 	{
-		//callback call
-		PT_CallbackList* node = PT_CallbackListGet(behavior->callbackList, _this->aways[i]);
+		return;
+	}
+
+	for ( unsigned int i = 0; i < _this->awaysNum; i++ )
+	{
+		//use the callback
+		PT_CallbackList* node = PT_CallbackListGet(
+		PT_BehaviorGetCallbackList(_this->pBehavior), _this->aways[i]);
 		if ( node )
 		{
 			if ( node->simpleCallback )

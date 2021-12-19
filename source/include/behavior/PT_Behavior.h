@@ -15,6 +15,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <SDL.h>
 
 
+#include <PT_InputHandler.h>
+#include <PT_CallbackList.h>
+
 typedef struct pt_behavior PT_Behavior;
 
 
@@ -26,7 +29,12 @@ void PT_BehaviorAddSimpleCallback( PT_Behavior* _this, const char* utf8_callback
 void PT_BehaviorAddSDL_FPointCallback( PT_Behavior* _this, const char* utf8_callbackName, 
 	void (*callback)(void* _data, SDL_FPoint) );
 
-void PT_BehaviorUpdate( PT_Behavior* _this, void* target );
+void PT_BehaviorUpdate( PT_Behavior* _this, void* target, Sint32 elapsedTime );
+
+void PT_BehaviorChangeState( PT_Behavior* _this, const char* utf8_stateName );
+
+PT_InputHandler* PT_BehaviorGetInputHandler( PT_Behavior* _this );
+PT_CallbackList* PT_BehaviorGetCallbackList( PT_Behavior* _this );
 
 #endif /* _PT_BEHAVIOR_H_ */
 

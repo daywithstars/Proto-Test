@@ -19,7 +19,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_String.h>
 #include <PT_Behavior.h>
 
-
+struct pt_behavior;
+typedef struct pt_behavior PT_Behavior;
 
 typedef struct {
 	PT_String* imageName;	

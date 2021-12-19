@@ -14,6 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <malloc.h>
 
 #include <PT_InputHandler.h>
+#include <PT_Sprite.h>
 #include <PT_Parse.h>
 #include <PT_InputManager.h>
 #include <PT_Keyboard.h>

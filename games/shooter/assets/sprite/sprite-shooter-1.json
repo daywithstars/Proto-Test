@@ -4,7 +4,7 @@
 	"speedX": 0.18,
 	"speedY": 0.14,
 	"srcRect": [0, 0, 64, 64],
-	"dstRect": [100.0, 20.0, 128.0, 128.0],
+	"dstRect": [100.0, 120.0, 128.0, 128.0],
 	"behavior": "shooter-behavior",
 	
 	"misc": {

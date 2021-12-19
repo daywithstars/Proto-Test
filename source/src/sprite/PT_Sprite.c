@@ -160,7 +160,7 @@ void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime ) {
 	PT_SpriteStopMoveHorizontal((void*)_this);
 	PT_SpriteStopMoveVertical((void*)_this);
 
-	PT_BehaviorUpdate(_this->behavior, (void*)_this);
+	PT_BehaviorUpdate(_this->behavior, (void*)_this, elapsedTime);
 
 	_this->dstRect->x += _this->speedX * elapsedTime * _this->dirX;
 	_this->dstRect->y += _this->speedY * elapsedTime * _this->dirY;

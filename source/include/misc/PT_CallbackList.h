@@ -22,6 +22,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <SDL.h>
 
+
 #include <PT_String.h>
 
 
@@ -29,7 +30,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 typedef struct pt_callback_list {
 	PT_String* index;
 	void (*simpleCallback)(void* _data);
-	void (*SDL_FPointCallback)(void* _data, SDL_FPoint);
+	void (*SDL_FPointCallback)(void* _data, SDL_FPoint );
 	
 	struct pt_callback_list* next;
 }PT_CallbackList;

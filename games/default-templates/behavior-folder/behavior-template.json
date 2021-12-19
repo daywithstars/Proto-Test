@@ -12,17 +12,32 @@
 				"<keyMapName>": "change-state-<nameOfState>",
 			},
 			
-			"event": {
-				"typeCollision-<type>": "<callback-function>",
-				"typeCollision-<type>": "change-state-<nameOfState>",
-				
-				"playSound": {
-					"input": "<keyMap>",
-					"type": "<type>",
-					"name": "<name>",
-					"loop": 1
-				}
-			},
+			"event": [
+				{	
+					"trigger": {
+					
+						"type": "<TriggerType>",
+						
+						"value": {
+							"type": "<ValueType>",
+							"fields": {
+							}
+						}
+					},
+				},
+				{	
+					"trigger": {
+					
+						"type": "<TriggerType>",
+						
+						"value": {
+							"type": "<ValueType>",
+							"fields": {
+							}
+						}
+					},
+				},	
+			],
 			
 			"aways": [
 				"<callback-function>",
@@ -37,10 +52,9 @@
 				"<keyMapName>": "change-state-<nameOfState>",
 			},
 			
-			"event": {
-				"typeCollision-<type>": "<callback-function>",
-				"typeCollision-<type>": "change-state-<nameOfState>",
-			},
+			"event": [
+
+			],
 			
 			"aways": [
 				"<callback-function>",

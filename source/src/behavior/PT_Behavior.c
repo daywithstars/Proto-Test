@@ -22,7 +22,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_BehaviorState.h>
 #include <PT_BehaviorStateList.h>
 #include <PT_InputManager.h>
-#include <PT_CallbackList.h>
 #include <PT_StringList.h>
 #include <PT_Parse.h>
 
@@ -40,8 +39,6 @@ struct pt_behavior {
 //===================================== PRIVATE Functions
 
 SDL_bool PT_BehaviorParse( PT_Behavior* _this, json_value* jsonValue );
-
-void PT_BehaviorChangeState( PT_Behavior* _this, const char* utf8_stateName );
 
 
 //===================================== PUBLIC Functions
@@ -104,14 +101,28 @@ void PT_BehaviorAddSDL_FPointCallback( PT_Behavior* _this, const char* utf8_call
 	_this->callbackList = PT_CallbackListAddSDL_FPoint(_this->callbackList, utf8_callbackName, callback);
 }
 
-void PT_BehaviorUpdate( PT_Behavior* _this, void* target ) {
+void PT_BehaviorUpdate( PT_Behavior* _this, void* target, Sint32 elapsedTime ) {
 	if ( _this->currentState )
 	{
-		PT_BehaviorStateUpdate(_this->currentState, (void*)_this, target);
+		PT_BehaviorStateUpdate(_this->currentState, target, elapsedTime);
 	}
 }
 
+void PT_BehaviorChangeState( PT_Behavior* _this, const char* utf8_stateName ) {
+	PT_BehaviorStateList* node = PT_BehaviorStateListGet(_this->behaviorStateList, utf8_stateName);
+	
+	if ( node )
+	{
+		_this->currentState = node->value;
+	}
+}
 
+PT_InputHandler* PT_BehaviorGetInputHandler( PT_Behavior* _this ) {
+	return _this->inputHandler;
+}
+PT_CallbackList* PT_BehaviorGetCallbackList( PT_Behavior* _this ) {
+	return _this->callbackList;
+}
 
 //===================================== PRIVATE Functions
 
@@ -145,7 +156,10 @@ SDL_bool PT_BehaviorParse( PT_Behavior* _this, json_value* jsonValue ) {
 		json_object_entry entry2 = 
 		PT_ParseGetObjectEntry_json_value(entry.value->u.array.values[i], "name");
 		
-		PT_BehaviorState* newState = PT_BehaviorStateCreate(entry.value->u.array.values[i]);
+		PT_BehaviorState* newState = PT_BehaviorStateCreate(
+				entry.value->u.array.values[i],	
+				_this		
+			);
 		if ( !newState )
 		{
 			SDL_Log("(*)PT: PT_BehaviorStateParse: Not enough memory\n");
@@ -164,23 +178,6 @@ SDL_bool PT_BehaviorParse( PT_Behavior* _this, json_value* jsonValue ) {
 
 	return SDL_TRUE;
 }
-
-void PT_BehaviorChangeState( PT_Behavior* _this, const char* utf8_stateName ) {
-	PT_BehaviorStateList* node = PT_BehaviorStateListGet(_this->behaviorStateList, utf8_stateName);
-	
-	if ( node )
-	{
-		_this->currentState = node->value;
-	}
-}
-
-//================= PT_BehaviorState implementation
-
-
-
-
-
-
 
 
 

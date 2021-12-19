@@ -15,9 +15,53 @@
 				"input-dodge": "change-state-dodge",
 			},
 			
-			"event": {
-				
-			},
+			"events": [
+				{
+					"trigger": {
+
+					"type": "input",
+
+						"value": {
+							"type": "play-sample",
+							"fields": {
+								"keyMap": "shot-button",
+								"sample-name": "jump",
+								"loop": 0
+							}
+						}
+					},
+				},
+				{
+					"trigger": {
+
+					"type": "none",
+
+						"value": {
+							"type": "play-music",
+							"fields": {
+								"keyMap": "input-secret-technique",
+								"music-name": "special1",
+								"loop": 0
+							}
+						}
+					},
+				},
+				{
+					"trigger": {
+
+					"type": "input",
+
+						"value": {
+							"type": "change-screen",
+							"fields": {
+								"keyMap": "input-secret technique",
+								"music-name": "special1",
+								"loop": 0
+							}
+						}
+					},
+				},
+			],
 			
 			"aways": [
 				"sprite-stop-horizontal",

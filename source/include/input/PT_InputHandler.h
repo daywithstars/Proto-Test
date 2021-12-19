@@ -14,11 +14,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #define _PT_INPUTHANDLER_H_
 
 #include <SDL_stdinc.h>
+#include <SDL_rect.h>
 
 #include <json.h>
 
 #include <PT_StringList.h>
-#include <PT_Sprite.h>
 
 
 typedef struct { 
