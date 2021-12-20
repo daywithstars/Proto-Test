@@ -12,9 +12,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #ifndef _PT_BEHAVIORSTATEEVENT_H_
 #define _PT_BEHAVIORSTATEEVENT_H_
 
+
 #include <SDL_stdinc.h>
 
-#include <PT_BehaviorState.h>
+#include <json.h>
+
 #include <PT_String.h>
 
 //Use "mask" with bitwise to bind TYPE with VALUE
@@ -67,15 +69,16 @@ typedef union {
 }PT_BehaviorStateEventTrigger;
 
 
+
 typedef struct {
 	int flags;
 	
-	PT_BehaviorState* pBehaviorState;
+	void* pBehaviorState;
 	PT_BehaviorStateEventTrigger trigger;
 }PT_BehaviorStateEvent;
 
 
-PT_BehaviorStateEvent* PT_BehaviorStateEventCreate( PT_BehaviorState* behaviorState, 
+PT_BehaviorStateEvent* PT_BehaviorStateEventCreate( void* pBehaviorState, 
 	json_value* jsonValue );
 void PT_BehaviorStateEventDestroy( PT_BehaviorStateEvent* _this );
 

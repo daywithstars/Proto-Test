@@ -17,10 +17,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <json.h>
 
 #include <PT_String.h>
-#include <PT_Behavior.h>
+
 
 struct pt_behavior;
-typedef struct pt_behavior PT_Behavior;
 
 typedef struct {
 	PT_String* imageName;	
@@ -28,7 +27,7 @@ typedef struct {
 	float speedX, speedY;
 	SDL_Rect* srcRect;
 	SDL_FRect* dstRect;
-	PT_Behavior* behavior;
+	struct pt_behavior* behavior;
 	
 	
 	void* _data;

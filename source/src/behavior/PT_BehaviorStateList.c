@@ -19,7 +19,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 
-
 PT_BehaviorStateList* PT_BehaviorStateListCreate( const char* utf8_index, PT_BehaviorState* value ) {
 	PT_BehaviorStateList* _this = (PT_BehaviorStateList*)malloc(sizeof(PT_BehaviorStateList));
 	

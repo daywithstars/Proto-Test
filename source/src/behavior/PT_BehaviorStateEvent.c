@@ -18,10 +18,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <SDL_log.h>
 
 #include <PT_BehaviorStateEvent.h>
+#include <PT_Behavior.h>
+#include <PT_BehaviorState.h>
 #include <PT_Parse.h>
 #include <PT_InputHandler.h>
-#include <PT_CallbackList.h>
-#include <PT_BehaviorStateList.h>
+#include <PT_SoundManager.h>
 
 
 
@@ -42,7 +43,7 @@ SDL_bool PT_BehaviorStateEventParseTriggerInputChangeScreen(
 
 //===================================== PUBLIC Functions
 
-PT_BehaviorStateEvent* PT_BehaviorStateEventCreate( PT_BehaviorState* behaviorState,
+PT_BehaviorStateEvent* PT_BehaviorStateEventCreate( void* pBehaviorState,
 	json_value* jsonValue  ) {
 	
 	PT_BehaviorStateEvent* _this = (PT_BehaviorStateEvent*)malloc(sizeof(PT_BehaviorStateEvent));
@@ -53,7 +54,7 @@ PT_BehaviorStateEvent* PT_BehaviorStateEventCreate( PT_BehaviorState* behaviorSt
 	}
 	SDL_memset(_this, 0, sizeof(PT_BehaviorStateEvent));
 	
-	_this->pBehaviorState = behaviorState;
+	_this->pBehaviorState = pBehaviorState;
 	if ( !PT_BehaviorStateEventParse(_this, jsonValue) )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateEventCreate: Cannot parse!\n");
@@ -113,9 +114,11 @@ void PT_BehaviorStateEventDestroy( PT_BehaviorStateEvent* _this ) {
 
 void PT_BehaviorStateEventUpdate( PT_BehaviorStateEvent* _this, Sint32 elapsedTime ) {
 	if ( _this->flags & PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_INPUT )
-	{
-		PT_InputHandler* inputHandler = 
-		PT_BehaviorGetInputHandler(PT_BehaviorStateGetBehavior(_this->pBehaviorState));
+	{	
+		PT_BehaviorState* pBehaviorState = (PT_BehaviorState*)_this->pBehaviorState;
+		PT_Behavior* pBehavior = (PT_Behavior*)pBehaviorState->pBehavior;
+		PT_InputHandler* inputHandler = pBehavior->inputHandler;
+
 		
 		if ( _this->flags & PT_BEHAVIOR_STATE_EVENT_TRIGGER_VALUE_PLAY_SAMPLE )
 		{

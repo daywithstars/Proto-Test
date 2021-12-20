@@ -18,6 +18,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Parse.h>
 #include <PT_Graphics.h>
 #include <PT_SoundManager.h>
+#include <PT_Behavior.h>
 
 
 

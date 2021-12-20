@@ -12,28 +12,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include <string.h>
 
 #include <json.h>
 
 #include <SDL_log.h>
 
 #include <PT_Behavior.h>
-#include <PT_BehaviorState.h>
-#include <PT_BehaviorStateList.h>
 #include <PT_InputManager.h>
-#include <PT_StringList.h>
 #include <PT_Parse.h>
 
 
 
 
-struct pt_behavior {
-	PT_InputHandler* inputHandler;
-	PT_CallbackList* callbackList;
-	PT_BehaviorStateList* behaviorStateList;
-	PT_BehaviorState* currentState;
-};
 
 
 //===================================== PRIVATE Functions
@@ -44,12 +34,12 @@ SDL_bool PT_BehaviorParse( PT_Behavior* _this, json_value* jsonValue );
 //===================================== PUBLIC Functions
 
 PT_Behavior* PT_BehaviorCreate( const char* utf8_behaviorTemplate ) {
-	PT_Behavior* _this = (PT_Behavior*)malloc(sizeof(struct pt_behavior));
+	PT_Behavior* _this = (PT_Behavior*)malloc(sizeof(PT_Behavior));
 	if ( !_this )
 	{	
 		return NULL;
 	}
-	SDL_memset(_this, 0, sizeof(struct pt_behavior));
+	SDL_memset(_this, 0, sizeof(PT_Behavior));
 	
 	PT_String* path = PT_StringCreate();
 	PT_StringInsert(&path, ".json", 0);
@@ -115,13 +105,6 @@ void PT_BehaviorChangeState( PT_Behavior* _this, const char* utf8_stateName ) {
 	{
 		_this->currentState = node->value;
 	}
-}
-
-PT_InputHandler* PT_BehaviorGetInputHandler( PT_Behavior* _this ) {
-	return _this->inputHandler;
-}
-PT_CallbackList* PT_BehaviorGetCallbackList( PT_Behavior* _this ) {
-	return _this->callbackList;
 }
 
 //===================================== PRIVATE Functions

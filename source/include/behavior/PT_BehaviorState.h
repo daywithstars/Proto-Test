@@ -14,17 +14,31 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <json.h>
 
-#include <PT_Behavior.h>
+#include <SDL_stdinc.h>
 
-typedef struct pt_behavior_state PT_BehaviorState;
+#include <PT_StringList.h>
+#include <PT_BehaviorStateEvent.h>
 
 
-PT_BehaviorState* PT_BehaviorStateCreate( json_value* jsonValue, PT_Behavior* pBehavior );
+
+typedef struct pt_behavior_state {
+	void* pBehavior;
+
+	PT_StringList* inputMap;
+	PT_StringList* inputChangeStateMap;
+	
+	unsigned int eventsNum;
+	PT_BehaviorStateEvent** events;
+	
+	unsigned int awaysNum;
+	char** aways;
+}PT_BehaviorState;
+
+
+PT_BehaviorState* PT_BehaviorStateCreate( json_value* jsonValue, void* pBehavior );
 void PT_BehaviorStateDestroy( PT_BehaviorState* _this );
 
 void PT_BehaviorStateUpdate( PT_BehaviorState* _this, void* target, Sint32 elapsedTime );
-
-PT_Behavior* PT_BehaviorStateGetBehavior( PT_BehaviorState* _this );
 
 #endif /* _PT_BEHAVIOR_STATE_H_ */
 

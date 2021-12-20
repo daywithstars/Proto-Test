@@ -14,23 +14,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <malloc.h>
 
 #include <PT_BehaviorState.h>
-#include <PT_BehaviorStateEvent.h>
+#include <PT_Behavior.h>
 #include <PT_Parse.h>
 
 
-struct pt_behavior_state {
-
-	PT_Behavior* pBehavior;
-
-	PT_StringList* inputMap;
-	PT_StringList* inputChangeStateMap;
-	
-	unsigned int eventsNum;
-	PT_BehaviorStateEvent** events;
-	
-	unsigned int awaysNum;
-	char** aways;
-};
 
 
 //===================================== PRIVATE Functions
@@ -39,7 +26,7 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target );
 void PT_BehaviorStateUpdateAways( PT_BehaviorState* _this, void* target );
 
 //===================================== PUBLIC Functions
-PT_BehaviorState* PT_BehaviorStateCreate( json_value* jsonValue, PT_Behavior* pBehavior ) {
+PT_BehaviorState* PT_BehaviorStateCreate( json_value* jsonValue, void* pBehavior ) {
 	PT_BehaviorState* _this = (PT_BehaviorState*)malloc(sizeof(PT_BehaviorState));
 	if ( !_this )
 	{
@@ -104,9 +91,6 @@ void PT_BehaviorStateUpdate( PT_BehaviorState* _this, void* target, Sint32 elaps
 	}
 }//PT_BehaviorStateUpdate
 
-PT_Behavior* PT_BehaviorStateGetBehavior( PT_BehaviorState* _this ) {
-	return _this->pBehavior;
-}
 
 //===================================== PRIVATE Functions
 
@@ -224,7 +208,7 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target ) {
 		return;
 	}
 
-	PT_InputHandler* inputHandler = PT_BehaviorGetInputHandler(_this->pBehavior);
+	PT_InputHandler* inputHandler = ((PT_Behavior*)_this->pBehavior)->inputHandler;
 	
 	PT_StringList* pList = _this->inputMap;
 	while ( pList )
@@ -233,7 +217,7 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target ) {
 		{
 			//use the callback
 			PT_CallbackList* node = PT_CallbackListGet(
-			PT_BehaviorGetCallbackList(_this->pBehavior), 
+			((PT_Behavior*)_this->pBehavior)->callbackList, 
 				(char*)pList->value->utf8_string);
 			if ( node )
 			{
@@ -253,7 +237,7 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target ) {
 			PT_InputHandlerGetGrabPosition(inputHandler, (char*)pList->index->utf8_string);
 			
 			PT_CallbackList* node = PT_CallbackListGet(
-			PT_BehaviorGetCallbackList(_this->pBehavior), 
+			((PT_Behavior*)_this->pBehavior)->callbackList, 
 				(char*)pList->value->utf8_string);
 			if ( node )
 			{
@@ -277,7 +261,7 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target ) {
 		if ( PT_InputHandlerGetButtonState(inputHandler, (char*)pList->index->utf8_string) )
 		{
 			//use the callback 
-			PT_BehaviorChangeState(_this->pBehavior, (char*)pList->value->utf8_string);
+			PT_BehaviorChangeState((PT_Behavior*)_this->pBehavior, (char*)pList->value->utf8_string);
 		}
 		
 		pList = pList->next;
@@ -295,7 +279,7 @@ void PT_BehaviorStateUpdateAways( PT_BehaviorState* _this, void* target ) {
 	{
 		//use the callback
 		PT_CallbackList* node = PT_CallbackListGet(
-		PT_BehaviorGetCallbackList(_this->pBehavior), _this->aways[i]);
+		((PT_Behavior*)_this->pBehavior)->callbackList, _this->aways[i]);
 		if ( node )
 		{
 			if ( node->simpleCallback )

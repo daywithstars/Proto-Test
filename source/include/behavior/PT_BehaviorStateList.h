@@ -14,9 +14,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 #include <PT_String.h>
+
 #include <PT_BehaviorState.h>
-
-
 
 typedef struct pt_behavior_state_list {
 	PT_String* index;
