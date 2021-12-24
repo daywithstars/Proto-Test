@@ -536,6 +536,99 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 	return SDL_TRUE;
 }//PT_StringInsert
 
+SDL_bool PT_StringRemove( PT_String* _this, const char* utf8_string ) {
+	
+	PT_String* ignore = PT_StringCreate();
+	if ( !ignore )
+	{	
+		return SDL_FALSE;
+	}
+	if ( !PT_StringInsert(&ignore, utf8_string, 0) )
+	{
+		PT_StringDestroy(ignore);
+		return SDL_FALSE;
+	}
+	
+	
+	Uint64 numIgnore = 0;
+	for ( Uint64 i = 0; i < ignore->length; i++ )
+	{
+		for ( Uint64 j = 0; j < _this->length; j++ )
+		{
+			if ( get_utf8_char_length(ignore->utf8_string[i]) != 
+				get_utf8_char_length(_this->utf8_string[j]) )
+			{
+				j += get_utf8_char_length(_this->utf8_string[j]);
+				i += get_utf8_char_length(ignore->utf8_string[i]);
+				
+				continue;
+			}
+			
+			if ( ignore->utf8_string[i] == _this->utf8_string[j] )
+			{
+				if ( numIgnore + 1 < _this->length )
+				{
+					numIgnore ++;
+				}
+				else {
+					PT_StringDestroy(ignore);
+					return SDL_FALSE;
+				}
+			}
+		}
+	}
+	
+	
+	Uint64 newStringSize = (_this->length - numIgnore) + 1;
+	Uint8* newString = (Uint8*)malloc(sizeof(Uint8) * newStringSize);
+	if ( !newString )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringRemove: Not enough memory\n");
+		PT_StringDestroy(ignore);
+		return SDL_FALSE;
+	}
+	Uint64 k = 0;
+	for ( Uint64 i = 0; i < _this->length; i++ )
+	{
+		SDL_bool equals = SDL_FALSE;
+		for ( Uint64 j = 0; j < ignore->length; j++ )
+		{
+			if ( get_utf8_char_length(ignore->utf8_string[j]) != 
+				get_utf8_char_length(_this->utf8_string[i]) )
+			{
+				//i += get_utf8_char_length(_this->utf8_string[j]);
+				j += get_utf8_char_length(ignore->utf8_string[i]);
+				
+				continue;
+			}
+			
+			if ( _this->utf8_string[i] == ignore->utf8_string[j] )
+			{
+				equals = SDL_TRUE;
+			}
+		}
+		
+		if ( equals == SDL_FALSE )
+		{
+			if ( k < newStringSize )
+			{
+				newString[k] = _this->utf8_string[i];
+				k ++;
+			}
+		}
+	}
+	newString[newStringSize - 1] = '\0';
+	
+	free(_this->utf8_string);
+	_this->utf8_string = newString;
+	_this->length = newStringSize - 1;
+	_this->_size = newStringSize;
+	
+
+	PT_StringDestroy(ignore);
+	return SDL_TRUE;
+}//PT_StringRemove
+
 void PT_StringClear( PT_String** _this ) {
 	if ( !_this || !(*_this)) 
 	{

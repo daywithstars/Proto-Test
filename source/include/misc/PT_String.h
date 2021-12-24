@@ -78,6 +78,7 @@ void PT_StringDestroy( PT_String* _this );
 *
 * \returns SDL_TRUE with no warning messages, SDL_FALSE with warning message. 
 *
+* \sa PT_StringRemove
 * \sa PT_StringClear
 * \sa PT_StringCount
 * \sa PT_StringGetOccurrencePosition
@@ -88,11 +89,30 @@ void PT_StringDestroy( PT_String* _this );
 SDL_bool PT_StringInsert( PT_String** _this, const char* utf8_string, Uint64 insertPosition );
 
 /**
+* \brief Remove any char hold by _this from utf8_string. 
+* 
+* @param _this The pointer to the PT_String struct. 
+*
+* \sa PT_StringInsert
+* \sa PT_StringClear
+* \sa PT_StringCount
+* \sa PT_StringGetOccurrencePosition
+* \sa PT_StringCopyFrom
+* \sa PT_StringMatch
+* \sa PT_StringPrintLine
+*/
+SDL_bool PT_StringRemove( PT_String* _this, const char* utf8_string );
+
+/**
 * \brief Clear all the chars from the PT_String.
+*
+* Do not insert the same char twice in utf8_string. If you want remove all 'a' just put "a",
+* if you want remove all 'a', 'z' put: "az". 
 *
 * @param _this The pointer to pointer an PT_String struct.
 *
 * \sa PT_StringInsert
+* \sa PT_StringRemove
 * \sa PT_StringCount
 * \sa PT_StringGetOccurrencePosition
 * \sa PT_StringCopyFrom
@@ -113,7 +133,8 @@ void PT_StringClear( PT_String** _this );
 *
 *	This function don't count the termination Null char.
 *
-* \sa PT_StringInsert
+* \sa PT_StringInsert]
+* \sa PT_StringRemove
 * \sa PT_StringClear
 * \sa PT_StringGetOccurrencePosition
 * \sa PT_StringCopyFrom
@@ -146,6 +167,7 @@ Uint64 PT_StringCountBasicString( const char* utf8_string );
 *	the next occurrence. 
 *
 * \sa PT_StringInsert
+* \sa PT_StringRemove
 * \sa PT_StringClear
 * \sa PT_StringCount
 * \sa PT_StringCopyFrom
@@ -178,6 +200,7 @@ Uint64 PT_StringGetOccurrencePositionBasicString ( const char* utf8_string1, con
 * \returns SDL_FALSE on error, or SDL_TRUE on success.
 *
 * \sa PT_StringInsert
+* \sa PT_StringRemove
 * \sa PT_StringClear
 * \sa PT_StringCount
 * \sa PT_StringMatch
@@ -195,6 +218,7 @@ SDL_bool PT_StringCopyFrom( PT_String* _this, const char* utf8_string, Uint64 so
 * \returns SDL_TRUE if are equal, SDL_FALSE are not equal or NULL.
 *
 * \sa PT_StringInsert
+* \sa PT_StringRemove
 * \sa PT_StringClear
 * \sa PT_StringCount
 * \sa PT_StringGetOccurrencePosition
@@ -215,6 +239,7 @@ SDL_bool PT_StringMatchFast( const char* str1, const char* str2 );
 * @param _this The PT_String pointer, or NULL to print an blank line. 
 *
 * \sa PT_StringInsert
+* \sa PT_StringRemove
 * \sa PT_StringClear
 * \sa PT_StringCount
 * \sa PT_StringGetOccurrencePosition

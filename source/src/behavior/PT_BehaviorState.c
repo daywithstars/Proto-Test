@@ -125,6 +125,7 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 					PT_StringCountBasicString(entry.value->u.object.values[i].value->u.string.ptr),
 					0
 				);
+			
 				
 				if ( _return == SDL_FALSE )
 				{
