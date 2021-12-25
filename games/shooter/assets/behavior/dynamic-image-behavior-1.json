@@ -1,6 +1,6 @@
 {
 	"settings": {
-		"keyMap": "InputMap show-image",
+		"input-template": "InputMap show-image",
 	},
 	
 	"states": [

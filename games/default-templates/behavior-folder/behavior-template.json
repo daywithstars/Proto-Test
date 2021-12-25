@@ -1,6 +1,6 @@
 {
 	"settings": {
-		"keyMap": "<input-name>",
+		"input-template": "<input-template.settings.name>",
 	},
 	
 	"states": [
@@ -8,18 +8,18 @@
 			"name": "<nameOfState>",
 			
 			"input": {
-				"<keyMapName>": "<callback-function>",
-				"<keyMapName>": "change-state-<nameOfState>",
+				"<input-template.buttons-map.name>": "$callback-function$",
+				"<input-template.buttons-map.name>": "change-state-<states.name>",
 			},
 			
 			"event": [
 				{	
 					"trigger": {
 					
-						"type": "<TriggerType>",
+						"type": "$TriggerType$",
 						
 						"value": {
-							"type": "<ValueType>",
+							"type": "$ValueType$",
 							"fields": {
 							}
 						}
@@ -28,10 +28,10 @@
 				{	
 					"trigger": {
 					
-						"type": "<TriggerType>",
+						"type": "$TriggerType$",
 						
 						"value": {
-							"type": "<ValueType>",
+							"type": "$ValueType$",
 							"fields": {
 							}
 						}
@@ -40,16 +40,16 @@
 			],
 			
 			"aways": [
-				"<callback-function>",
-				"<callback-function>",
+				"$callback-function$",
+				"$callback-function$",
 			]
 		},
 	 	{
 			"name": "<nameOfState>",
 
 			"input": {
-				"<keyMapName>": "<callback-function>",
-				"<keyMapName>": "change-state-<nameOfState>",
+				"<input-template.buttons-map.name>": "$callback-function$",
+				"<input-template.buttons-map.name>": "change-state-<states.name>",
 			},
 			
 			"event": [
@@ -57,8 +57,8 @@
 			],
 			
 			"aways": [
-				"<callback-function>",
-				"<callback-function>",
+				"$callback-function$",
+				"$callback-function$",
 			]
 		},
 	]

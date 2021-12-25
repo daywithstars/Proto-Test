@@ -23,7 +23,7 @@ You need to put one of those:
   - require: **"timer": integer(in milliseconds)** on fields
 - **"input"**
   - It will execute once an keyMap is pressed.
-  - require: **"keyMap": "&lt;keyMapName&gt;"**
+  - require: **"key-map": "&lt;input-template.buttons-map.name&gt;"**
 - **"collision"**
   - It will execute once the collision happens.
   - In construction. 

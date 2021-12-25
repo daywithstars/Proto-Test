@@ -270,10 +270,18 @@ json_object_entry PT_ParseGetObjectEntry( PT_Parse* _this, const char* nameSeque
 json_object_entry PT_ParseGetObjectEntry_json_value( json_value* _json_value, const char* nameSequence ) {
 
 	json_object_entry entry = { 0 };
+	PT_String* sequenceFound = PT_StringCreate();
+	if ( !sequenceFound )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_ParseGetObjectEntry_json_value: Not enough memory\n");
+		return entry;
+	}	
 
 	if ( !_json_value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseGetObjectEntry_json_value: Invalid _json_value\n");
+		PT_StringDestroy(sequenceFound);
 		return entry;
 	}
 	
@@ -297,6 +305,19 @@ json_object_entry PT_ParseGetObjectEntry_json_value( json_value* _json_value, co
 					{
 						if ( !strcmp(entryName, pJsonValue->u.object.values[k].name) )
 						{
+							if ( sequenceFound->length != 0 )
+							{
+								if ( !PT_StringInsert(&sequenceFound, " ", sequenceFound->length) )
+								{
+									SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+									"PT: PT_ParseGetObjectEntry_json_value\n");
+								}
+							}
+							if ( !PT_StringInsert(&sequenceFound, entryName, sequenceFound->length) )
+							{
+								SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+								"PT: PT_ParseGetObjectEntry_json_value\n");
+							}
 							entry = pJsonValue->u.object.values[k];
 							pJsonValue = pJsonValue->u.object.values[k].value;
 							break;
@@ -321,7 +342,14 @@ json_object_entry PT_ParseGetObjectEntry_json_value( json_value* _json_value, co
 		entryName[j] = nameSequence[i];
 	}
 	
+	if ( !PT_StringMatchFast((char*)sequenceFound->utf8_string, nameSequence) )
+	{
+		PT_StringDestroy(sequenceFound);
+		SDL_memset(&entry, 0, sizeof(json_object_entry));
+		return entry;
+	}
 	
+	PT_StringDestroy(sequenceFound);
 	return entry;
 }//PT_ParseGetObjectEntry_json_value
 

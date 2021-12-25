@@ -116,7 +116,7 @@ SDL_bool PT_BehaviorParse( PT_Behavior* _this, json_value* jsonValue ) {
 		see the template: games/default-templates/behavior-folder/behavior-template.json
 	*/
 	
-	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "settings keyMap");
+	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "settings input-template");
 	if ( entry.name )
 	{
 		_this->inputHandler = PT_InputManagerGetInputHandler(entry.value->u.string.ptr);

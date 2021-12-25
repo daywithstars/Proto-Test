@@ -292,7 +292,7 @@ SDL_bool PT_BehaviorStateEventParseTriggerInputPlaySample(
 	if ( fieldsEntry.name )
 	{
 		fieldsEntry = 
-		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields keyMap");
+		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields key-map");
 		if ( fieldsEntry.name )
 		{
 			PT_String* keyMap = PT_StringCreate();
@@ -316,7 +316,7 @@ SDL_bool PT_BehaviorStateEventParseTriggerInputPlaySample(
 		}
 		else {
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-			"PT: PT_BehaviorStateEventParseTriggerInputPlaySample: Cannot find in fields: keyMap\n");
+			"PT: PT_BehaviorStateEventParseTriggerInputPlaySample: Cannot find in fields: key-map\n");
 			
 			return SDL_FALSE;
 		}
@@ -397,7 +397,7 @@ SDL_bool PT_BehaviorStateEventParseTriggerInputPlayMusic(
 	if ( fieldsEntry.name )
 	{
 		fieldsEntry = 
-		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields keyMap");
+		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields key-map");
 		if ( fieldsEntry.name )
 		{
 			PT_String* keyMap = PT_StringCreate();
@@ -421,7 +421,7 @@ SDL_bool PT_BehaviorStateEventParseTriggerInputPlayMusic(
 		}
 		else {
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-			"PT: PT_BehaviorStateEventParseTriggerInputPlayMusic: Cannot find in fields: keyMap\n");
+			"PT: PT_BehaviorStateEventParseTriggerInputPlayMusic: Cannot find in fields: key-map\n");
 			
 			return SDL_FALSE;
 		}

@@ -1,6 +1,6 @@
 {
 	"settings": {
-		"keyMap": "Map-keyboard-1",
+		"input-template": "Map-keyboard-1",
 	},
 	
 	"states": [
@@ -24,7 +24,7 @@
 						"value": {
 							"type": "play-sample",
 							"fields": {
-								"keyMap": "shot-button",
+								"key-map": "shot-button",
 								"sample-name": "jump",
 								"loop": 0
 							}
@@ -39,7 +39,7 @@
 						"value": {
 							"type": "play-music",
 							"fields": {
-								"keyMap": "input-secret-technique",
+								"key-map": "input-secret-technique",
 								"music-name": "special1",
 								"loop": 0
 							}
@@ -54,7 +54,7 @@
 						"value": {
 							"type": "change-screen",
 							"fields": {
-								"keyMap": "input-secret technique",
+								"key-map": "input-secret technique",
 								"music-name": "special1",
 								"loop": 0
 							}
