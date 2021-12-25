@@ -22,7 +22,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 //Use "mask" with bitwise to bind TYPE with VALUE
 typedef enum {
 	PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_NONE                  =1,
-	PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_AWAYS                 =2,
+	PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_ALWAYS                 =2,
 	PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_TIMES                 =4,
 	PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_CONDITION             =8,
 	PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_TIMER                 =16,
@@ -63,7 +63,7 @@ typedef struct {
 }PT_BehaviorStateEventTriggerField;
 
 typedef union {
-	PT_BehaviorStateEventTriggerField aways;
+	PT_BehaviorStateEventTriggerField always;
 	PT_BehaviorStateEventTriggerField collision;
 	PT_BehaviorStateEventTriggerField input;
 }PT_BehaviorStateEventTrigger;

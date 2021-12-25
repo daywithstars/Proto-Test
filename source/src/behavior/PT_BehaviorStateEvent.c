@@ -160,9 +160,9 @@ SDL_bool PT_BehaviorStateEventParse( PT_BehaviorStateEvent* _this, json_value* j
 		{
 			_this->flags |= PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_NONE;
 		}
-		else if ( PT_StringMatchFast(triggerEntry.value->u.string.ptr, "aways") )
+		else if ( PT_StringMatchFast(triggerEntry.value->u.string.ptr, "always") )
 		{
-			_this->flags |= PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_AWAYS;
+			_this->flags |= PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_ALWAYS;
 		}
 		else if ( PT_StringMatchFast(triggerEntry.value->u.string.ptr, "times") )
 		{

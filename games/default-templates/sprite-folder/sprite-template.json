@@ -1,5 +1,5 @@
 {
-	"type": "<SpriteType>",
+	"type": "$SpriteType$",
 	"image": "<ImageToUse>",
 	"speedX": 0.1,
 	"speedY": 0.2,

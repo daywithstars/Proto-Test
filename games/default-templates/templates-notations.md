@@ -16,4 +16,4 @@ Everything are json format but, we have some special notation:
 ## System values
 
 - $$
-  - This is where you can put system values, that you will find in files called command-something.md
+  - This is where you can put predefined system values.

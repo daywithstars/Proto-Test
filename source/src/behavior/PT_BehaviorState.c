@@ -23,7 +23,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 //===================================== PRIVATE Functions
 SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue );
 void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target );
-void PT_BehaviorStateUpdateAways( PT_BehaviorState* _this, void* target );
+void PT_BehaviorStateUpdateAlways( PT_BehaviorState* _this, void* target );
 
 //===================================== PUBLIC Functions
 PT_BehaviorState* PT_BehaviorStateCreate( json_value* jsonValue, void* pBehavior ) {
@@ -53,13 +53,13 @@ void PT_BehaviorStateDestroy( PT_BehaviorState* _this ) {
 
 	PT_StringListDestroy(_this->inputMap);
 	PT_StringListDestroy(_this->inputChangeStateMap);
-	if ( _this->aways )
+	if ( _this->always )
 	{
-		for ( unsigned int i = 0; i < _this->awaysNum; i++ )
+		for ( unsigned int i = 0; i < _this->alwaysNum; i++ )
 		{
-			free(_this->aways[i]);
+			free(_this->always[i]);
 		}
-		free(_this->aways);
+		free(_this->always);
 	}
 	if ( _this->events )
 	{
@@ -76,10 +76,10 @@ void PT_BehaviorStateDestroy( PT_BehaviorState* _this ) {
 void PT_BehaviorStateUpdate( PT_BehaviorState* _this, void* target, Sint32 elapsedTime ) {
 	/*
 		the "input" need to be an action from any input type.
-		the "aways" need to accour before any other and need to be aways executed in each state.
+		the "always" need to accour before any other and need to be always executed in each state.
 	*/
 	
-	PT_BehaviorStateUpdateAways(_this, target);
+	PT_BehaviorStateUpdateAlways(_this, target);
 	PT_BehaviorStateUpdateInput(_this, target);
 	
 	for ( unsigned int i = 0; i < _this->eventsNum; i++ )
@@ -165,7 +165,7 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 					/*
 						we parse the array position json_object to the create function, 
 						to not restart the internal search from PT_BehaviorStateEventParse and get 
-						aways the first array element. 
+						always the first array element. 
 					*/
 					_this->events[i] = PT_BehaviorStateEventCreate(_this,
 						entry.value->u.array.values[i]);
@@ -180,12 +180,12 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 		}
 	}
 	
-	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "aways");
+	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "always");
 	if ( entry.name )
 	{
-		_this->awaysNum = entry.value->u.array.length;
-		_this->aways = (char**)malloc(_this->awaysNum);
-		if ( !_this->aways )
+		_this->alwaysNum = entry.value->u.array.length;
+		_this->always = (char**)malloc(_this->alwaysNum);
+		if ( !_this->always )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateParse: Not enough memory\n");
 		}
@@ -193,8 +193,8 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 		
 			for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
 			{	
-				_this->aways[i] = (char*)malloc(entry.value->u.array.values[i]->u.string.length);
-				strcpy(_this->aways[i], entry.value->u.array.values[i]->u.string.ptr);
+				_this->always[i] = (char*)malloc(entry.value->u.array.values[i]->u.string.length);
+				strcpy(_this->always[i], entry.value->u.array.values[i]->u.string.ptr);
 			}
 		}
 	}
@@ -270,17 +270,17 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target ) {
 	}
 }//PT_BehaviorStateUpdateInput
 
-void PT_BehaviorStateUpdateAways( PT_BehaviorState* _this, void* target ) {
+void PT_BehaviorStateUpdateAlways( PT_BehaviorState* _this, void* target ) {
 	if ( !_this || !_this->pBehavior )
 	{
 		return;
 	}
 
-	for ( unsigned int i = 0; i < _this->awaysNum; i++ )
+	for ( unsigned int i = 0; i < _this->alwaysNum; i++ )
 	{
 		//use the callback
 		PT_CallbackList* node = PT_CallbackListGet(
-		((PT_Behavior*)_this->pBehavior)->callbackList, _this->aways[i]);
+		((PT_Behavior*)_this->pBehavior)->callbackList, _this->always[i]);
 		if ( node )
 		{
 			if ( node->simpleCallback )
@@ -289,7 +289,7 @@ void PT_BehaviorStateUpdateAways( PT_BehaviorState* _this, void* target ) {
 			}
 		}
 	}
-}//PT_BehaviorStateUpdateAways
+}//PT_BehaviorStateUpdateAlways
 
 
 

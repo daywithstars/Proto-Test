@@ -1,6 +1,6 @@
 {
 	"files": [
-		"keyboard-1.json",
-		"show-image-input.json"
+		"<input-template>.json",
+		"<input-template>.json",
 	]
 }

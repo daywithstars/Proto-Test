@@ -1,8 +1,8 @@
 {
-	"file": "<thisInputFileName>.json",
+	"file": "<thisInputTemplateFileName>.json",
 	
 	"settings": {
-		"name": "<nameYourInputFile>"
+		"name": "<nameYourInputTemplateFile>"
 	},
 	
 	"buttons-map": [

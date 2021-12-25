@@ -63,7 +63,7 @@
 				},
 			],
 			
-			"aways": [
+			"always": [
 				"sprite-stop-horizontal",
 				"sprite-stop-vertical",
 			]
@@ -76,7 +76,7 @@
 				"input-right": "PT_SpriteMoveRight",
 			},
 			
-			"aways": [
+			"always": [
 				"PT_SpriteMoveDown"
 			],
 		}
