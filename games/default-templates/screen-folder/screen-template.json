@@ -3,7 +3,7 @@
 
 	"settings": {
 		"name": "<nameYourScreen>",
-		"tag": "<tagType>",
+		"tag": "$tagType$",
 	},
 	
 	"sprites": [

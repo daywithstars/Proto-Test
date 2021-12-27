@@ -19,7 +19,7 @@ The way you delegate each input to a name you want, this will be sent to the Pro
 
 - **"file"** is a label that will be used internally. 
   - **"&lt;thisInputTemplateFileName&gt;.json"** the file name in your disk.
-- **"settings"** The object that holds to make the basic setup.
+- **"settings"** The object that holds information's to make the basic setup.
   - **"name"** This element holds the name of your input-template into Proto-Test. 
     - **"&lt;nameYourInputTemplateFile&gt;"** Choose the name you want. 
 - **"buttons-map"** The array of buttons to map.
