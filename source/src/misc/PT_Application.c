@@ -23,7 +23,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_SoundManager.h>
 #include <PT_Parse.h>
 #include <PT_InputManager.h>
-#include <PT_Mouse.h>
 
 
 
@@ -32,7 +31,6 @@ typedef struct {
 	SDL_bool canExit;
 	
 	PT_String* gameName;
-	PT_Mouse* mouse;
 }PT_Application;
 
 extern PT_String* gRootDir;
@@ -49,42 +47,46 @@ SDL_bool PT_ApplicationParseSettings( ) {
 	
 	if ( !PT_ParseOpenFile(parse, "../games/global-settings.json", SDL_FALSE) )
 	{
-		SDL_Log("(*)PT: PT_ApplicationParseSettings: Creating default global-settings.json\n");
-		
-		if ( !PT_ParseLoadTemplate(parse, 
-"{\n \
-	\"game\": \"your-game-name\"\n\
-}") )
-		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationParseSettings!\n");
-			return SDL_FALSE;
-		}
-		
-		if ( !PT_ParseSaveFile(parse, "../games/global-settings.json", SDL_FALSE) )
-		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationParseSettings!\n");
-			return SDL_FALSE; 
-		}
-
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"* Create your game folder and put the name on: \"game\": \"your-game-name\" from global-settings.json then run again\n");
+		"PT: PT_Application: Please use the global-settings-template.json and create a new global-settings.json into game directory\n");
 		
+		PT_ParseDestroy(parse);
 		return SDL_FALSE;
 	}
 	
-	json_object_entry entry = PT_ParseGetObjectEntry(parse, "game");
-	if ( entry.name )
+	json_object_entry entry = PT_ParseGetObjectEntry(parse, "games");
+	if ( !entry.name )
 	{
-		PT_StringInsert(&gRootDir, "/", 0);
-		PT_StringInsert(&gRootDir, entry.value->u.string.ptr, 0);
-		PT_StringInsert(&gRootDir, "../games/", 0);
-		
-		PT_StringInsert(&ptApplication->gameName, entry.value->u.string.ptr, 0);
-	}
-	else {
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_ApplicationParseSettings: Cannot get game property\n");
+		"PT: PT_Application: Cannot find games element into global-settings.json\n");
+		
+		PT_ParseDestroy(parse);
 		return SDL_FALSE;
+	}
+	
+	for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
+	{
+		if ( i != 0 )//cap to read only the first array.
+		{
+			break;
+		}
+		
+		for ( unsigned int j = 0; j < entry.value->u.array.values[i]->u.object.length; j++ )
+		{
+			
+			if ( PT_StringMatchFast(entry.value->u.array.values[i]->u.object.values[j].name, "name") )
+			{				
+				PT_StringInsert(&ptApplication->gameName, 
+				entry.value->u.array.values[i]->u.object.values[j].value->u.string.ptr, 0);
+			}
+			else if ( PT_StringMatchFast(entry.value->u.array.values[i]->u.object.values[j].name, "folder-name") )
+			{
+				PT_StringInsert(&gRootDir, "/", 0);
+				PT_StringInsert(&gRootDir, 
+				entry.value->u.array.values[i]->u.object.values[j].value->u.string.ptr, 0);
+				PT_StringInsert(&gRootDir, "../games/", 0);
+			}
+		}
 	}
 	
 	PT_ParseDestroy(parse);
@@ -117,11 +119,9 @@ void PT_ApplicationMainLoop( ) {
 		prevElapsedTime = currentElapsedTime;
 	
 		PT_InputManagerClearState();
-		PT_MouseClearState(ptApplication->mouse);
 		while ( SDL_PollEvent(&ev) ) {
 		
 			PT_InputManagerUpdate(&ev);
-			PT_MouseUpdate(ptApplication->mouse, &ev);
 			if ( ev.type == SDL_QUIT )
 			{
 				ptApplication->running = SDL_FALSE;
@@ -188,8 +188,6 @@ SDL_bool PT_ApplicationCreate( ) {
 	SDL_Log("PT: PT_ApplicationCreate: Game: \"%s\", successful initialized\n", 
 	(char*)ptApplication->gameName->utf8_string);
 	
-	ptApplication->mouse = PT_MouseCreate();
-	
 	ptApplication->running = SDL_TRUE;
 	ptApplication->canExit = SDL_TRUE;
 	return SDL_TRUE;
@@ -213,7 +211,6 @@ void PT_ApplicationDestroy( ) {
 		PT_StringDestroy(gRootDir);
 		gRootDir = NULL;
 		
-		PT_MouseDestroy(ptApplication->mouse);
 		free(ptApplication);
 	}
 	ptApplication = NULL;

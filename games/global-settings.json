@@ -1,3 +1,8 @@
 {
- 	"game": "shooter"
+	"games": [
+		{ 
+			"name": "Shooter", 
+			"folder-name": "shooter" 
+		},
+  	],
 }

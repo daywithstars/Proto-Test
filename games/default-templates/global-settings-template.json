@@ -1,4 +1,12 @@
 {
- 	"game": "<gameFolderName>",
-  	"game": "<gameFolderName>",
+	"games": [
+		{ 
+			"name": "<nameOfYourGame>", 
+			"folder-name": "<gameFolderName>" 
+		},
+		{ 
+			"name": "<nameOfYourGame>", 
+			"folder-name": "<gameFolderName>" 
+		},
+  	],
 }
