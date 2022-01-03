@@ -10,7 +10,7 @@ This file describes all elements on a sprite-template, this is not the documenta
 	"speedX": 0.1,
 	"speedY": 0.2,
 	"srcRect": [0, 0, 64, 64],
-	"dstRect": [0.0, 0.0, 128.0, 128.0],
+	"dstRect": [0.0, 0.0, 64.0, 64.0],
 	"behavior": "<behaviorName>",
 	
 	"misc": {

@@ -4,7 +4,23 @@
 	"speedX": 0.1,
 	"speedY": 0.2,
 	"srcRect": [0, 0, 64, 64],
-	"dstRect": [0.0, 0.0, 128.0, 128.0],
+	"dstRect": [0.0, 0.0, 64.0, 64.0],
+	"animations": [
+		{
+			"name": "<animationName>",
+			"frame-delay": 100,
+			"frame-width": 32,
+			"frame-height": 32,
+			"frame-column-max": 2,
+		},
+		{
+			"name": "<animationName>",
+			"frame-delay": 100,
+			"frame-width": 32,
+			"frame-height": 32,
+			"frame-column-max": 2,
+		},
+	],
 	"behavior": "<behaviorName>",
 	
 	"misc": {

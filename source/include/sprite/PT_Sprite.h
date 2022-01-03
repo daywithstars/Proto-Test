@@ -1,5 +1,5 @@
 /*
-Copyright 2021 daywithstars
+Copyright 2022 daywithstars
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -17,6 +17,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <json.h>
 
 #include <PT_String.h>
+#include <PT_AnimationList.h>
 
 
 struct pt_behavior;
@@ -27,6 +28,8 @@ typedef struct {
 	float speedX, speedY;
 	SDL_Rect* srcRect;
 	SDL_FRect* dstRect;
+	PT_AnimationList* animationList;
+	PT_Animation currentAnimation;
 	struct pt_behavior* behavior;
 	
 	

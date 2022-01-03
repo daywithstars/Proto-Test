@@ -1,11 +1,26 @@
 {
 	"type": "PT_Sprite",
-	"image": "shooter",
+	"image": "tileset",
 	"speedX": 0.10,
 	"speedY": 0.10,
 	"srcRect": [0, 0, 64, 64],
-	"dstRect": [100.0, 20.0, 128.0, 128.0],
-	"behavior": "shooter-behavior",
+	"dstRect": [100.0, 20.0, 32.0, 32.0],
+	"animations": [
+		{
+			"name": "first-anim",
+			"frame-delay": 1000,
+			"frame-width": 32,
+			"frame-height": 32,
+			"frame-column-max": 2,
+		},
+		{
+			"name": "second-anim",
+			"frame-delay": 1000,
+			"frame-width": 32,
+			"frame-height": 32,
+			"frame-column-max": 2,
+		},
+	],
 	
 	"misc": {
 	}

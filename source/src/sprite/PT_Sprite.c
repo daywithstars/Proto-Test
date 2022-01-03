@@ -1,5 +1,5 @@
 /*
-Copyright 2021 daywithstars
+Copyright 2022 daywithstars
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -96,6 +96,7 @@ void PT_SpriteDestroy( PT_Sprite* _this ) {
 	{
 		free(_this->dstRect);
 	}
+	PT_AnimationListDestroy(_this->animationList);
 	PT_BehaviorDestroy(_this->behavior);
 	
 	if ( _this->destroy )
@@ -161,7 +162,14 @@ void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime ) {
 	PT_SpriteStopMoveHorizontal((void*)_this);
 	PT_SpriteStopMoveVertical((void*)_this);
 
-	PT_BehaviorUpdate(_this->behavior, (void*)_this, elapsedTime);
+	if ( _this->animationList )
+	{
+		PT_AnimationUpdate(&_this->currentAnimation, _this->srcRect, elapsedTime);
+	}
+	if ( _this->behavior )
+	{
+		PT_BehaviorUpdate(_this->behavior, (void*)_this, elapsedTime);
+	}
 
 	_this->dstRect->x += _this->speedX * elapsedTime * _this->dirX;
 	_this->dstRect->y += _this->speedY * elapsedTime * _this->dirY;
@@ -233,6 +241,67 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 				jsonValue->u.object.values[i].value->u.array.values[2]->u.dbl;
 				_this->dstRect->h = 
 				jsonValue->u.object.values[i].value->u.array.values[3]->u.dbl;
+			}
+			else if ( !strcmp("animations", jsonValue->u.object.values[i].name) )
+			{
+				
+				for ( unsigned int j = 0; j < jsonValue->u.object.values[i].value->u.array.length; j++ )
+				{
+					json_value* animObj = jsonValue->u.object.values[i].value->u.array.values[j];
+					
+					char* name = "default";
+					Uint16 frameDelay = 100;
+					Uint16 frameWidth = 32;
+					Uint16 frameHeight = 32;
+					Uint16 frameColumnMax = 2;
+				
+					json_object_entry entry = PT_ParseGetObjectEntry_json_value(animObj, "name");
+					if ( entry.name )
+					{
+						name = entry.value->u.string.ptr;
+					}
+					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-delay");
+					if ( entry.name )
+					{
+						frameDelay = entry.value->u.integer;
+					}
+					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-width");
+					if ( entry.name )
+					{
+						frameWidth = entry.value->u.integer;
+					}
+					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-height");
+					if ( entry.name )
+					{
+						frameHeight = entry.value->u.integer;
+					}
+					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-column-max");
+					if ( entry.name )
+					{
+						frameColumnMax = entry.value->u.integer;
+					}
+					
+					
+					PT_Animation anim = 
+					PT_AnimationCreate(
+						frameDelay,
+						frameWidth,
+						frameHeight,
+						frameColumnMax
+					);
+					
+					_this->animationList = 
+					PT_AnimationListAdd(
+						_this->animationList, 
+						name,
+						anim
+					);
+					
+					if ( j == 0 )
+					{
+						_this->currentAnimation = anim;
+					}
+				}
 			}
 			else if ( !strcmp("behavior", jsonValue->u.object.values[i].name) )
 			{
