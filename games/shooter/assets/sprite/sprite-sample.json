@@ -11,16 +11,27 @@
 			"frame-delay": 1000,
 			"frame-width": 32,
 			"frame-height": 32,
+			"frame-column": 0,
+			"frame-column-dir": 1,
 			"frame-column-max": 2,
+			"frame-row": 0,
+			"frame-row-dir": 0,
+			"frame-row-max": 2,
 		},
 		{
 			"name": "second-anim",
 			"frame-delay": 1000,
 			"frame-width": 32,
 			"frame-height": 32,
+			"frame-column": 0,
+			"frame-column-dir": 1,
 			"frame-column-max": 2,
+			"frame-row": 1,
+			"frame-row-dir": 0,
+			"frame-row-max": 2,
 		},
 	],
+	"behavior": "shooter-behavior",
 	
 	"misc": {
 	}

@@ -1,0 +1,40 @@
+{
+	"type": "PT_Sprite",
+	"image": "shooter-sheet",
+	"speedX": 0.18,
+	"speedY": 0.14,
+	"srcRect": [0, 0, 192, 128],
+	"dstRect": [120.0, 120.0, 64.0, 64.0],
+	"animations": [
+		{
+			"name": "idle-anim",
+			"frame-delay": 0,
+			"frame-width": 64,
+			"frame-height": 64,
+			"frame-column": 0,
+			"frame-column-dir": 0,
+			"frame-column-max": 3,
+			"frame-row": 1,
+			"frame-row-dir": 0,
+			"frame-row-max": 1,
+		},
+		{
+			"name": "shot-anim",
+			"frame-delay": 200,
+			"frame-width": 64,
+			"frame-height": 64,
+			"frame-column": 0,
+			"frame-column-dir": 1,
+			"frame-column-max": 3,
+			"frame-row": 0,
+			"frame-row-dir": 0,
+			"frame-row-max": 1,
+		},
+	],
+	"behavior": "shooter-behavior",
+	
+	"misc": {
+	}
+} 
+
+

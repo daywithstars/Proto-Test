@@ -12,7 +12,13 @@
 				"input-right": "PT_SpriteMoveRight",
 				"input-up": "PT_SpriteMoveUp",
 				"input-down": "PT_SpriteMoveDown",
-				"input-dodge": "change-state-dodge",
+				
+				"shot-button": "change-animation-shot-anim",
+				"input-left": "change-animation-idle-anim",
+				"input-right": "change-animation-idle-anim",
+				"input-up": "change-animation-idle-anim",
+				"input-down": "change-animation-idle-anim",
+				"input-dodge": "change-animation-idle-anim",
 			},
 			
 			"events": [

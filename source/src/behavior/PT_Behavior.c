@@ -86,6 +86,10 @@ void PT_BehaviorAddSimpleCallback( PT_Behavior* _this, const char* utf8_callback
 	void (*callback)(void* _data) ) {
 	_this->callbackList = PT_CallbackListAddSimple(_this->callbackList, utf8_callbackName, callback);
 }
+void PT_BehaviorAddStringCallback( PT_Behavior* _this, const char* utf8_callbackName, 
+	void (*callback)(void* _data, const char* utf8_string) ) {
+	_this->callbackList = PT_CallbackListAddString(_this->callbackList, utf8_callbackName, callback);
+}
 void PT_BehaviorAddSDL_FPointCallback( PT_Behavior* _this, const char* utf8_callbackName, 
 	void (*callback)(void* _data, SDL_FPoint) ) {
 	_this->callbackList = PT_CallbackListAddSDL_FPoint(_this->callbackList, utf8_callbackName, callback);

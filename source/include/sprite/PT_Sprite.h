@@ -58,6 +58,9 @@ void PT_SpriteMoveDown( void* _data );
 void PT_SpriteStopMoveHorizontal( void* _data );
 void PT_SpriteStopMoveVertical( void* _data );
 
+//String callbacks declarations.
+void PT_SpriteChangeAnimation( void* _data, const char* utf8_string );
+
 //Misc callbacks declarations.
 void PT_SpriteGrab( void* _data, SDL_FPoint mousePosition );
 

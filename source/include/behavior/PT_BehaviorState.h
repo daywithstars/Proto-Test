@@ -24,8 +24,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 typedef struct pt_behavior_state {
 	void* pBehavior;
 
-	PT_StringList* inputMap;
-	PT_StringList* inputChangeStateMap;
+	PT_StringList* inputSimpleCallbacks;
+	PT_StringList* inputChangeStateList;
+	PT_StringList* inputChangeAnimationList;
 	
 	unsigned int eventsNum;
 	PT_BehaviorStateEvent** events;

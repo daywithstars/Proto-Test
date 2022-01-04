@@ -43,10 +43,11 @@ The object holds three main features: **input**, **event**, **always**. These fe
 "input": {
 	"<input-template.buttons-map.name>": "$callback-function$",
 	"<input-template.buttons-map.name>": "change-state-<states.name>",
+	"<input-template.buttons.map.name>": "change-animation-<sprite-template.animations[].name>",
 }
 ```
 
-This is the main way to implement input to the state, it use the settings.input-template previously described, as "key mapping" for their action into the Proto-Test objects.  
+This is the main way to implement input to the state, it's use the settings.input-template previously described, as "key mapping" for their action into the Proto-Test objects.  
 
 - **"&lt;input-template.buttons-map.name&gt;"** from file input-template.md this is the string place for your mapped buttons, created in that template.
   - With this element you can assign an **$callback-function$** or **"change-state-&lt;states.name&gt;"**(required)
@@ -67,6 +68,13 @@ Depends on the sprite-template.type:
 **"change-state-&lt;states.name&gt;"**(required)
 
 If the input occurs, the state will change to what you want, for example: "change-state-jumping". 
+
+
+**"change-animation-&lt;sprite-template.animations[].name&gt;"**(required)
+
+When the button map is pressed, it will change the current animation to another if exists. 
+
+
 
 ### event (optional)
 

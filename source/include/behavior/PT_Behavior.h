@@ -33,6 +33,8 @@ void PT_BehaviorDestroy( PT_Behavior* _this );
 
 void PT_BehaviorAddSimpleCallback( PT_Behavior* _this, const char* utf8_callbackName, 
 	void (*callback)(void* _data) );
+void PT_BehaviorAddStringCallback( PT_Behavior* _this, const char* utf8_callbackName, 
+	void (*callback)(void* _data, const char* utf8_string) );
 void PT_BehaviorAddSDL_FPointCallback( PT_Behavior* _this, const char* utf8_callbackName, 
 	void (*callback)(void* _data, SDL_FPoint) );
 

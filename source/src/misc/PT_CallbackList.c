@@ -81,7 +81,34 @@ PT_CallbackList* PT_CallbackListAddSimple( PT_CallbackList* _this, const char* u
 	newNode->next = _this;
 	
 	return newNode;
-}//PT_CallbackListAdd
+}//PT_CallbackListAddSimple
+
+PT_CallbackList* PT_CallbackListAddString( PT_CallbackList* _this, const char* utf8_index, 
+	void (*callback)(void* _data, const char* utf8_string) ) {
+	
+	if ( !_this )
+	{
+		PT_CallbackList* head = PT_CallbackListCreate(utf8_index);
+		head->stringCallback = callback;
+		return head;
+	}
+	
+	PT_CallbackList* pList = _this;
+	while ( pList )
+	{
+		if ( PT_StringMatch(pList->index, utf8_index) )
+		{
+			return _this;
+		}
+		pList = pList->next;
+	}
+
+	PT_CallbackList* newNode = PT_CallbackListCreate(utf8_index);
+	newNode->stringCallback = callback;
+	newNode->next = _this;
+	
+	return newNode;
+}//PT_CallbackListAddString
 
 PT_CallbackList* PT_CallbackListAddSDL_FPoint( PT_CallbackList* _this, const char* utf8_index,
 	void (*callback)(void* _data, SDL_FPoint) ) {

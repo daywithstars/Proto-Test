@@ -17,6 +17,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 typedef struct pt_animation {
+	int id;
 	SDL_bool stop;
 
 	Uint16 frameDelay;
@@ -25,14 +26,21 @@ typedef struct pt_animation {
 	Uint16 frameWidth;
 	Uint16 frameHeight;
 	
-	Uint16 frameColumn;
+	Sint16 frameColumn;
+	Sint8 frameColumnDir;
 	Uint16 frameColumnMax;
+	
+	Sint16 frameRow;
+	Sint8 frameRowDir;
+	Uint16 frameRowMax;
 }PT_Animation;
 
 
 
-PT_Animation PT_AnimationCreate( Uint16 frameDelay, Uint16 frameWidth, Uint16 frameHeight, 
-	Uint16 frameColumnMax );
+PT_Animation PT_AnimationCreate( 
+	Uint16 frameDelay, Uint16 frameWidth, Uint16 frameHeight, 
+	Sint16 frameColumn, Sint8 frameColumnDir, Uint16 frameColumnMax, 
+	Sint16 frameRow, Sint8 frameRowDir, Uint16 frameRowMax );
 void PT_AnimationDestroy( PT_Animation* _this );
 
 void PT_AnimationUpdate( PT_Animation* _this, SDL_Rect* src, Sint32 elapsedTime );

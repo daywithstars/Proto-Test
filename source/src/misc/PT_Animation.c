@@ -16,10 +16,31 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 
-PT_Animation PT_AnimationCreate( Uint16 frameDelay, Uint16 frameWidth, Uint16 frameHeight, 
-	Uint16 frameColumnMax ) {
+PT_Animation PT_AnimationCreate( 
+	Uint16 frameDelay, Uint16 frameWidth, Uint16 frameHeight, 
+	Sint16 frameColumn, Sint8 frameColumnDir, Uint16 frameColumnMax, 
+	Sint16 frameRow, Sint8 frameRowDir, Uint16 frameRowMax ) {
 	
-	PT_Animation _this = { SDL_FALSE, frameDelay, 0, frameWidth, frameHeight, 0, frameColumnMax };
+	static int id = 0;
+	
+	PT_Animation _this = { 
+		id,
+		SDL_FALSE, 
+		frameDelay, 
+		0, 
+		frameWidth, 
+		frameHeight,
+		 
+		frameColumn, 
+		frameColumnDir,
+		frameColumnMax,
+		
+		frameRow,
+		frameRowDir,
+		frameRowMax
+	};
+	
+	id ++;
 	
 	return _this;
 }//PT_AnimationCreate
@@ -43,16 +64,44 @@ void PT_AnimationUpdate( PT_Animation* _this, SDL_Rect* src, Sint32 elapsedTime 
 	{
 		_this->frameDelayCount = 0;
 		
-		if ( ++_this->frameColumn >= _this->frameColumnMax )
+		
+		if ( _this->frameColumnDir == 1 )
 		{
-			_this->frameColumn = 0;
+			if ( ++_this->frameColumn >= _this->frameColumnMax )
+			{
+				_this->frameColumn = 0;
+			}
 		}
+		else if ( _this->frameColumnDir == -1 )
+		{
+			if ( --_this->frameColumn < 0 )
+			{
+				_this->frameColumn = _this->frameColumnMax - 1;
+			}
+		}
+		
+		
+		if ( _this->frameRowDir == 1 )
+		{
+			if ( ++_this->frameRow >= _this->frameRowMax )
+			{
+				_this->frameRow = 0;
+			}
+		}
+		else if ( _this->frameRowDir == -1 )
+		{
+			if ( --_this->frameRow < 0 )
+			{
+				_this->frameRow = _this->frameRowMax - 1;
+			}
+		}		
 	}
 	
 	src->x = _this->frameColumn * _this->frameWidth;
-	src->y = 0;
+	src->y = _this->frameRow * _this->frameHeight;
 	src->w = _this->frameWidth;
 	src->h = _this->frameHeight;
+
 }//PT_AnimationUpdate
 
 void PT_AnimationStop( PT_Animation* _this, SDL_bool value ) {

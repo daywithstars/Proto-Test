@@ -142,6 +142,21 @@ void PT_SpriteStopMoveVertical( void* _data ) {
 	_this->dirY = 0;
 }
 
+void PT_SpriteChangeAnimation( void* _data, const char* utf8_string ) {
+	PT_Sprite* _this = (PT_Sprite*)_data;
+	
+	if ( _this->animationList )
+	{
+		PT_AnimationList* node = PT_AnimationListGet(_this->animationList, utf8_string);
+		if ( node )
+		{
+			if ( _this->currentAnimation.id != node->value.id )
+			{
+				_this->currentAnimation = node->value;
+			}
+		}
+	}
+}
 
 void PT_SpriteGrab( void* _data, SDL_FPoint mousePosition ) {
 	PT_Sprite* _this = (PT_Sprite*)_data;
@@ -253,7 +268,12 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 					Uint16 frameDelay = 100;
 					Uint16 frameWidth = 32;
 					Uint16 frameHeight = 32;
+					Sint16 frameColumn = 0;
+					Sint8 frameColumnDir = 1;
 					Uint16 frameColumnMax = 2;
+					Sint16 frameRow = 0;
+					Sint16 frameRowDir = 0;
+					Uint16 frameRowMax = 2;
 				
 					json_object_entry entry = PT_ParseGetObjectEntry_json_value(animObj, "name");
 					if ( entry.name )
@@ -275,10 +295,35 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 					{
 						frameHeight = entry.value->u.integer;
 					}
+					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-column");
+					if ( entry.name )
+					{
+						frameColumn = entry.value->u.integer;
+					}
+					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-column-dir");
+					if ( entry.name )
+					{
+						frameColumnDir = entry.value->u.integer;
+					}
 					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-column-max");
 					if ( entry.name )
 					{
 						frameColumnMax = entry.value->u.integer;
+					}
+					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-row");
+					if ( entry.name )
+					{
+						frameRow = entry.value->u.integer;
+					}
+					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-row-dir");
+					if ( entry.name )
+					{
+						frameRowDir = entry.value->u.integer;
+					}
+					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-row-max");
+					if ( entry.name )
+					{
+						frameRowMax = entry.value->u.integer;
 					}
 					
 					
@@ -287,7 +332,12 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 						frameDelay,
 						frameWidth,
 						frameHeight,
-						frameColumnMax
+						frameColumn,
+						frameColumnDir,
+						frameColumnMax,
+						frameRow,
+						frameRowDir,
+						frameRowMax
 					);
 					
 					_this->animationList = 
@@ -324,7 +374,9 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 					"PT_SpriteStopMoveHorizontal", PT_SpriteStopMoveHorizontal);
 				PT_BehaviorAddSimpleCallback(_this->behavior, 
 					"PT_SpriteStopMoveVertical", PT_SpriteStopMoveVertical);
-					
+	
+				PT_BehaviorAddStringCallback(_this->behavior, 
+					"PT_SpriteChangeAnimation", PT_SpriteChangeAnimation);				
 					
 				PT_BehaviorAddSDL_FPointCallback(_this->behavior, "PT_SpriteGrab", PT_SpriteGrab);
 			}

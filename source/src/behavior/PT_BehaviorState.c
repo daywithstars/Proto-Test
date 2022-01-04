@@ -15,6 +15,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <PT_BehaviorState.h>
 #include <PT_Behavior.h>
+#include <PT_Sprite.h>
 #include <PT_Parse.h>
 
 
@@ -51,8 +52,9 @@ void PT_BehaviorStateDestroy( PT_BehaviorState* _this ) {
 		return;
 	}
 
-	PT_StringListDestroy(_this->inputMap);
-	PT_StringListDestroy(_this->inputChangeStateMap);
+	PT_StringListDestroy(_this->inputSimpleCallbacks);
+	PT_StringListDestroy(_this->inputChangeStateList);
+	PT_StringListDestroy(_this->inputChangeAnimationList);
 	if ( _this->always )
 	{
 		for ( unsigned int i = 0; i < _this->alwaysNum; i++ )
@@ -106,16 +108,14 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 				"change-state-",
 				1
 			);
+			const Uint64 changeAnimationLastCharPosition = PT_StringGetOccurrencePositionBasicString(
+				entry.value->u.object.values[i].value->u.string.ptr,
+				"change-animation-",
+				1
+			);
 			
-			if ( changeStateLastCharPosition == 0 )
+			if ( changeStateLastCharPosition != 0 )
 			{
-				PT_String* callbackName = PT_StringCreate();
-				PT_StringInsert(&callbackName, entry.value->u.object.values[i].value->u.string.ptr, 0);
-				
-				_this->inputMap = PT_StringListAdd(_this->inputMap, entry.value->u.object.values[i].name,
-				callbackName);
-			}
-			else {
 				PT_String* stateName = PT_StringCreate();
 				
 				SDL_bool _return = PT_StringCopyFrom(
@@ -129,13 +129,47 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 				
 				if ( _return == SDL_FALSE )
 				{
-					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateParse!");
+					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateParse!\n");
 					PT_StringDestroy(stateName);
 					continue;
 				}
 				
-				_this->inputChangeStateMap = PT_StringListAdd(_this->inputChangeStateMap, 
+				_this->inputChangeStateList = PT_StringListAdd(_this->inputChangeStateList, 
 					entry.value->u.object.values[i].name, stateName);
+			
+			}
+			else if ( changeAnimationLastCharPosition != 0 )
+			{
+				PT_String* animName = PT_StringCreate();
+				
+				SDL_bool _return = PT_StringCopyFrom(
+					animName,
+					entry.value->u.object.values[i].value->u.string.ptr,
+					changeAnimationLastCharPosition,
+					PT_StringCountBasicString(entry.value->u.object.values[i].value->u.string.ptr),
+					0
+				);
+				
+				if ( _return == SDL_FALSE )
+				{
+					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateParse!\n");
+					PT_StringDestroy(animName);
+					continue;
+				}
+				
+				_this->inputChangeAnimationList = PT_StringListAdd(_this->inputChangeAnimationList,
+					entry.value->u.object.values[i].name, animName);
+			}
+			else {
+				PT_String* callbackName = PT_StringCreate();
+				PT_StringInsert(&callbackName, entry.value->u.object.values[i].value->u.string.ptr, 0);
+				
+				_this->inputSimpleCallbacks = 
+				PT_StringListAdd(
+					_this->inputSimpleCallbacks,
+					entry.value->u.object.values[i].name,
+					callbackName
+				);
 			}
 		}
 	}
@@ -211,7 +245,7 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target ) {
 
 	PT_InputHandler* inputHandler = ((PT_Behavior*)_this->pBehavior)->inputHandler;
 	
-	PT_StringList* pList = _this->inputMap;
+	PT_StringList* pList = _this->inputSimpleCallbacks;
 	while ( pList )
 	{
 		if ( PT_InputHandlerGetButtonState(inputHandler, (char*)pList->index->utf8_string) )
@@ -252,10 +286,21 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target ) {
 		pList = pList->next;
 	}
 	
+	pList = _this->inputChangeAnimationList;
+	while ( pList )
+	{
+		if ( PT_InputHandlerGetButtonState(inputHandler, (char*)pList->index->utf8_string) )
+		{
+			//use the the change animation from PT_Sprite
+			PT_SpriteChangeAnimation(target, (char*)pList->value->utf8_string);
+		}
+		pList = pList->next;
+	}
+	
 	/*
 		we treat in separated loop, to not process any previous state input. 
 	*/
-	pList = _this->inputChangeStateMap;
+	pList = _this->inputChangeStateList;
 	while ( pList )
 	{
 
