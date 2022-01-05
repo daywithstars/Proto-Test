@@ -30,7 +30,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 typedef struct pt_callback_list {
 	PT_String* index;
 	void (*simpleCallback)(void* _data);
-	void (*stringCallback)(void* _data, const char* utf8_string);
+	SDL_bool (*stringCallback)(void* _data, const char* utf8_string);
 	void (*SDL_FPointCallback)(void* _data, SDL_FPoint );
 	
 	struct pt_callback_list* next;
@@ -75,7 +75,7 @@ PT_CallbackList* PT_CallbackListAddSimple( PT_CallbackList* _this, const char* u
 	void (*callback)(void* _data) );
 	
 PT_CallbackList* PT_CallbackListAddString( PT_CallbackList* _this, const char* utf8_index, 
-	void (*callback)(void* _data, const char* utf8_string) );
+	SDL_bool (*callback)(void* _data, const char* utf8_string) );
 	
 PT_CallbackList* PT_CallbackListAddSDL_FPoint( PT_CallbackList* _this, const char* utf8_index,
 	void (*callback)(void* _data, SDL_FPoint) );

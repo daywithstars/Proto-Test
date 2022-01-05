@@ -23,6 +23,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 //===================================== PRIVATE Functions
 SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue );
+SDL_bool PT_BehaviorStateParseInputSimpleCallback( PT_BehaviorState* _this, 
+	const char* utf8_index, const char* utf8_value );
+SDL_bool PT_BehaviorStateParseInputChangeAnimation( PT_BehaviorState* _this,
+	const char* utf8_index, const char* utf8_value, Uint64 charPos );
+SDL_bool PT_BehaviorStateParseInputChangeState( PT_BehaviorState* _this,
+	const char* utf8_index, const char* utf8_value, Uint64 charPos );
+
 void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target );
 void PT_BehaviorStateUpdateAlways( PT_BehaviorState* _this, void* target );
 
@@ -103,84 +110,111 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 	{
 		for ( unsigned int i = 0; i < entry.value->u.object.length; i++ )
 		{
-			const Uint64 changeStateLastCharPosition = PT_StringGetOccurrencePositionBasicString(
-				entry.value->u.object.values[i].value->u.string.ptr,
-				"change-state-",
-				1
-			);
-			const Uint64 changeAnimationLastCharPosition = PT_StringGetOccurrencePositionBasicString(
-				entry.value->u.object.values[i].value->u.string.ptr,
-				"change-animation-",
-				1
-			);
-			
-			if ( changeStateLastCharPosition != 0 )
+			if ( entry.value->u.object.values[i].value->type == json_array )
 			{
-				PT_String* stateName = PT_StringCreate();
-				
-				SDL_bool _return = PT_StringCopyFrom(
-					stateName,
-					entry.value->u.object.values[i].value->u.string.ptr,
-					changeStateLastCharPosition,
-					PT_StringCountBasicString(entry.value->u.object.values[i].value->u.string.ptr),
-					0
-				);
-			
-				
-				if ( _return == SDL_FALSE )
+				for ( unsigned int j = 0; j < entry.value->u.object.values[i].value->u.array.length; j++ )
 				{
-					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateParse!\n");
-					PT_StringDestroy(stateName);
-					continue;
-				}
-				
-				_this->inputChangeStateList = PT_StringListAdd(_this->inputChangeStateList, 
-					entry.value->u.object.values[i].name, stateName);
-			
-			}
-			else if ( changeAnimationLastCharPosition != 0 )
-			{
-				PT_String* animName = PT_StringCreate();
-				
-				SDL_bool _return = PT_StringCopyFrom(
-					animName,
-					entry.value->u.object.values[i].value->u.string.ptr,
-					changeAnimationLastCharPosition,
-					PT_StringCountBasicString(entry.value->u.object.values[i].value->u.string.ptr),
-					0
-				);
-				
-				if ( _return == SDL_FALSE )
-				{
-					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateParse!\n");
-					PT_StringDestroy(animName);
-					continue;
-				}
-				
-				_this->inputChangeAnimationList = PT_StringListAdd(_this->inputChangeAnimationList,
-					entry.value->u.object.values[i].name, animName);
-				
-				static int once = 1;
-				if ( once )
-				{	
-					once = 0;
-					PT_String* animName2 = PT_StringCreate();
-					PT_StringInsert(&animName2, "shot-anim", 0);
+					const Uint64 changeStateLastCharPosition = 
+					PT_StringGetOccurrencePositionBasicString(
+						entry.value->u.object.values[i].value->u.array.values[j]->u.string.ptr,
+						"change-state-",
+						1
+					);
+					const Uint64 changeAnimationLastCharPosition =
+					PT_StringGetOccurrencePositionBasicString(
+						entry.value->u.object.values[i].value->u.array.values[j]->u.string.ptr,
+						"change-animation-",
+						1
+					);
 					
-					_this->inputChangeAnimationList = PT_StringListAdd(_this->inputChangeAnimationList,
-						"input-left", animName2);
+					if ( changeStateLastCharPosition != 0 )
+					{
+						if ( 
+							!PT_BehaviorStateParseInputChangeState(
+								_this,
+								entry.value->u.object.values[i].name,
+								entry.value->u.object.values[i].value->u.array.values[j]->u.string.ptr,
+								changeStateLastCharPosition
+							)
+						)
+						{
+							continue;
+						}	
+					}	
+					else if ( changeAnimationLastCharPosition != 0 )
+					{
+						if ( 
+							!PT_BehaviorStateParseInputChangeAnimation(
+								_this,
+								entry.value->u.object.values[i].name,
+								entry.value->u.object.values[i].value->u.array.values[j]->u.string.ptr,
+								changeAnimationLastCharPosition
+							)
+						)
+						{
+							continue;
+						}
+					}
+					else {
+						if ( 
+							!PT_BehaviorStateParseInputSimpleCallback(
+								_this, entry.value->u.object.values[i].name,
+								entry.value->u.object.values[i].value->u.array.values[j]->u.string.ptr) )
+						{
+							continue;
+						}
+					}
 				}
 			}
 			else {
-				PT_String* callbackName = PT_StringCreate();
-				PT_StringInsert(&callbackName, entry.value->u.object.values[i].value->u.string.ptr, 0);
-				
-				_this->inputSimpleCallbacks = 
-				PT_StringListAdd(
-					_this->inputSimpleCallbacks,
-					entry.value->u.object.values[i].name,
-					callbackName
+				const Uint64 changeStateLastCharPosition = PT_StringGetOccurrencePositionBasicString(
+					entry.value->u.object.values[i].value->u.string.ptr,
+					"change-state-",
+					1
 				);
+				const Uint64 changeAnimationLastCharPosition = PT_StringGetOccurrencePositionBasicString(
+					entry.value->u.object.values[i].value->u.string.ptr,
+					"change-animation-",
+					1
+				);
+				
+				if ( changeStateLastCharPosition != 0 )
+				{
+					if ( 
+						!PT_BehaviorStateParseInputChangeState(
+							_this,
+							entry.value->u.object.values[i].name,
+							entry.value->u.object.values[i].value->u.string.ptr,
+							changeStateLastCharPosition
+						)
+					)
+					{
+						continue;
+					}				
+				}
+				else if ( changeAnimationLastCharPosition != 0 )
+				{
+					if ( 
+						!PT_BehaviorStateParseInputChangeAnimation(
+							_this,
+							entry.value->u.object.values[i].name,
+							entry.value->u.object.values[i].value->u.string.ptr,
+							changeAnimationLastCharPosition
+						)
+					)
+					{
+						continue;
+					}
+				}
+				else {
+					if ( 
+						!PT_BehaviorStateParseInputSimpleCallback(
+							_this, entry.value->u.object.values[i].name,
+							entry.value->u.object.values[i].value->u.string.ptr) )
+					{
+						continue;
+					}
+				}
 			}
 		}
 	}
@@ -248,6 +282,79 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 	return SDL_TRUE;
 }//PT_BehaviorStateParse
 
+SDL_bool PT_BehaviorStateParseInputSimpleCallback( PT_BehaviorState* _this, 
+	const char* utf8_index, const char* utf8_value ) {
+	
+	PT_String* callbackName = PT_StringCreate();
+	if ( !PT_StringInsert(&callbackName, utf8_value, 0) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateParseInputSimpleCallback\n");
+		PT_StringDestroy(callbackName);
+		return SDL_FALSE;
+	}
+	
+	_this->inputSimpleCallbacks = 
+	PT_StringListCat(
+		_this->inputSimpleCallbacks,
+		utf8_index,
+		callbackName
+	);
+	
+	return SDL_TRUE;
+}//PT_BehaviorStateParseInputSimpleCallback
+
+SDL_bool PT_BehaviorStateParseInputChangeAnimation( PT_BehaviorState* _this,
+	const char* utf8_index, const char* utf8_value, Uint64 charPos ) {
+	
+	PT_String* animName = PT_StringCreate();
+	
+	SDL_bool _return = PT_StringCopyFrom(
+		animName,
+		utf8_value,
+		charPos,
+		PT_StringCountBasicString(utf8_value),
+		0
+	);
+	
+	if ( _return == SDL_FALSE )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateParseInputChangeAnimation!\n");
+		PT_StringDestroy(animName);
+		return SDL_FALSE;
+	}
+	
+	_this->inputChangeAnimationList = PT_StringListCat(_this->inputChangeAnimationList,
+		utf8_index, animName);
+		
+	return SDL_TRUE;
+}//PT_BehaviorStateParseInputChangeAnimation
+
+SDL_bool PT_BehaviorStateParseInputChangeState( PT_BehaviorState* _this,
+	const char* utf8_index, const char* utf8_value, Uint64 charPos ) {
+	
+	PT_String* stateName = PT_StringCreate();
+	
+	SDL_bool _return = PT_StringCopyFrom(
+		stateName,
+		utf8_value,
+		charPos,
+		PT_StringCountBasicString(utf8_value),
+		0
+	);
+	
+	if ( _return == SDL_FALSE )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateParseInputChangeState!\n");
+		PT_StringDestroy(stateName);
+		return SDL_FALSE;
+	}
+	
+	_this->inputChangeStateList = PT_StringListCat(_this->inputChangeStateList, 
+		utf8_index, stateName);
+	
+	return SDL_TRUE;
+}//PT_BehaviorStateParseInputChangeState
+
 void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target ) {
 	if ( !_this || !_this->pBehavior )
 	{
@@ -304,15 +411,25 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target ) {
 	}
 	
 	pList = _this->inputChangeAnimationList;
+	SDL_bool animChanged = SDL_FALSE;
 	while ( pList )
 	{
 		if ( PT_InputHandlerGetButtonState(inputHandler, (char*)pList->index->utf8_string) )
 		{
-			//use the the change animation from PT_Sprite
+			//use the change animation from PT_Sprite
 			for ( unsigned int i = 0; i < pList->numValues; i++ )
 			{
-				PT_SpriteChangeAnimation(target, (char*)pList->values[i]->utf8_string);
+				if ( PT_SpriteChangeAnimation(target, (char*)pList->values[i]->utf8_string) )
+				{
+					animChanged = SDL_TRUE;
+					break;
+				}
 			}
+		}
+		
+		if ( animChanged )
+		{
+			break;
 		}
 		pList = pList->next;
 	}

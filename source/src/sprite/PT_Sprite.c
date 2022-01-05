@@ -142,7 +142,7 @@ void PT_SpriteStopMoveVertical( void* _data ) {
 	_this->dirY = 0;
 }
 
-void PT_SpriteChangeAnimation( void* _data, const char* utf8_string ) {
+SDL_bool PT_SpriteChangeAnimation( void* _data, const char* utf8_string ) {
 	PT_Sprite* _this = (PT_Sprite*)_data;
 	
 	if ( _this->animationList )
@@ -153,9 +153,12 @@ void PT_SpriteChangeAnimation( void* _data, const char* utf8_string ) {
 			if ( _this->currentAnimation.id != node->value.id )
 			{
 				_this->currentAnimation = node->value;
+				return SDL_TRUE;
 			}
 		}
 	}
+	
+	return SDL_FALSE;
 }
 
 void PT_SpriteGrab( void* _data, SDL_FPoint mousePosition ) {

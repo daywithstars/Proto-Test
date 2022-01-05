@@ -84,7 +84,7 @@ PT_CallbackList* PT_CallbackListAddSimple( PT_CallbackList* _this, const char* u
 }//PT_CallbackListAddSimple
 
 PT_CallbackList* PT_CallbackListAddString( PT_CallbackList* _this, const char* utf8_index, 
-	void (*callback)(void* _data, const char* utf8_string) ) {
+	SDL_bool (*callback)(void* _data, const char* utf8_string) ) {
 	
 	if ( !_this )
 	{

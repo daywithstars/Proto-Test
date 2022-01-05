@@ -18,6 +18,10 @@
 					"change-state-<states.name>",
 					"change-animation-<sprite-template.animations[].name>",
 				],
+				
+				"<input-template.buttons.map.name>": "$callback-function$",
+				"<input-template.buttons.map.name>": "change-state-<states.name>",
+				"<input-template.buttons-map.name>": "change-animation-<sprite-template.animations[].name>",
 			},
 			
 			"events": [
