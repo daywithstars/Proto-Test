@@ -24,7 +24,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 typedef struct pt_string_list {
 	PT_String* index;
-	PT_String* value;
+	
+	unsigned int numValues;
+	PT_String** values;
 	
 	struct pt_string_list* next;
 }PT_StringList;
@@ -32,8 +34,11 @@ typedef struct pt_string_list {
 
 
 /** 
-* \brief Create the first PT_StringList Node.
+* \brief Create the first PT_StringList Node or add more values to the node
 *
+* You can use this function to concatenate more values, but be sure to parse the correct _this/node. 
+*
+* @param _this The PT_StringList pointer or NULL. 
 * @param utf8_index The index node name.
 * @param value An valid PT_String pointer or NULL.
 *
@@ -41,7 +46,7 @@ typedef struct pt_string_list {
 *
 * \sa PT_StringListDestroy
 */
-PT_StringList* PT_StringListCreate( const char* utf8_index, PT_String* value );
+PT_StringList* PT_StringListCreate( PT_StringList* _this, const char* utf8_index, PT_String* value );
 
 /**
 * \brief Free all the memory used by PT_StringList, this also frees the value if its not NULL.
@@ -76,9 +81,29 @@ void PT_StringListDestroy( PT_StringList* _this );
 *	is already registered or NULL if fails.
 *
 * \sa PT_StringListCreate
+* \sa PT_StringListCat
 * \sa PT_StringListGet
 */
 PT_StringList* PT_StringListAdd( PT_StringList* _this, const char* utf8_index, PT_String* value );
+
+/** 
+* \brief Concatenate an PT_String to a node that already have the same index. 
+*
+* @param _this This can be a NULL PT_StringList or a valid one.
+*
+*	case 1 NULL the function will works like: PT_StringListCreate, and will return the head node.
+*
+*	case 2 Valid PT_StringList, it will search for the utf8_index and will concatenate value to that node->index. If the node->index cannot be founded, it will work like: PT_StringListAdd
+*
+* @param value Pointer to your previous created PT_String.
+*
+* \returns The updated PT_StringList on success.
+*
+* \sa PT_StringListCreate
+* \sa PT_StringListAdd
+* \sa PT_StringListGet
+*/
+PT_StringList* PT_StringListCat( PT_StringList* _this, const char* utf8_index, PT_String* value );
 
 /**
 * \brief Get the pointer to an specific node, based on its index.
@@ -89,6 +114,7 @@ PT_StringList* PT_StringListAdd( PT_StringList* _this, const char* utf8_index, P
 * \returns The pointer to the node on success, or NULL if the node does not exist.
 *
 * \sa PT_StringListAdd
+* \sa PT_StringListCat
 */
 PT_StringList* PT_StringListGet( PT_StringList* _this, const char* utf8_index );
 

@@ -159,6 +159,17 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 				
 				_this->inputChangeAnimationList = PT_StringListAdd(_this->inputChangeAnimationList,
 					entry.value->u.object.values[i].name, animName);
+				
+				static int once = 1;
+				if ( once )
+				{	
+					once = 0;
+					PT_String* animName2 = PT_StringCreate();
+					PT_StringInsert(&animName2, "shot-anim", 0);
+					
+					_this->inputChangeAnimationList = PT_StringListAdd(_this->inputChangeAnimationList,
+						"input-left", animName2);
+				}
 			}
 			else {
 				PT_String* callbackName = PT_StringCreate();
@@ -251,14 +262,17 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target ) {
 		if ( PT_InputHandlerGetButtonState(inputHandler, (char*)pList->index->utf8_string) )
 		{
 			//use the callback
-			PT_CallbackList* node = PT_CallbackListGet(
-			((PT_Behavior*)_this->pBehavior)->callbackList, 
-				(char*)pList->value->utf8_string);
-			if ( node )
+			for ( unsigned int i = 0; i < pList->numValues; i++ )
 			{
-				if ( node->simpleCallback )
+				PT_CallbackList* node = PT_CallbackListGet(
+				((PT_Behavior*)_this->pBehavior)->callbackList, 
+					(char*)pList->values[i]->utf8_string);
+				if ( node )
 				{
-					node->simpleCallback(target);
+					if ( node->simpleCallback )
+					{
+						node->simpleCallback(target);
+					}
 				}
 			}
 		}
@@ -268,17 +282,20 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target ) {
 			)
 		{
 			//use the callback
-			PT_InputHandlerGrab grab = 
-			PT_InputHandlerGetGrabPosition(inputHandler, (char*)pList->index->utf8_string);
-			
-			PT_CallbackList* node = PT_CallbackListGet(
-			((PT_Behavior*)_this->pBehavior)->callbackList, 
-				(char*)pList->value->utf8_string);
-			if ( node )
+			for ( unsigned int i = 0; i < pList->numValues; i++ )
 			{
-				if ( node->SDL_FPointCallback )
+				PT_InputHandlerGrab grab = 
+				PT_InputHandlerGetGrabPosition(inputHandler, (char*)pList->index->utf8_string);
+				
+				PT_CallbackList* node = PT_CallbackListGet(
+				((PT_Behavior*)_this->pBehavior)->callbackList, 
+					(char*)pList->values[i]->utf8_string);
+				if ( node )
 				{
-					node->SDL_FPointCallback(target, grab.mousePosition);
+					if ( node->SDL_FPointCallback )
+					{
+						node->SDL_FPointCallback(target, grab.mousePosition);
+					}
 				}
 			}
 		}
@@ -292,7 +309,10 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target ) {
 		if ( PT_InputHandlerGetButtonState(inputHandler, (char*)pList->index->utf8_string) )
 		{
 			//use the the change animation from PT_Sprite
-			PT_SpriteChangeAnimation(target, (char*)pList->value->utf8_string);
+			for ( unsigned int i = 0; i < pList->numValues; i++ )
+			{
+				PT_SpriteChangeAnimation(target, (char*)pList->values[i]->utf8_string);
+			}
 		}
 		pList = pList->next;
 	}
@@ -307,7 +327,11 @@ void PT_BehaviorStateUpdateInput( PT_BehaviorState* _this, void* target ) {
 		if ( PT_InputHandlerGetButtonState(inputHandler, (char*)pList->index->utf8_string) )
 		{
 			//use the callback 
-			PT_BehaviorChangeState((PT_Behavior*)_this->pBehavior, (char*)pList->value->utf8_string);
+			for ( unsigned int i = 0; i < pList->numValues; i++ )
+			{
+				PT_BehaviorChangeState((PT_Behavior*)_this->pBehavior, 
+					(char*)pList->values[i]->utf8_string);
+			}
 		}
 		
 		pList = pList->next;

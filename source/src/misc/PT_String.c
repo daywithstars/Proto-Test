@@ -248,12 +248,12 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 	
 	if ( !_this )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringIinsertString: Invalid PT_String\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringInsertString: Invalid PT_String\n");
 		return SDL_FALSE;
 	}
 	if ( !_utf8_string )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringIinsertString: Invalid _utf8_string\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringInsertString: Invalid _utf8_string\n");
 		return SDL_FALSE;
 	}
 
@@ -270,7 +270,7 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 				(*_this)->utf8_string[i] = utf8_string[i];
 			}
 			else {
-				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringIinsertString case 1: this char: %d is not supported!\n", (int)utf8_string[i]);
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringInsertString case 1: this char: %d is not supported!\n", (int)utf8_string[i]);
 					
 				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "* please format in UTF-8, the wrong char will be replaced by U+FFFD unicode code point into your string \n");
 				
@@ -321,7 +321,7 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 					newString->utf8_string[i] = utf8_string[j];
 				}
 				else {
-					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringIinsertString case 2: this char: %d is not supported!\n", (int)utf8_string[j]);
+					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringInsertString case 2: this char: %d is not supported!\n", (int)utf8_string[j]);
 						
 					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "* please format in UTF-8, the wrong char will be replaced by U+FFFD unicode code point into your string \n");
 						
@@ -382,7 +382,7 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 					newString->utf8_string[i] = utf8_string[i];
 				}
 				else {
-					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringIinsertString case 3: this char: %d is not supported!\n", (int)utf8_string[i]);
+					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringInsertString case 3: this char: %d is not supported!\n", (int)utf8_string[i]);
 						
 					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "* please format in UTF-8, the wrong char will be replaced by U+FFFD unicode code point into your string \n");
 					
@@ -467,7 +467,7 @@ SDL_bool PT_StringInsert( PT_String** _this, const char* _utf8_string, Uint64 in
 					newString->utf8_string[j] = utf8_string[i];
 				}
 				else {
-					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringIinsertString case 5: this char: %d is not supported!\n", (int)utf8_string[i]);
+					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringInsertString case 5: this char: %d is not supported!\n", (int)utf8_string[i]);
 						
 					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "* please format in UTF-8, the wrong char will be replaced by U+FFFD unicode code point into your string \n");
 					

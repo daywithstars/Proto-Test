@@ -73,11 +73,11 @@ SDL_bool PT_InputHandlerGetButtonState( PT_InputHandler* _this, const char* mapN
 	}
 	
 	const PT_InputHandlerInputTypes inputType = 
-	node->value->utf8_string[0] == 'k' && node->value->utf8_string[1] == 'y' && 
-	node->value->utf8_string[2] == 'd' ? PT_INPUT_HANDLER_INPUT_TYPE_KEYBOARD :
+	node->values[0]->utf8_string[0] == 'k' && node->values[0]->utf8_string[1] == 'y' && 
+	node->values[0]->utf8_string[2] == 'd' ? PT_INPUT_HANDLER_INPUT_TYPE_KEYBOARD :
 	
-	node->value->utf8_string[0] == 'm' && node->value->utf8_string[1] == 's' &&
-	node->value->utf8_string[2] == 'e' ? PT_INPUT_HANDLER_INPUT_TYPE_MOUSE : 
+	node->values[0]->utf8_string[0] == 'm' && node->values[0]->utf8_string[1] == 's' &&
+	node->values[0]->utf8_string[2] == 'e' ? PT_INPUT_HANDLER_INPUT_TYPE_MOUSE : 
 	PT_INPUT_HANDLER_INPUT_TYPE_NONE;
 	
 	if ( inputType == PT_INPUT_HANDLER_INPUT_TYPE_NONE )
@@ -86,50 +86,50 @@ SDL_bool PT_InputHandlerGetButtonState( PT_InputHandler* _this, const char* mapN
 	}
 	
 	//button pressed
-	if ( node->value->utf8_string[4] == 'p' )
+	if ( node->values[0]->utf8_string[4] == 'p' )
 	{
 		if ( inputType == PT_INPUT_HANDLER_INPUT_TYPE_KEYBOARD )
 		{
 			return PT_InputManagerKeyboardGetKeyDown(
-				PT_KeyboardGetScancodeByString( (char*)(&node->value->utf8_string[6]) )
+				PT_KeyboardGetScancodeByString( (char*)(&node->values[0]->utf8_string[6]) )
 			);
 		}
 		else if ( inputType == PT_INPUT_HANDLER_INPUT_TYPE_MOUSE )
 		{
 			return PT_InputManagerMouseGetButtonDown(
-				PT_MouseGetButtonByString( (char*)(&node->value->utf8_string[6]) )
+				PT_MouseGetButtonByString( (char*)(&node->values[0]->utf8_string[6]) )
 			);
 		}
 	}
 	//button release
-	else if ( node->value->utf8_string[4] == 'r' )
+	else if ( node->values[0]->utf8_string[4] == 'r' )
 	{
 		if ( inputType == PT_INPUT_HANDLER_INPUT_TYPE_KEYBOARD )
 		{
 			return PT_InputManagerKeyboardGetKeyUp(
-				PT_KeyboardGetScancodeByString( (char*)(&node->value->utf8_string[6]) )
+				PT_KeyboardGetScancodeByString( (char*)(&node->values[0]->utf8_string[6]) )
 			);
 		}
 		else if ( inputType == PT_INPUT_HANDLER_INPUT_TYPE_MOUSE )
 		{
 			return PT_InputManagerMouseGetButtonUp(
-				PT_MouseGetButtonByString( (char*)(&node->value->utf8_string[6]) )
+				PT_MouseGetButtonByString( (char*)(&node->values[0]->utf8_string[6]) )
 			);
 		}
 	}
 	//button hold
-	else if ( node->value->utf8_string[4] == 'h' )
+	else if ( node->values[0]->utf8_string[4] == 'h' )
 	{
 		if ( inputType == PT_INPUT_HANDLER_INPUT_TYPE_KEYBOARD )
 		{
 			return PT_InputManagerKeyboardGetKeyHold(
-				PT_KeyboardGetScancodeByString( (char*)(&node->value->utf8_string[6]) )
+				PT_KeyboardGetScancodeByString( (char*)(&node->values[0]->utf8_string[6]) )
 			);
 		}
 		else if ( inputType == PT_INPUT_HANDLER_INPUT_TYPE_MOUSE )
 		{
 			return PT_InputManagerMouseGetButtonHold(
-				PT_MouseGetButtonByString( (char*)(&node->value->utf8_string[6]) )
+				PT_MouseGetButtonByString( (char*)(&node->values[0]->utf8_string[6]) )
 			);
 		}
 	}
@@ -150,8 +150,8 @@ PT_InputHandlerGrab PT_InputHandlerGetGrabPosition( PT_InputHandler* _this, cons
 	}
 	
 	const PT_InputHandlerInputTypes inputType = 
-	node->value->utf8_string[0] == 'm' && node->value->utf8_string[1] == 's' &&
-	node->value->utf8_string[2] == 'e' ? PT_INPUT_HANDLER_INPUT_TYPE_MOUSE : 
+	node->values[0]->utf8_string[0] == 'm' && node->values[0]->utf8_string[1] == 's' &&
+	node->values[0]->utf8_string[2] == 'e' ? PT_INPUT_HANDLER_INPUT_TYPE_MOUSE : 
 	PT_INPUT_HANDLER_INPUT_TYPE_NONE;
 	
 	if ( inputType == PT_INPUT_HANDLER_INPUT_TYPE_NONE )
@@ -161,11 +161,11 @@ PT_InputHandlerGrab PT_InputHandlerGetGrabPosition( PT_InputHandler* _this, cons
 	
 	
 	//button pressed and grab
-	if ( node->value->utf8_string[4] == 'p' &&  node->value->utf8_string[5] == 'g' )
+	if ( node->values[0]->utf8_string[4] == 'p' &&  node->values[0]->utf8_string[5] == 'g' )
 	{
 		if ( 
 			PT_InputManagerMouseGetButtonDown(
-			PT_MouseGetButtonByString((char*)(&node->value->utf8_string[7])))
+			PT_MouseGetButtonByString((char*)(&node->values[0]->utf8_string[7])))
 			)
 		{
 			Sint32 mx=0, my=0;
@@ -177,11 +177,11 @@ PT_InputHandlerGrab PT_InputHandlerGetGrabPosition( PT_InputHandler* _this, cons
 		}	
 	}
 	//button release and grab
-	else if ( node->value->utf8_string[4] == 'r' &&  node->value->utf8_string[5] == 'g' )
+	else if ( node->values[0]->utf8_string[4] == 'r' &&  node->values[0]->utf8_string[5] == 'g' )
 	{
 		if ( 
 			PT_InputManagerMouseGetButtonUp(
-			PT_MouseGetButtonByString((char*)(&node->value->utf8_string[7])))
+			PT_MouseGetButtonByString((char*)(&node->values[0]->utf8_string[7])))
 			)
 		{
 			Sint32 mx=0, my=0;
@@ -194,11 +194,11 @@ PT_InputHandlerGrab PT_InputHandlerGetGrabPosition( PT_InputHandler* _this, cons
 		}	
 	}
 	//button hold and grab
-	else if ( node->value->utf8_string[4] == 'h' &&  node->value->utf8_string[5] == 'g' )
+	else if ( node->values[0]->utf8_string[4] == 'h' &&  node->values[0]->utf8_string[5] == 'g' )
 	{
 		if ( 
 			PT_InputManagerMouseGetButtonHold(
-			PT_MouseGetButtonByString((char*)(&node->value->utf8_string[7])))
+			PT_MouseGetButtonByString((char*)(&node->values[0]->utf8_string[7])))
 			)
 		{
 			Sint32 mx=0, my=0;
