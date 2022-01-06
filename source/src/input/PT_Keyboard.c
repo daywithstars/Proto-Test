@@ -1,5 +1,5 @@
 /*
-Copyright 2021 daywithstars
+Copyright 2022 daywithstars
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -18,6 +18,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 struct pt_keyboard {
+	SDL_bool keyEvent;
+
 	SDL_bool keyDown[SDL_NUM_SCANCODES];
 	SDL_bool keyUp[SDL_NUM_SCANCODES];
 	SDL_bool keyHold[SDL_NUM_SCANCODES];
@@ -32,6 +34,8 @@ PT_Keyboard* PT_KeyboardCreate( ) {
 	{
 		return NULL;
 	}
+	_this->keyEvent = SDL_FALSE;
+	
 	SDL_memset(_this->keyDown, SDL_FALSE, sizeof(SDL_bool) * SDL_NUM_SCANCODES);
 	SDL_memset(_this->keyUp, SDL_FALSE, sizeof(SDL_bool) * SDL_NUM_SCANCODES);
 	SDL_memset(_this->keyHold, SDL_FALSE, sizeof(SDL_bool) * SDL_NUM_SCANCODES);
@@ -49,6 +53,7 @@ void PT_KeyboardDestroy( PT_Keyboard* _this ) {
 }//PT_KeyboardDestroy
 
 void PT_KeyboardClearState( PT_Keyboard* _this ) {
+	_this->keyEvent = SDL_FALSE;
 	SDL_memset(_this->keyDown, SDL_FALSE, sizeof(SDL_bool) * SDL_NUM_SCANCODES);
 	SDL_memset(_this->keyUp, SDL_FALSE, sizeof(SDL_bool) * SDL_NUM_SCANCODES);
 }
@@ -62,12 +67,14 @@ void PT_KeyboardUpdate( PT_Keyboard* _this, const SDL_Event* ev ) {
 			_this->keyUp[ev->key.keysym.scancode] = SDL_FALSE;
 		}
 		_this->keyHold[ev->key.keysym.scancode] = SDL_TRUE;
+		_this->keyEvent = SDL_TRUE;
 	}
 	else if ( ev->type == SDL_KEYUP )
 	{
 		_this->keyDown[ev->key.keysym.scancode] = SDL_FALSE;
 		_this->keyUp[ev->key.keysym.scancode] = SDL_TRUE;
 		_this->keyHold[ev->key.keysym.scancode] = SDL_FALSE;	
+		_this->keyEvent = SDL_TRUE;
 	}
 }//PT_KeyboardUpdate
 
@@ -79,6 +86,10 @@ SDL_bool PT_KeyboardGetKeyUp( PT_Keyboard* _this, SDL_Scancode key ) {
 }
 SDL_bool PT_KeyboardGetKeyHold( PT_Keyboard* _this, SDL_Scancode key ) {
 	return _this->keyHold[key];
+}
+
+SDL_bool PT_KeyboardGetKeyEvent( PT_Keyboard* _this ) {
+	return _this->keyEvent;
 }
 
 SDL_Scancode PT_KeyboardGetScancodeByString( const char* string ) {

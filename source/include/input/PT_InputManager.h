@@ -1,5 +1,5 @@
 /*
-Copyright 2021 daywithstars
+Copyright 2022 daywithstars
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -80,6 +80,8 @@ SDL_bool PT_InputManagerKeyboardGetKeyUp( SDL_Scancode key );
 * \sa PT_KeyboardGetKeyHold
 */
 SDL_bool PT_InputManagerKeyboardGetKeyHold( SDL_Scancode key );
+
+SDL_bool PT_InputManagerKeyboardGetKeyEvent( );
 
 void PT_InputManagerMouseGetPosition( Sint32* x, Sint32* y );
 void PT_InputManagerMouseGetWheelScroll( Sint32* wheelX, Sint32* wheelY );

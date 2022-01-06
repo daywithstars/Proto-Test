@@ -41,15 +41,21 @@ The object holds three main features: **input**, **event**, **always**. These fe
 
 ```json
 "input": {
-	"<input-template.buttons-map.name>": "$callback-function$",
-	"<input-template.buttons-map.name>": "change-state-<states.name>",
-	"<input-template.buttons.map.name>": "change-animation-<sprite-template.animations[].name>",
+	"<input-template.buttons-map.name>": [
+		"$callback-function$",
+		"change-state-<states.name>",
+		"change-animation-<sprite-template.animations[].name>",
+	],
+
+	"<input-template.buttons.map.name>": "$callback-function$",
+	"<input-template.buttons.map.name>": "change-state-<states.name>",
+	"<input-template.buttons-map.name>": "change-animation-<sprite-template.animations[].name>",
 }
 ```
 
-This is the main way to implement input to the state, it's use the settings.input-template previously described, as "key mapping" for their action into the Proto-Test objects.  
+This is the main way to implement input to the state, it's use the settings.input-template previously described, as "key mapping" for their action into the Proto-Test objects. You can use one map name to task several commands using the array type. 
 
-- **"&lt;input-template.buttons-map.name&gt;"** from file input-template.md this is the string place for your mapped buttons, created in that template.
+- **"&lt;input-template.buttons-map.name&gt;"** from file input-template.md this is the string place for your mapped buttons, created in that template. If this element is from JSON array type, you can give any command you want for this key map. 
   - With this element you can assign an **$callback-function$** or **"change-state-&lt;states.name&gt;"**(required)
 
 **$callback-function$**(required)

@@ -25,10 +25,7 @@
 					"change-animation-idle-anim",
 				],
 				
-				"shot-button": [
-					"change-state-dodge",
-					"change-animation-shot-anim",
-				]
+				"no-buttons": "change-animation-shot-anim",
 			},
 			
 			"events": [
@@ -90,11 +87,6 @@
 			"input": {
 				"input-left": "PT_SpriteMoveLeft",
 				"input-right": "PT_SpriteMoveRight",
-				
-				"shot-button": [
-					"change-animation-idle-anim",
-					"change-state-action",
-				],
 			},
 		}
 	]

@@ -12,6 +12,7 @@ endif()
 file(GLOB project_src 
 	"source/src/behavior/*.c"
 	"source/src/input/*.c"
+	"source/src/level/*.c"
 	"source/src/misc/*.c"
 	"source/src/parse/*.c"
 	"source/src/screen/*.c"
@@ -27,6 +28,7 @@ include_directories(
 	"/usr/include/SDL2" # Here you put the path to SDL2/image/mixer include files.  
 	"source/include/behavior"
 	"source/include/input"
+	"source/include/level"
 	"source/include/misc"
 	"source/include/parse"
 	"source/include/screen"

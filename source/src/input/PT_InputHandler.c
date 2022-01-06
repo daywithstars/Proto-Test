@@ -1,5 +1,5 @@
 /*
-Copyright 2021 daywithstars
+Copyright 2022 daywithstars
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -131,6 +131,15 @@ SDL_bool PT_InputHandlerGetButtonState( PT_InputHandler* _this, const char* mapN
 			return PT_InputManagerMouseGetButtonHold(
 				PT_MouseGetButtonByString( (char*)(&node->values[0]->utf8_string[6]) )
 			);
+		}
+	}
+	//no buttons pressed 
+	else if ( node->values[0]->utf8_string[4] == 'n' && node->values[0]->utf8_string[5] == 'o'
+		&& node->values[0]->utf8_string[6] == 'n' && node->values[0]->utf8_string[7] == 'e' )
+	{
+		if ( inputType == PT_INPUT_HANDLER_INPUT_TYPE_KEYBOARD )
+		{
+			return !PT_InputManagerKeyboardGetKeyEvent();
 		}
 	}
 	

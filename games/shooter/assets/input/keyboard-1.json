@@ -11,5 +11,6 @@
 		{ "input-up": "kyd-h-up" },
 		{ "input-down": "kyd-h-down" },
 		{ "shot-button": "kyd-p-space" }, 
+		{ "no-buttons": "kyd-none" },
 	]
 }

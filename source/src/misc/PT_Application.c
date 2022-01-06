@@ -23,6 +23,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_SoundManager.h>
 #include <PT_Parse.h>
 #include <PT_InputManager.h>
+#include <PT_LevelManager.h>
 
 
 
@@ -185,6 +186,11 @@ SDL_bool PT_ApplicationCreate( ) {
 	
 	PT_SoundManagerPlayMusic("SS2-intro", 2);
 	
+	if ( !PT_LevelManagerCreate() )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_Application: Cannot create PT_LevelManager!\n");
+	}
+	
 	SDL_Log("PT: PT_ApplicationCreate: Game: \"%s\", successful initialized\n", 
 	(char*)ptApplication->gameName->utf8_string);
 	
@@ -199,6 +205,7 @@ void PT_ApplicationDestroy( ) {
 	{
 		PT_ScreenManagerDestroy();
 		PT_SoundManagerDestroy();
+		PT_LevelManagerDestroy();
 		
 		//To present sounds threads lose information before using it. 
 		while ( !ptApplication->canExit ) { }

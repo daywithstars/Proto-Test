@@ -1,5 +1,16 @@
-# INPUT
+# Input - List of keys
 
+These values are used into: input-template.buttons-map.element.**&lt;value&gt;**, Three elements are required in order to build the **value**, the first is the type of input, that can be: kyd for keyboard, mse for mouse. The second is the state from that input, that can be: h for holding keys, p for pressing keys, r for released keys. The third one is the key that can be one of from the list. 
+
+Example: for keyboard hold space = "kyd-h-space"
+
+Special values, those values have different notation:
+
+- "kyd-none" means no keys from keyboard are pressed. 
+
+**Key List:**
+
+- 
 
 
 
