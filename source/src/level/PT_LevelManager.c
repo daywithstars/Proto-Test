@@ -16,17 +16,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_LevelManager.h>
 #include <PT_LevelList.h>
 #include <PT_Parse.h>
+#include <PT_JsonList.h>
 
 
 typedef struct {
 	PT_LevelList* levelList;
+	PT_JsonList* jsonList;
+	
+	PT_Level* level;
+	
 }PT_LevelManager;
 
 static PT_LevelManager* ptLevelManager = NULL;
-
-//===================================== PRIVATE Functions
-
-SDL_bool PT_LevelManagerParse( );
 
 
 //===================================== PUBLIC Functions
@@ -45,12 +46,6 @@ SDL_bool PT_LevelManagerCreate( ) {
 	}	
 	SDL_memset(ptLevelManager, 0, sizeof(PT_LevelManager));
 	
-	if ( !PT_LevelManagerParse() )
-	{
-		PT_LevelManagerDestroy();
-		return SDL_FALSE;
-	}
-	
 	return SDL_TRUE;
 }//PT_LevelManagerCreate
 void PT_LevelManagerDestroy( ) {
@@ -60,37 +55,128 @@ void PT_LevelManagerDestroy( ) {
 	}
 	
 	PT_LevelListDestroy(ptLevelManager->levelList);
+	PT_JsonListDestroy(ptLevelManager->jsonList);
+	
+	PT_LevelDestroy(ptLevelManager->level);
 	
 	free(ptLevelManager);
 	ptLevelManager = NULL;
 }//PT_LevelManagerDestroy
 
-//===================================== PRIVATE Functions
-
-SDL_bool PT_LevelManagerParse( ) {
+SDL_bool PT_LevelManagerSetup() {
 	if ( !ptLevelManager )
 	{
 		return SDL_FALSE;
 	}
 	
+	PT_JsonListDestroy(ptLevelManager->jsonList);
+	
 	PT_Parse* parse = PT_ParseCreate();
 	if ( !parse )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerParse: Not enough memory\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup: Not enough memory\n");
 		return SDL_FALSE;
 	}
 	
 	if ( !PT_ParseOpenFile(parse, "assets/level/level-list.json", SDL_TRUE) )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerParse!\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup!\n");
 		PT_ParseDestroy(parse);
 		return SDL_FALSE;
+	}
+	
+	const json_value* jsonValue = PT_ParseGetJsonValuePointer(parse);
+	
+	for ( unsigned int i = 0; i < jsonValue->u.object.length; i++ )
+	{
+		json_char* levelName = jsonValue->u.object.values[i].name;
+		json_char* levelFileName = jsonValue->u.object.values[i].value->u.string.ptr;
+		
+		PT_String* jsonLevelPath = PT_StringCreate();
+		if ( !jsonLevelPath )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup: Not enough memory\n");
+			break;
+		}
+		
+		if ( !PT_StringInsert(&jsonLevelPath, ".json", 0) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup!\n");
+			PT_StringDestroy(jsonLevelPath);
+			continue;
+		}
+		if ( !PT_StringInsert(&jsonLevelPath, levelFileName, 0) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup!\n");
+			PT_StringDestroy(jsonLevelPath);
+			continue;
+		}
+		if ( !PT_StringInsert(&jsonLevelPath, "assets/level/", 0) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup!\n");
+			PT_StringDestroy(jsonLevelPath);
+			continue;
+		}
+		
+		
+		json_value* value = PT_ParseGetJsonValueFromFile((char*)jsonLevelPath->utf8_string, SDL_TRUE);
+		if ( !value )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup!\n");
+			PT_StringDestroy(jsonLevelPath);
+			continue;
+		}
+		
+		ptLevelManager->jsonList = PT_JsonListAdd(ptLevelManager->jsonList, levelName, value);
+		
+		PT_StringDestroy(jsonLevelPath);
 	}
 	
 	PT_ParseDestroy(parse);
 	
 	return SDL_TRUE;
-}//PT_LevelManagerParse
+}//PT_LevelManagerSetup
+
+SDL_bool PT_LevelManagerLoadLevel( const char* utf8_levelName ) {
+	if ( !ptLevelManager )
+	{
+		return SDL_FALSE;
+	}
+	
+	PT_JsonList* node = PT_JsonListGet(ptLevelManager->jsonList, utf8_levelName);
+	if ( !node )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_LevelManagerLoadLevel: Cannot find level: %s\n", utf8_levelName);
+		return SDL_FALSE;
+	}
+	
+	PT_LevelDestroy(ptLevelManager->level);
+	ptLevelManager->level = NULL;
+	
+	ptLevelManager->level = PT_LevelCreate(node->value);
+	if ( !ptLevelManager->level )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+		"PT: PT_LevelManagerLoadLevel\n");
+		return SDL_FALSE;
+	}
+	
+	return SDL_TRUE;
+}//PT_LevelManagerLoadLevel
+
+void PT_LevelManagerUpdate( Sint32 elapsedTime ) {
+	if ( ptLevelManager->level )
+	{
+		PT_LevelUpdate(ptLevelManager->level, elapsedTime);
+	}
+}
+void PT_LevelManagerDraw( ) {
+	if ( ptLevelManager->level )
+	{
+		PT_LevelDraw(ptLevelManager->level);
+	}
+}
 
 
 

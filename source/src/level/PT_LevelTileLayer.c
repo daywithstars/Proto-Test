@@ -9,43 +9,71 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-#ifndef _PT_LEVEL_H_
-#define _PT_LEVEL_H_
-
-
-#include <json.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <malloc.h>
 
 #include <SDL_stdinc.h>
+
 #include <PT_LevelTileLayer.h>
 
 
+//===================================== PRIVATE Functions
 
-typedef enum { 
-	PT_LEVEL_ORIENTATION_NONE,
-	PT_LEVEL_ORIENTATION_ORTHOGONAL
-} PT_LevelOrientations;
+SDL_bool PT_LevelTileLayerParse( PT_LevelTileLayer* _this, json_value* jsonValue );
 
-typedef struct pt_level {
-	PT_LevelOrientations orientation;
-	Uint32 width;
-	Uint32 height;
-	Uint16 tilewidth;
-	Uint16 tileheight;
+
+//===================================== PUBLIC Functions
+
+
+PT_LevelTileLayer* PT_LevelTileLayerCreate( json_value* jsonValue ) {
+
+	PT_LevelTileLayer* _this = (PT_LevelTileLayer*)malloc(sizeof(PT_LevelTileLayer));
+	if ( !_this )
+	{
+		return NULL;
+	}
+	SDL_memset(_this, 0, sizeof(PT_LevelTileLayer));
 	
-	unsigned int numTileLayers;
-	PT_LevelTileLayer** tileLayers;
-}PT_Level;
+	if ( !PT_LevelTileLayerParse(_this, jsonValue) )
+	{
+		free(_this);
+		return NULL;
+	}
+	
+	return _this;
+}
+void PT_LevelTileLayerDestroy( PT_LevelTileLayer* _this ) {
+	if ( !_this )
+	{
+		return;
+	}
+	
+	
+	free(_this);
+}
+
+void PT_LevelTileLayerUpdate( PT_LevelTileLayer* _this, Sint32 elapsedTime ) {
+	
+}
+void PT_LevelTileLayerDraw( PT_LevelTileLayer* _this ) {
+}
+
+//===================================== PRIVATE Functions
+
+SDL_bool PT_LevelTileLayerParse( PT_LevelTileLayer* _this, json_value* jsonValue ) {
+	if ( !_this )
+	{
+		return SDL_FALSE;
+	}
+	
+	
+	
+	return SDL_TRUE;
+}//PT_LevelTileLayerParse
 
 
 
-PT_Level* PT_LevelCreate( json_value* jsonValue );
-void PT_LevelDestroy( PT_Level* _this );
-
-void PT_LevelUpdate( PT_Level* _this, Sint32 elapsedTime );
-void PT_LevelDraw( PT_Level* _this );
-
-
-#endif /* _PT_LEVEL_H_ */
 
 
 

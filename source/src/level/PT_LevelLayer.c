@@ -9,24 +9,38 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-#ifndef _PT_LEVELMANAGER_H_
-#define _PT_LEVELMANAGER_H_
+#include <stdio.h>
+#include <stdlib.h>
+#include <malloc.h>
 
-#include <SDL_stdinc.h>
-
-
-SDL_bool PT_LevelManagerCreate( );
-void PT_LevelManagerDestroy( );
-
-SDL_bool PT_LevelManagerSetup();
-
-SDL_bool PT_LevelManagerLoadLevel( const char* utf8_levelName );
-
-void PT_LevelManagerUpdate( Sint32 elapsedTime );
-void PT_LevelManagerDraw( );
+#include <PT_LevelLayer.h>
 
 
-#endif /* _PT_LEVELMANAGER_H_ */
+//===================================== PRIVATE Functions
+
+SDL_bool PT_LevelLayerParse( PT_LevelLayer* _this, json_value* jsonValue );
+
+//===================================== PUBLIC Functions
+
+PT_LevelLayer* PT_LevelLayerCreate( void* layerData, 
+	SDL_bool (*layerParse)(PT_LevelLayer* layer, void* layerData, json_value* jsonValue) ) {
+	
+	PT_LevelLayer* _this = NULL;
+	
+	return _this;
+}
+void PT_LevelLayerDestroy(PT_LevelLayer* _this);
+
+
+void PT_LevelLayerAddUpdateCallback( PT_LevelLayer* _this, 
+	void (*callback)(void* layerData, Sint32 elapsedTime) );
+void PT_LevelLayerAddDrawCallback( PT_LevelLayer* _this, void (*callback)(void* layerData) );
+void PT_LevelLayerAddDestroyCallback( PT_LevelLayer* _this, void (*callback)(void* layerData) );
+
+void PT_LevelLayerUpdate(PT_LevelLayer* _this, Sint32 elapsedTime);
+void PT_LevelLayerDraw(PT_LevelLayer* _this);
+
+
 
 
 

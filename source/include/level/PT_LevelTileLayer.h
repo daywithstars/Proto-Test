@@ -9,24 +9,27 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-#ifndef _PT_LEVELMANAGER_H_
-#define _PT_LEVELMANAGER_H_
+#ifndef _PT_LEVELTILELAYER_H_
+#define _PT_LEVELTILELAYER_H_
 
-#include <SDL_stdinc.h>
+#include <json.h>
 
+#include <PT_String.h>
 
-SDL_bool PT_LevelManagerCreate( );
-void PT_LevelManagerDestroy( );
-
-SDL_bool PT_LevelManagerSetup();
-
-SDL_bool PT_LevelManagerLoadLevel( const char* utf8_levelName );
-
-void PT_LevelManagerUpdate( Sint32 elapsedTime );
-void PT_LevelManagerDraw( );
+typedef struct pt_level_tile_layer {
+	Uint32 width;
+	Uint32 height;
+	Uint32* data;
+}PT_LevelTileLayer;
 
 
-#endif /* _PT_LEVELMANAGER_H_ */
+PT_LevelTileLayer* PT_LevelTileLayerCreate( json_value* jsonValue );
+void PT_LevelTileLayerDestroy( PT_LevelTileLayer* _this );
+
+void PT_LevelTileLayerUpdate( PT_LevelTileLayer* _this, Sint32 elapsedTime );
+void PT_LevelTileLayerDraw( PT_LevelTileLayer* _this );
+
+#endif /* _PT_LEVELTILELAYER_H_ */
 
 
 

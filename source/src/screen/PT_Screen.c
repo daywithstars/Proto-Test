@@ -17,7 +17,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <PT_Screen.h>
 #include <PT_ScreenManager.h>
-#include <PT_SoundManager.h>
+#include <PT_LevelManager.h>
 #include <PT_String.h>
 #include <PT_Parse.h>
 #include <PT_Graphics.h>
@@ -160,6 +160,23 @@ PT_Screen* PT_ScreenCreate( json_value* jsonValue ) {
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenCreate: Cannot load sprites\n");
 	}
 	
+	if ( !PT_LevelManagerCreate() )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenCreate: Cannot create PT_LevelManager!\n");
+	}
+	else {
+		if ( !PT_LevelManagerSetup() )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+			"PT: PT_ScreenCreate: Cannot create PT_LevelManager!\n");
+			PT_LevelManagerDestroy();
+		}
+	}
+	if ( !PT_LevelManagerLoadLevel("Intro Stage") )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenCreate!\n");
+	}
+	
 	SDL_Log("===== PT: PT_ScreenCreate =====\n");
 	SDL_Log("* Screen: %s: created\n", (char*)_this->name->utf8_string);
 	SDL_Log("* --File: %s\n", (char*)_this->fileName->utf8_string);
@@ -195,22 +212,22 @@ void PT_ScreenDestroy( PT_Screen* _this ) {
 		free(_this->sprites);
 	}
 	
+	PT_LevelManagerDestroy();
+	
 	free(_this);
 }//PT_ScreenDestroy
 
 void PT_ScreenUpdate( PT_Screen* _this, Sint32 elapsedTime ) {
+	PT_LevelManagerUpdate(elapsedTime);
 	
 	for ( unsigned int i = 0; i < _this->numSprites; i++ )
 	{
 		PT_SpriteUpdate(_this->sprites[i], elapsedTime);
 	}
-	if ( PT_InputManagerKeyboardGetKeyDown(SDL_SCANCODE_S) )
-	{
-		PT_SoundManagerPlaySample("jump", 0);
-	}
 }//PT_ScreenUpdate
 
 void PT_ScreenDraw( PT_Screen* _this ) {
+	PT_LevelManagerDraw();
 	
 	for ( unsigned int i = 0; i < _this->numSprites; i++ )
 	{

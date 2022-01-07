@@ -9,43 +9,52 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-#ifndef _PT_LEVEL_H_
-#define _PT_LEVEL_H_
+#ifndef _PT_LEVELLAYER_H_
+#define _PT_LEVELLAYER_H_
 
+#include <SDL_stdinc.h>
 
 #include <json.h>
 
-#include <SDL_stdinc.h>
-#include <PT_LevelTileLayer.h>
+#include <PT_String.h>
 
 
+typedef enum {
+	PT_LEVEL_LAYER_TYPE_TILE,
+	PT_LEVEL_LAYER_TYPE_OBJECT
+}PT_LevelLayerType;
 
-typedef enum { 
-	PT_LEVEL_ORIENTATION_NONE,
-	PT_LEVEL_ORIENTATION_ORTHOGONAL
-} PT_LevelOrientations;
 
-typedef struct pt_level {
-	PT_LevelOrientations orientation;
-	Uint32 width;
-	Uint32 height;
-	Uint16 tilewidth;
-	Uint16 tileheight;
+typedef struct pt_level_layer {
+	int id;
+	SDL_bool visible;
+	PT_LevelLayerType type;
+	PT_String* name;
 	
-	unsigned int numTileLayers;
-	PT_LevelTileLayer** tileLayers;
-}PT_Level;
+	void* layerData;
+	void (*update)(void* layerData, Sint32 elapsedTime);
+	void (*draw)(void* layerData);
+	void (*destroy)(void* layerData);
+}PT_LevelLayer;
+
+
+PT_LevelLayer* PT_LevelLayerCreate( void* layerData, 
+	SDL_bool (*layerParse)(PT_LevelLayer* layer, void* layerData, json_value* jsonValue) );
+void PT_LevelLayerDestroy(PT_LevelLayer* _this);
+
+
+void PT_LevelLayerAddUpdateCallback( PT_LevelLayer* _this, 
+	void (*callback)(void* layerData, Sint32 elapsedTime) );
+void PT_LevelLayerAddDrawCallback( PT_LevelLayer* _this, void (*callback)(void* layerData) );
+void PT_LevelLayerAddDestroyCallback( PT_LevelLayer* _this, void (*callback)(void* layerData) );
+
+void PT_LevelLayerUpdate(PT_LevelLayer* _this, Sint32 elapsedTime);
+void PT_LevelLayerDraw(PT_LevelLayer* _this);
 
 
 
-PT_Level* PT_LevelCreate( json_value* jsonValue );
-void PT_LevelDestroy( PT_Level* _this );
+#endif /* _PT_LEVELLAYER_H_ */
 
-void PT_LevelUpdate( PT_Level* _this, Sint32 elapsedTime );
-void PT_LevelDraw( PT_Level* _this );
-
-
-#endif /* _PT_LEVEL_H_ */
 
 
 

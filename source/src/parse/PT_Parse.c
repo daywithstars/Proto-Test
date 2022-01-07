@@ -1,5 +1,5 @@
 /*
-Copyright 2021 daywithstars
+Copyright 2022 daywithstars
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -208,7 +208,7 @@ json_value* PT_ParseGetJsonValueFromFile( const char* utf8_filePath, SDL_bool de
 	}
 	
 	Sint64 jsonStringSize = SDL_RWsize(file);
-	json_char* jsonStr = (json_char*)malloc(jsonStringSize);
+	json_char* jsonStr = (json_char*)malloc(jsonStringSize + 1);
 	
 	if ( !jsonStr )
 	{
@@ -219,7 +219,7 @@ json_value* PT_ParseGetJsonValueFromFile( const char* utf8_filePath, SDL_bool de
 	}
 	
 	SDL_RWread(file, jsonStr, sizeof(json_char), SDL_RWsize(file));
-	jsonStr[jsonStringSize - 1] = '\0';
+	jsonStr[jsonStringSize] = '\0';
 	
 	json_value* jsonValue = json_parse(
 		jsonStr,
