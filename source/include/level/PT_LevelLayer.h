@@ -38,8 +38,8 @@ typedef struct pt_level_layer {
 }PT_LevelLayer;
 
 
-PT_LevelLayer* PT_LevelLayerCreate( void* layerData, 
-	SDL_bool (*layerParse)(PT_LevelLayer* layer, void* layerData, json_value* jsonValue) );
+PT_LevelLayer* PT_LevelLayerCreate( void* layerData, json_value* jsonValue,
+	SDL_bool (*layerParse)(void* layerData, json_value* jsonValue) );
 void PT_LevelLayerDestroy(PT_LevelLayer* _this);
 
 

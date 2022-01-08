@@ -16,7 +16,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <json.h>
 
 #include <SDL_stdinc.h>
-#include <PT_LevelTileLayer.h>
+#include <PT_LevelLayer.h>
 
 
 
@@ -32,8 +32,8 @@ typedef struct pt_level {
 	Uint16 tilewidth;
 	Uint16 tileheight;
 	
-	unsigned int numTileLayers;
-	PT_LevelTileLayer** tileLayers;
+	unsigned int numLayers;
+	PT_LevelLayer** layers;
 }PT_Level;
 
 

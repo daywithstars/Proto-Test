@@ -18,6 +18,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Level.h>
 #include <PT_Parse.h>
 #include <PT_String.h>
+#include <PT_LevelTileLayer.h>
 
 
 
@@ -52,13 +53,13 @@ void PT_LevelDestroy( PT_Level* _this ) {
 		return;
 	}
 	
-	if ( _this->tileLayers )
+	if ( _this->layers )
 	{
-		for ( unsigned int i = 0; i < _this->numTileLayers; i++ )
+		for ( unsigned int i = 0; i < _this->numLayers; i++ )
 		{
-			PT_LevelTileLayerDestroy(_this->tileLayers[i]);
+			PT_LevelLayerDestroy(_this->layers[i]);
 		}
-		free(_this->tileLayers);
+		free(_this->layers);
 	}
 	
 	
@@ -66,15 +67,15 @@ void PT_LevelDestroy( PT_Level* _this ) {
 }
 
 void PT_LevelUpdate( PT_Level* _this, Sint32 elapsedTime ) {
-	for ( unsigned int i = 0; i < _this->numTileLayers; i++ )
+	for ( unsigned int i = 0; i < _this->numLayers; i++ )
 	{
-		PT_LevelTileLayerUpdate(_this->tileLayers[i], elapsedTime);
+		PT_LevelLayerUpdate(_this->layers[i], elapsedTime);
 	}
 }
 void PT_LevelDraw( PT_Level* _this ) {
-	for ( unsigned int i = 0; i < _this->numTileLayers; i++ )
+	for ( unsigned int i = 0; i < _this->numLayers; i++ )
 	{
-		PT_LevelTileLayerDraw(_this->tileLayers[i]);
+		PT_LevelLayerDraw(_this->layers[i]);
 	}
 } 
 
@@ -84,6 +85,12 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 	
 	//Property: map.orientation 
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "orientation");
+	if ( !entry.name )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
+		return SDL_FALSE;
+	}
+	
 	if ( PT_StringMatchFast(entry.value->u.string.ptr, "orthogonal") )
 	{
 		_this->orientation = PT_LEVEL_ORIENTATION_ORTHOGONAL;
@@ -94,48 +101,74 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 	
 	//Property: map.width 
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "width");
+	if ( !entry.name )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
+		return SDL_FALSE;
+	}
 	_this->width = entry.value->u.integer;
 	
 	//Property: map.height
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "height");
+	if ( !entry.name )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
+		return SDL_FALSE;
+	}
 	_this->height = entry.value->u.integer;
 	
 	//Property: map.tilewidth
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "tilewidth");
+	if ( !entry.name )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
+		return SDL_FALSE;
+	}
 	_this->tilewidth = entry.value->u.integer;
 	
 	//Property: map.tileheight
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "tileheight");
+	if ( !entry.name )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
+		return SDL_FALSE;
+	}
 	_this->tileheight = entry.value->u.integer;
 	
-	//Property layers
-	//tiles layer
+	//Property: map.layers
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "layers");
+	if ( !entry.name )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
+		return SDL_FALSE;
+	}
 	
-	const unsigned int numTileLayers = entry.value->u.array.length;
-	_this->tileLayers = (PT_LevelTileLayer**)malloc(sizeof(PT_LevelTileLayer*));
-	if ( !_this->tileLayers )
+	const unsigned int numLayers = entry.value->u.array.length;
+	_this->layers = (PT_LevelLayer**)malloc(sizeof(PT_LevelLayer*));
+	if ( !_this->layers )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse: Not enough memory\n");
 		return SDL_FALSE;
 	}
-	_this->numTileLayers = numTileLayers;
+	_this->numLayers = numLayers;
 	
-	for ( unsigned int i = 0; i < numTileLayers; i++ )
+	for ( unsigned int i = 0; i < numLayers; i++ )
 	{		
+		//Property: map.layers[i].type
 		json_object_entry entry2 = PT_ParseGetObjectEntry_json_value(
 			entry.value->u.array.values[i], "type"
 		);
 		
 		if ( !entry2.name )
 		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
 			return SDL_FALSE;
 		}
 		
 		if ( PT_StringMatchFast(entry2.value->u.string.ptr, "tilelayer"))
 		{
-			_this->tileLayers[i] = PT_LevelTileLayerCreate(entry.value->u.array.values[i]);
-			if ( !_this->tileLayers[i] )
+			_this->layers[i] = PT_LevelTileLayerCreate(entry.value->u.array.values[i]);
+			if ( !_this->layers[i] )
 			{
 				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
 				return SDL_FALSE;

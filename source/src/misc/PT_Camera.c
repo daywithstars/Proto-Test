@@ -9,33 +9,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-#ifndef _PT_LEVELTILELAYER_H_
-#define _PT_LEVELTILELAYER_H_
-
-#include <json.h>
-
-#include <PT_String.h>
-#include <PT_LevelLayer.h>
+#include <PT_Camera.h>
 
 
-typedef struct pt_level_tile_layer {
-	PT_LevelLayer* pLayer;
 
-	Uint32 width;
-	Uint32 height;
-	
-	Uint32 dataLength;
-	Uint32* data;
-}PT_LevelTileLayer;
+typedef struct pt_camera {
+	int tmp;
+}PT_Camera;
+
+static PT_Camera* ptCamera = NULL;
 
 
-PT_LevelLayer* PT_LevelTileLayerCreate( json_value* jsonValue );
-void PT_LevelTileLayerDestroy( void* layerData );
 
-void PT_LevelTileLayerUpdate( void* layerData, Sint32 elapsedTime );
-void PT_LevelTileLayerDraw( void* layerData );
-
-#endif /* _PT_LEVELTILELAYER_H_ */
-
+SDL_bool PT_CameraCreate();
+void PT_CameraDestroy();
 
 
