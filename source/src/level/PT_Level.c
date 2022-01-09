@@ -144,7 +144,7 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 	}
 	
 	const unsigned int numLayers = entry.value->u.array.length;
-	_this->layers = (PT_LevelLayer**)malloc(sizeof(PT_LevelLayer*));
+	_this->layers = (PT_LevelLayer**)malloc(sizeof(PT_LevelLayer*) * numLayers);
 	if ( !_this->layers )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse: Not enough memory\n");

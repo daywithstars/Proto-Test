@@ -63,14 +63,9 @@ void PT_BehaviorStateDestroy( PT_BehaviorState* _this ) {
 	PT_StringListDestroy(_this->inputSimpleCallbacks);
 	PT_StringListDestroy(_this->inputChangeStateList);
 	PT_StringListDestroy(_this->inputChangeAnimationList);
-	if ( _this->always )
-	{
-		for ( unsigned int i = 0; i < _this->alwaysNum; i++ )
-		{
-			free(_this->always[i]);
-		}
-		free(_this->always);
-	}
+	
+	PT_StringListDestroy(_this->always);
+	
 	if ( _this->events )
 	{
 		for ( unsigned int i = 0; i < _this->eventsNum; i++ )
@@ -232,7 +227,7 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 			const unsigned int arrayLength = entry.value->u.array.length;
 			_this->eventsNum = arrayLength;
 			
-			_this->events = (PT_BehaviorStateEvent**)malloc(sizeof(PT_BehaviorStateEvent*));
+			_this->events = (PT_BehaviorStateEvent**)malloc(sizeof(PT_BehaviorStateEvent*) * arrayLength);
 			if ( !_this->events )
 			{
 				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
@@ -262,20 +257,12 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 	
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "always");
 	if ( entry.name )
-	{
-		_this->alwaysNum = entry.value->u.array.length;
-		_this->always = (char**)malloc(_this->alwaysNum);
-		if ( !_this->always )
-		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateParse: Not enough memory\n");
-		}
-		else {
-		
-			for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
-			{	
-				_this->always[i] = (char*)malloc(entry.value->u.array.values[i]->u.string.length);
-				strcpy(_this->always[i], entry.value->u.array.values[i]->u.string.ptr);
-			}
+	{	
+		for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
+		{	
+			PT_String* value = PT_StringCreate();
+			PT_StringInsert(&value, entry.value->u.array.values[i]->u.string.ptr, 0);
+			_this->always = PT_StringListCat(_this->always, "always", value);
 		}
 	}
 	
@@ -463,18 +450,24 @@ void PT_BehaviorStateUpdateAlways( PT_BehaviorState* _this, void* target ) {
 		return;
 	}
 
-	for ( unsigned int i = 0; i < _this->alwaysNum; i++ )
+	PT_StringList* pList = _this->always;
+	while ( pList )
 	{
 		//use the callback
-		PT_CallbackList* node = PT_CallbackListGet(
-		((PT_Behavior*)_this->pBehavior)->callbackList, _this->always[i]);
-		if ( node )
+		for ( unsigned int i = 0; i < pList->numValues; i++ )
 		{
-			if ( node->simpleCallback )
+			PT_CallbackList* node = PT_CallbackListGet(
+			((PT_Behavior*)_this->pBehavior)->callbackList, (char*)pList->values[i]->utf8_string);
+			if ( node )
 			{
-				node->simpleCallback(target);
+				if ( node->simpleCallback )
+				{
+					node->simpleCallback(target);
+				}
 			}
 		}
+		
+		pList = pList->next;
 	}
 }//PT_BehaviorStateUpdateAlways
 

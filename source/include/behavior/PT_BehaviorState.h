@@ -31,8 +31,7 @@ typedef struct pt_behavior_state {
 	unsigned int eventsNum;
 	PT_BehaviorStateEvent** events;
 	
-	unsigned int alwaysNum;
-	char** always;
+	PT_StringList* always;
 }PT_BehaviorState;
 
 
