@@ -18,6 +18,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <PT_LevelTileLayer.h>
 #include <PT_Parse.h>
+#include <PT_Camera.h>
 
 
 //===================================== PRIVATE Functions
@@ -28,7 +29,7 @@ SDL_bool PT_LevelTileLayerParse( void* layerData, json_value* jsonValue );
 //===================================== PUBLIC Functions
 
 
-PT_LevelLayer* PT_LevelTileLayerCreate( json_value* jsonValue ) {
+PT_LevelLayer* PT_LevelTileLayerCreate( json_value* jsonValue, Uint16 tilewidth, Uint16 tileheight ) {
 
 	PT_LevelTileLayer* _this = (PT_LevelTileLayer*)malloc(sizeof(PT_LevelTileLayer));
 	if ( !_this )
@@ -43,6 +44,9 @@ PT_LevelLayer* PT_LevelTileLayerCreate( json_value* jsonValue ) {
 		PT_LevelTileLayerDestroy(_this);
 		return NULL;
 	}
+	
+	_this->tilewidth = tilewidth;
+	_this->tileheight = tileheight;
 	
 	PT_LevelLayerAddUpdateCallback(_this->pLayer, PT_LevelTileLayerUpdate);
 	PT_LevelLayerAddDrawCallback(_this->pLayer, PT_LevelTileLayerDraw);
@@ -62,6 +66,10 @@ void PT_LevelTileLayerDestroy( void* layerData ) {
 	
 	if ( _this->data )
 	{
+		for ( Uint32 i = 0; i < _this->height; i++ )
+		{
+			free(_this->data[i]);
+		}
 		free(_this->data);
 	}
 	
@@ -74,17 +82,33 @@ void PT_LevelTileLayerUpdate( void* layerData, Sint32 elapsedTime ) {
 }
 void PT_LevelTileLayerDraw( void* layerData ) {
 	PT_LevelTileLayer* _this = (PT_LevelTileLayer*)layerData;
+
+	Uint32 startColumn = 0;
+	Uint32 startRow = 0;
+	Uint32 maxColumn = 0;
+	Uint32 maxRow = 0;
 	
-	Uint32 newLine = _this->width;
+	PT_CameraGetRenderDistance(&startColumn, &startRow, &maxColumn, &maxRow, _this->tilewidth);
+	
+	if ( _this->tilewidth * _this->width <= PT_CameraGetWidth() )
+	{
+		startColumn = 0;
+		maxColumn = (_this->tilewidth * _this->width) / _this->tilewidth;
+	}
+	if ( _this->tileheight * _this->height <= PT_CameraGetHeight() )
+	{
+		startRow = 0;
+		maxRow = (_this->tileheight * _this->height) / _this->tileheight;
+	}
+		
 	printf("\n\n");
-	for ( Uint32 i = 0; i < _this->dataLength; i++ )
+	for ( Uint32 i = startRow; i < maxRow; i++ )
 	{	
-		if ( i == newLine )
+		for ( Uint32 j = startColumn; j < maxColumn; j++ )
 		{
-			printf("\n");
-			newLine += _this->width;
+			printf(" %d ", _this->data[i][j]);
 		}
-		printf(" %d ", _this->data[i]);
+		printf("\n");
 	}
 	printf("\n\n");
 }
@@ -129,18 +153,29 @@ SDL_bool PT_LevelTileLayerParse( void* layerData, json_value* jsonValue ) {
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTileLayerParse!\n");
 		return SDL_FALSE;
 	}
-	_this->dataLength = entry.value->u.array.length;
 	
-	_this->data = (Uint32*)malloc(sizeof(Uint32) * _this->dataLength);
+	_this->data = (Uint32**)malloc(sizeof(Uint32*) * _this->height);
 	if ( !_this->data )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTileLayerParse: Not enough memory\n");
 		return SDL_FALSE;
 	}
 	
-	for ( Uint32 i = 0; i < _this->dataLength; i++ )
+	Uint32 k = 0;
+	for ( Uint32 i = 0; i < _this->height; i++ )
 	{
-		_this->data[i] = entry.value->u.array.values[i]->u.integer;
+		_this->data[i] = (Uint32*)malloc(sizeof(Uint32) * _this->width);
+		if ( !_this->data[i] )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTileLayerParse: Not enough memory\n");
+			return SDL_FALSE;
+		}
+		
+		for ( Uint32 j = 0; j < _this->width; j++ )
+		{
+			_this->data[i][j] = entry.value->u.array.values[k]->u.integer;
+			k++;
+		}
 	}
 
 	return SDL_TRUE;

@@ -18,6 +18,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 SDL_bool PT_CameraCreate();
 void PT_CameraDestroy();
 
+Uint16 PT_CameraGetWidth();
+Uint16 PT_CameraGetHeight();
+
+void PT_CameraSetPosition( Sint32 x, Sint32 y );
+
+void PT_CameraGetRenderDistance( Uint32* startColumn, Uint32* startRow, Uint32* maxColumn, Uint32* maxRow,
+	Uint16 tileSize );
+
 #endif /* _PT_CAMERA_H_ */
 
 

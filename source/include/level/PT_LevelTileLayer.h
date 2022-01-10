@@ -23,13 +23,14 @@ typedef struct pt_level_tile_layer {
 
 	Uint32 width;
 	Uint32 height;
+	Uint16 tilewidth;
+	Uint16 tileheight;
 	
-	Uint32 dataLength;
-	Uint32* data;
+	Uint32** data;
 }PT_LevelTileLayer;
 
 
-PT_LevelLayer* PT_LevelTileLayerCreate( json_value* jsonValue );
+PT_LevelLayer* PT_LevelTileLayerCreate( json_value* jsonValue, Uint16 tilewidth, Uint16 tileheight );
 void PT_LevelTileLayerDestroy( void* layerData );
 
 void PT_LevelTileLayerUpdate( void* layerData, Sint32 elapsedTime );

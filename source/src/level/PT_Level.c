@@ -167,7 +167,8 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 		
 		if ( PT_StringMatchFast(entry2.value->u.string.ptr, "tilelayer"))
 		{
-			_this->layers[i] = PT_LevelTileLayerCreate(entry.value->u.array.values[i]);
+			_this->layers[i] = PT_LevelTileLayerCreate(entry.value->u.array.values[i],
+				_this->tilewidth, _this->tileheight);
 			if ( !_this->layers[i] )
 			{
 				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");

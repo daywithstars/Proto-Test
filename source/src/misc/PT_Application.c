@@ -22,6 +22,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_ScreenManager.h>
 #include <PT_SoundManager.h>
 #include <PT_Parse.h>
+#include <PT_Camera.h>
 
 
 
@@ -170,6 +171,10 @@ SDL_bool PT_ApplicationCreate( ) {
 		return SDL_FALSE;
 	}
 
+	if ( !PT_CameraCreate() )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate: Cannot initilize Camera\n");
+	}
 	PT_ScreenManagerSetup();
 	
 	PT_SoundManagerCreate();
@@ -201,10 +206,10 @@ void PT_ApplicationDestroy( ) {
 		
 		//To present sounds threads lose information before using it. 
 		while ( !ptApplication->canExit ) { }
-		SDL_Delay(100);//Give 100ms to any background processing returns. 
 		
 		PT_GraphicsDestroy();
 		PT_InputManagerDestroy();
+		PT_CameraDestroy();
 		
 		PT_StringDestroy(ptApplication->gameName);
 		PT_StringDestroy(gRootDir);
