@@ -683,32 +683,34 @@ Uint64 PT_StringCountBasicString( const char* utf8_string ) {
 }//PT_StringCountBasicString
 
 Uint64 PT_StringGetOccurrencePosition( const PT_String* _this, const char* utf8_string, 
-	Uint16 numOccurrence ) {
+	Sint32 numOccurrence ) {
 	
 	return PT_StringGetOccurrencePositionBasicString((const char*)_this->utf8_string, utf8_string,
 		numOccurrence);
 }//PT_StringGetOccurrencePosition
 
 Uint64 PT_StringGetOccurrencePositionBasicString ( const char* utf8_string1, const char* utf8_string2, 
-	Uint16 numOccurrence ) {
+	Sint32 numOccurrence ) {
 	
+	Uint64 value = 0;
+
 	if ( numOccurrence == 0 )
 	{
-		return 0;
+		return value;
 	}
 	
 	PT_String* str1 = PT_StringCreate();
 	if ( !PT_StringInsert(&str1, utf8_string1, 0) )
 	{
 		PT_StringDestroy(str1);
-		return 0;
+		return value;
 	}
 	PT_String* str2 = PT_StringCreate();
 	if ( !PT_StringInsert(&str2, utf8_string2, 0) )
 	{
 		PT_StringDestroy(str2);
 		PT_StringDestroy(str1);
-		return 0;
+		return value;
 	}
 
 	
@@ -721,27 +723,33 @@ Uint64 PT_StringGetOccurrencePositionBasicString ( const char* utf8_string1, con
 			
 			if ( compareString_stopWhenSeeNullChar(str2->utf8_string, tmp) )
 			{
-				numOccurrence --;
-				
-				if ( numOccurrence == 0 )
+				if ( numOccurrence > 0 )
 				{
-					Uint64 value = strCount + PT_StringCount(str2);
-					PT_StringDestroy(str1);
-					PT_StringDestroy(str2);
-					return value;
+					numOccurrence --;
+					
+					if ( numOccurrence == 0 )
+					{
+						value = strCount + PT_StringCount(str2);
+						PT_StringDestroy(str1);
+						PT_StringDestroy(str2);
+						return value;
+					}
+				}
+				else {
+					value = strCount + PT_StringCount(str2);
 				}
 			}
 		}
 		
 		if ( get_utf8_char_length(str1->utf8_string[i]) )
 		{
-			strCount += 1;
+			strCount += get_utf8_char_length(str1->utf8_string[i]);
 		}
 	}
 
 	PT_StringDestroy(str1);
 	PT_StringDestroy(str2);
-	return 0;
+	return value;
 }//PT_StringGetOccurrencePositionBasicString
 
 SDL_bool PT_StringCopyFrom( PT_String* _this, const char* utf8_string, Uint64 sourceStart, 

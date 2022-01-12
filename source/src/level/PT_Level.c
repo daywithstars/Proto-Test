@@ -61,6 +61,14 @@ void PT_LevelDestroy( PT_Level* _this ) {
 		}
 		free(_this->layers);
 	}
+	if ( _this->tilesets )
+	{
+		for ( unsigned int i = 0; i < _this->numTilesets; i++ )
+		{
+			PT_LevelTilesetDestroy(&_this->tilesets[i]);
+		}
+		free(_this->tilesets);
+	}
 	
 	
 	free(_this);
@@ -135,6 +143,28 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 	}
 	_this->tileheight = entry.value->u.integer;
 	
+	//Property: map.tilesets
+	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "tilesets");
+	if ( !entry.name )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
+	}
+	else if ( entry.value->u.array.length >= 1 ) {
+	
+		_this->tilesets = (PT_LevelTileset*)malloc(sizeof(PT_LevelTileset) * entry.value->u.array.length);
+		if ( !_this->tilesets )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse: Not enough memory\n");
+			return SDL_FALSE;
+		}
+		_this->numTilesets = entry.value->u.array.length;
+		
+		for ( unsigned int i = 0; i < _this->numTilesets; i++ )
+		{
+			_this->tilesets[i] = PT_LevelTilesetCreate(entry.value->u.array.values[i]);
+		}
+	}
+	
 	//Property: map.layers
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "layers");
 	if ( !entry.name )
@@ -168,7 +198,7 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 		if ( PT_StringMatchFast(entry2.value->u.string.ptr, "tilelayer"))
 		{
 			_this->layers[i] = PT_LevelTileLayerCreate(entry.value->u.array.values[i],
-				_this->tilewidth, _this->tileheight);
+				_this->tilewidth, _this->tileheight, _this->numTilesets, _this->tilesets);
 			if ( !_this->layers[i] )
 			{
 				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");

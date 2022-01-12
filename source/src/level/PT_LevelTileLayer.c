@@ -29,7 +29,8 @@ SDL_bool PT_LevelTileLayerParse( void* layerData, json_value* jsonValue );
 //===================================== PUBLIC Functions
 
 
-PT_LevelLayer* PT_LevelTileLayerCreate( json_value* jsonValue, Uint16 tilewidth, Uint16 tileheight ) {
+PT_LevelLayer* PT_LevelTileLayerCreate( json_value* jsonValue, Uint16 tilewidth, Uint16 tileheight,
+	unsigned int numTilesets, PT_LevelTileset* pTilesets ) {
 
 	PT_LevelTileLayer* _this = (PT_LevelTileLayer*)malloc(sizeof(PT_LevelTileLayer));
 	if ( !_this )
@@ -47,6 +48,9 @@ PT_LevelLayer* PT_LevelTileLayerCreate( json_value* jsonValue, Uint16 tilewidth,
 	
 	_this->tilewidth = tilewidth;
 	_this->tileheight = tileheight;
+	
+	_this->numTilesets = numTilesets;
+	_this->pTilesets = pTilesets;
 	
 	PT_LevelLayerAddUpdateCallback(_this->pLayer, PT_LevelTileLayerUpdate);
 	PT_LevelLayerAddDrawCallback(_this->pLayer, PT_LevelTileLayerDraw);
@@ -100,7 +104,8 @@ void PT_LevelTileLayerDraw( void* layerData ) {
 		startRow = 0;
 		maxRow = (_this->tileheight * _this->height) / _this->tileheight;
 	}
-		
+	
+	
 	printf("\n\n");
 	for ( Uint32 i = startRow; i < maxRow; i++ )
 	{	

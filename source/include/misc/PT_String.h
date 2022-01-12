@@ -157,7 +157,7 @@ Uint64 PT_StringCountBasicString( const char* utf8_string );
 *
 * @param _this The PT_String pointer.
 * @param utf8_string The string pattern to search for. 
-* @param numOccurrence 1 means the first occurrence, 2 the second occurrence. Any given value above 0. 
+* @param numOccurrence 1 means the first occurrence, 2 the second occurrence to n occurrence. A negative number means the last string occurrence.   
 *
 *	case 1 If this value is 0 the function will return 0.
 *
@@ -175,13 +175,13 @@ Uint64 PT_StringCountBasicString( const char* utf8_string );
 * \sa PT_StringPrintLine
 */
 Uint64 PT_StringGetOccurrencePosition( const PT_String* _this, const char* utf8_string, 
-	Uint16 numOccurrence );
+	Sint32 numOccurrence );
 
 /**
 * \brief The same as PT_StringGetOccurrencePosition, but with basic string type. 
 */
 Uint64 PT_StringGetOccurrencePositionBasicString ( const char* utf8_string1, const char* utf8_string2, 
-	Uint16 numOccurrence );
+	Sint32 numOccurrence );
 
 /**
 * \brief Copy utf8_string to PT_String from a certain range. 

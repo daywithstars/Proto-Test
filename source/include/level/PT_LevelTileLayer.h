@@ -16,6 +16,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <PT_String.h>
 #include <PT_LevelLayer.h>
+#include <PT_LevelTileset.h>
 
 
 typedef struct pt_level_tile_layer {
@@ -26,11 +27,14 @@ typedef struct pt_level_tile_layer {
 	Uint16 tilewidth;
 	Uint16 tileheight;
 	
+	unsigned int numTilesets;
+	PT_LevelTileset* pTilesets;
 	Uint32** data;
 }PT_LevelTileLayer;
 
 
-PT_LevelLayer* PT_LevelTileLayerCreate( json_value* jsonValue, Uint16 tilewidth, Uint16 tileheight );
+PT_LevelLayer* PT_LevelTileLayerCreate( json_value* jsonValue, Uint16 tilewidth, Uint16 tileheight,
+	unsigned int numTilesets, PT_LevelTileset* pTilesets );
 void PT_LevelTileLayerDestroy( void* layerData );
 
 void PT_LevelTileLayerUpdate( void* layerData, Sint32 elapsedTime );

@@ -9,47 +9,37 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-#ifndef _PT_LEVEL_H_
-#define _PT_LEVEL_H_
+#ifndef _PT_LEVELTILESET_H_
+#define _PT_LEVELTILESET_H_
 
+#include <SDL_stdinc.h>
 
 #include <json.h>
 
-#include <SDL_stdinc.h>
-#include <PT_LevelLayer.h>
-#include <PT_LevelTileset.h>
+#include <PT_String.h>
 
 
+typedef struct pt_level_tileset {
 
-typedef enum { 
-	PT_LEVEL_ORIENTATION_NONE,
-	PT_LEVEL_ORIENTATION_ORTHOGONAL
-} PT_LevelOrientations;
-
-typedef struct pt_level {
-	PT_LevelOrientations orientation;
-	Uint32 width;
-	Uint32 height;
+	PT_String* name;
+	Uint8 columns;
+	Uint8 firstgid;
+	
+	PT_String* image;
+	Uint16 imagewidth;
+	Uint16 imageheight;
+	
+	Uint16 tilecount;
 	Uint16 tilewidth;
 	Uint16 tileheight;
 	
-	unsigned int numTilesets;
-	PT_LevelTileset* tilesets;
-	
-	unsigned int numLayers;
-	PT_LevelLayer** layers;
-}PT_Level;
+}PT_LevelTileset;
 
 
+PT_LevelTileset PT_LevelTilesetCreate( json_value* jsonValue );
+void PT_LevelTilesetDestroy( PT_LevelTileset* _this );
 
-PT_Level* PT_LevelCreate( json_value* jsonValue );
-void PT_LevelDestroy( PT_Level* _this );
-
-void PT_LevelUpdate( PT_Level* _this, Sint32 elapsedTime );
-void PT_LevelDraw( PT_Level* _this );
-
-
-#endif /* _PT_LEVEL_H_ */
+#endif /* _PT_LEVELTILESET_H_ */
 
 
 
