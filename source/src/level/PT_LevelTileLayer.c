@@ -39,18 +39,18 @@ PT_LevelLayer* PT_LevelTileLayerCreate( json_value* jsonValue, Uint16 tilewidth,
 	}
 	SDL_memset(_this, 0, sizeof(PT_LevelTileLayer));
 	
+	_this->tilewidth = tilewidth;
+	_this->tileheight = tileheight;
+	
+	_this->numTilesets = numTilesets;
+	_this->pTilesets = pTilesets;
+	
 	_this->pLayer = PT_LevelLayerCreate((void*)_this, jsonValue, PT_LevelTileLayerParse);
 	if ( !_this->pLayer )
 	{
 		PT_LevelTileLayerDestroy(_this);
 		return NULL;
 	}
-	
-	_this->tilewidth = tilewidth;
-	_this->tileheight = tileheight;
-	
-	_this->numTilesets = numTilesets;
-	_this->pTilesets = pTilesets;
 	
 	PT_LevelLayerAddUpdateCallback(_this->pLayer, PT_LevelTileLayerUpdate);
 	PT_LevelLayerAddDrawCallback(_this->pLayer, PT_LevelTileLayerDraw);
@@ -68,13 +68,13 @@ void PT_LevelTileLayerDestroy( void* layerData ) {
 	
 	PT_LevelTileLayer* _this = (PT_LevelTileLayer*)layerData;
 	
-	if ( _this->data )
+	if ( _this->tiles )
 	{
-		for ( Uint32 i = 0; i < _this->height; i++ )
+		for ( unsigned int i = 0; i < _this->height; i++ )
 		{
-			free(_this->data[i]);
+			free(_this->tiles[i]);
 		}
-		free(_this->data);
+		free(_this->tiles);
 	}
 	
 	free(_this);
@@ -106,16 +106,17 @@ void PT_LevelTileLayerDraw( void* layerData ) {
 	}
 	
 	
-	printf("\n\n");
+	//printf("\n\n");
 	for ( Uint32 i = startRow; i < maxRow; i++ )
 	{	
 		for ( Uint32 j = startColumn; j < maxColumn; j++ )
 		{
-			printf(" %d ", _this->data[i][j]);
+			//printf(" %d ", _this->data[i][j]);
+			PT_LevelTileDraw(_this->tiles[i][j]);
 		}
-		printf("\n");
+		//printf("\n");
 	}
-	printf("\n\n");
+	//printf("\n\n");
 }
 
 //===================================== PRIVATE Functions
@@ -159,8 +160,8 @@ SDL_bool PT_LevelTileLayerParse( void* layerData, json_value* jsonValue ) {
 		return SDL_FALSE;
 	}
 	
-	_this->data = (Uint32**)malloc(sizeof(Uint32*) * _this->height);
-	if ( !_this->data )
+	_this->tiles = (PT_LevelTile**)malloc(sizeof(PT_LevelTile*) * _this->height);
+	if ( !_this->tiles )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTileLayerParse: Not enough memory\n");
 		return SDL_FALSE;
@@ -169,8 +170,8 @@ SDL_bool PT_LevelTileLayerParse( void* layerData, json_value* jsonValue ) {
 	Uint32 k = 0;
 	for ( Uint32 i = 0; i < _this->height; i++ )
 	{
-		_this->data[i] = (Uint32*)malloc(sizeof(Uint32) * _this->width);
-		if ( !_this->data[i] )
+		_this->tiles[i] = (PT_LevelTile*)malloc(sizeof(PT_LevelTile) * _this->width);
+		if ( !_this->tiles[i] )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTileLayerParse: Not enough memory\n");
 			return SDL_FALSE;
@@ -178,7 +179,90 @@ SDL_bool PT_LevelTileLayerParse( void* layerData, json_value* jsonValue ) {
 		
 		for ( Uint32 j = 0; j < _this->width; j++ )
 		{
-			_this->data[i][j] = entry.value->u.array.values[k]->u.integer;
+			Uint32 data = entry.value->u.array.values[k]->u.integer;
+			
+			if ( data == 0 )
+			{
+				_this->tiles[i][j].visible = SDL_FALSE;
+				k++;
+				continue;
+			}
+			
+			//Tile setup
+			for ( Uint32 l = 0; l < _this->numTilesets; l++ )
+			{	
+				//visible
+				if ( data > 0 )
+				{
+					PT_LevelTile tile;
+					tile.visible = SDL_TRUE;
+					
+					//image
+					if ( data >= _this->pTilesets[l].firstgid && 
+						data < _this->pTilesets[l].firstgid + _this->pTilesets[l].tilecount )
+					{
+						tile.pImage = _this->pTilesets[l].image;
+						Uint32 index = data - _this->pTilesets[l].firstgid;
+			
+						//srcRect
+						if ( index == 1 )
+						{
+							tile.srcRect.x = 0;
+							tile.srcRect.y = 0;
+							tile.srcRect.w = _this->pTilesets[l].tilewidth;
+							tile.srcRect.h = _this->pTilesets[l].tileheight;
+						}
+						else {
+							int sx = 0;
+							const int sw = _this->pTilesets[l].tilewidth;
+							int sy_count = 0;
+							const int sh = _this->pTilesets[l].tileheight;
+							
+							for ( Uint32 m = 0; m < _this->pTilesets[l].tilecount; m++ )
+							{
+								if ( m != 0 )
+								{
+									
+									sx =
+									(m % _this->pTilesets[l].columns) * _this->pTilesets[l].tilewidth;
+									
+									if ( m % _this->pTilesets[l].columns == 0)
+									{
+										sy_count ++;
+									}
+								}
+								
+								int sy = sy_count * _this->pTilesets[l].tileheight;
+
+								
+								if ( index == m )
+								{
+									tile.srcRect.x = sx;
+									tile.srcRect.y = sy;
+									tile.srcRect.w = sw;
+									tile.srcRect.h = sh;
+									break;
+								}
+							}
+						}
+						//dstRect
+						
+						tile.dstRect.x = j * _this->pTilesets[l].tilewidth;
+						tile.dstRect.y = i * _this->pTilesets[l].tileheight;
+						tile.dstRect.w = _this->pTilesets[l].tilewidth;
+						tile.dstRect.h = _this->pTilesets[l].tileheight;
+						 
+						_this->tiles[i][j] = tile;
+						break;
+					}
+				}
+				else {
+					_this->tiles[i][j].visible = SDL_FALSE;
+					break;
+				}
+			}
+			
+			
 			k++;
 		}
 	}

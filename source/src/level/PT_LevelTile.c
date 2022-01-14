@@ -9,40 +9,31 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-#ifndef _PT_LEVELTILELAYER_H_
-#define _PT_LEVELTILELAYER_H_
+#include <stdlib.h>
 
-#include <json.h>
-
-#include <PT_String.h>
-#include <PT_LevelLayer.h>
-#include <PT_LevelTileset.h>
 #include <PT_LevelTile.h>
+#include <PT_Graphics.h>
 
 
-typedef struct pt_level_tile_layer {
-	PT_LevelLayer* pLayer;
-
-	Uint32 width;
-	Uint32 height;
-	Uint16 tilewidth;
-	Uint16 tileheight;
+PT_LevelTile PT_LevelTileCreate( SDL_bool visible, SDL_Rect srcRect, SDL_FRect dstRect, 
+	PT_String* pImage ) {
 	
-	unsigned int numTilesets;
-	PT_LevelTileset* pTilesets;
-	
-	PT_LevelTile** tiles;
-}PT_LevelTileLayer;
+	PT_LevelTile _this = { visible, srcRect, dstRect, pImage };
+	return _this;
+}
+
+void PT_LevelTileDraw( PT_LevelTile _this ) {
+	if ( _this.visible )
+	{
+		PT_GraphicsDrawTextureF((char*)_this.pImage->utf8_string, &_this.srcRect, &_this.dstRect,
+			0.0, NULL, SDL_FLIP_NONE);
+	}
+}
 
 
-PT_LevelLayer* PT_LevelTileLayerCreate( json_value* jsonValue, Uint16 tilewidth, Uint16 tileheight,
-	unsigned int numTilesets, PT_LevelTileset* pTilesets );
-void PT_LevelTileLayerDestroy( void* layerData );
 
-void PT_LevelTileLayerUpdate( void* layerData, Sint32 elapsedTime );
-void PT_LevelTileLayerDraw( void* layerData );
 
-#endif /* _PT_LEVELTILELAYER_H_ */
+
 
 
 
