@@ -21,6 +21,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Camera.h>
 
 
+
 //===================================== PRIVATE Functions
 
 SDL_bool PT_LevelTileLayerParse( void* layerData, json_value* jsonValue );
@@ -82,7 +83,6 @@ void PT_LevelTileLayerDestroy( void* layerData ) {
 
 void PT_LevelTileLayerUpdate( void* layerData, Sint32 elapsedTime ) {
 	PT_LevelTileLayer* _this = (PT_LevelTileLayer*)layerData;
-	
 }
 void PT_LevelTileLayerDraw( void* layerData ) {
 	PT_LevelTileLayer* _this = (PT_LevelTileLayer*)layerData;
@@ -92,31 +92,18 @@ void PT_LevelTileLayerDraw( void* layerData ) {
 	Uint32 maxColumn = 0;
 	Uint32 maxRow = 0;
 	
-	PT_CameraGetRenderDistance(&startColumn, &startRow, &maxColumn, &maxRow, _this->tilewidth);
+	PT_CameraSetPosition(100.f, 100.f);
 	
-	if ( _this->tilewidth * _this->width <= PT_CameraGetWidth() )
-	{
-		startColumn = 0;
-		maxColumn = (_this->tilewidth * _this->width) / _this->tilewidth;
-	}
-	if ( _this->tileheight * _this->height <= PT_CameraGetHeight() )
-	{
-		startRow = 0;
-		maxRow = (_this->tileheight * _this->height) / _this->tileheight;
-	}
+	PT_CameraGetRenderDistance(&startColumn, &startRow, &maxColumn, &maxRow, 
+	_this->width, _this->height, _this->tilewidth);
 	
-	
-	//printf("\n\n");
 	for ( Uint32 i = startRow; i < maxRow; i++ )
 	{	
 		for ( Uint32 j = startColumn; j < maxColumn; j++ )
 		{
-			//printf(" %d ", _this->data[i][j]);
 			PT_LevelTileDraw(_this->tiles[i][j]);
 		}
-		//printf("\n");
 	}
-	//printf("\n\n");
 }
 
 //===================================== PRIVATE Functions
@@ -222,11 +209,10 @@ SDL_bool PT_LevelTileLayerParse( void* layerData, json_value* jsonValue ) {
 							{
 								if ( m != 0 )
 								{
-									
 									sx =
 									(m % _this->pTilesets[l].columns) * _this->pTilesets[l].tilewidth;
 									
-									if ( m % _this->pTilesets[l].columns == 0)
+									if ( m % _this->pTilesets[l].columns == 0 )
 									{
 										sy_count ++;
 									}
@@ -245,8 +231,8 @@ SDL_bool PT_LevelTileLayerParse( void* layerData, json_value* jsonValue ) {
 								}
 							}
 						}
-						//dstRect
 						
+						//dstRect
 						tile.dstRect.x = j * _this->pTilesets[l].tilewidth;
 						tile.dstRect.y = i * _this->pTilesets[l].tileheight;
 						tile.dstRect.w = _this->pTilesets[l].tilewidth;

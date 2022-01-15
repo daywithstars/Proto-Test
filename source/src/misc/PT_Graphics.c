@@ -280,6 +280,10 @@ void PT_GraphicsLoadTexture( const char* utf8_filePath, const char* utf8_name ) 
 	PT_StringDestroy(path);
 }//PT_GraphicsLoadTexture
 
+void PT_GraphicsSetViewport( const SDL_Rect* rect ) {
+	SDL_RenderSetViewport(ptGraphics->renderer, rect);
+}//PT_GraphicsSetViewport
+
 void PT_GraphicsSetRenderClearColor( SDL_Color color ) {
 	ptGraphics->clearColor = color;
 }//PT_GraphicsSetRenderClearColor

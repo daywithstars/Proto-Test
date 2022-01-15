@@ -56,6 +56,8 @@ int PT_GraphicsShowSimpleMessageBox(Uint32 flags, const char *utf8_title, const 
 */
 void PT_GraphicsLoadTexture( const char* utf8_filePath, const char* utf8_name );
 
+void PT_GraphicsSetViewport( const SDL_Rect* rect );
+
 /**
 * \brief Set the default color, that color will be the clear color. 
 *
