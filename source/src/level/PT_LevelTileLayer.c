@@ -19,8 +19,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_LevelTileLayer.h>
 #include <PT_Parse.h>
 #include <PT_Camera.h>
+#include <PT_InputManager.h>
 
-
+static float x=0.f, y=0.f;
 
 //===================================== PRIVATE Functions
 
@@ -83,6 +84,26 @@ void PT_LevelTileLayerDestroy( void* layerData ) {
 
 void PT_LevelTileLayerUpdate( void* layerData, Sint32 elapsedTime ) {
 	PT_LevelTileLayer* _this = (PT_LevelTileLayer*)layerData;
+	
+	if ( PT_InputManagerKeyboardGetKeyHold(SDL_SCANCODE_LEFT) )
+	{
+		x -= 0.1 * elapsedTime;
+	}
+	else if ( PT_InputManagerKeyboardGetKeyHold(SDL_SCANCODE_RIGHT) )
+	{
+		x += 0.1 * elapsedTime;
+	}
+	else if ( PT_InputManagerKeyboardGetKeyHold(SDL_SCANCODE_UP) )
+	{
+		y -= 0.1 * elapsedTime;
+	}
+	else if ( PT_InputManagerKeyboardGetKeyHold(SDL_SCANCODE_DOWN) )
+	{
+		y += 0.1 * elapsedTime;
+	}
+	
+	
+	PT_CameraSetPosition((Sint32)x, (Sint32)y);
 }
 void PT_LevelTileLayerDraw( void* layerData ) {
 	PT_LevelTileLayer* _this = (PT_LevelTileLayer*)layerData;
@@ -92,10 +113,8 @@ void PT_LevelTileLayerDraw( void* layerData ) {
 	Uint32 maxColumn = 0;
 	Uint32 maxRow = 0;
 	
-	PT_CameraSetPosition(100.f, 100.f);
-	
 	PT_CameraGetRenderDistance(&startColumn, &startRow, &maxColumn, &maxRow, 
-	_this->width, _this->height, _this->tilewidth);
+	_this->width, _this->height, _this->tilewidth, _this->tileheight);
 	
 	for ( Uint32 i = startRow; i < maxRow; i++ )
 	{	

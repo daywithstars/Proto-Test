@@ -172,7 +172,7 @@ PT_Screen* PT_ScreenCreate( json_value* jsonValue ) {
 			PT_LevelManagerDestroy();
 		}
 	}
-	if ( !PT_LevelManagerLoadLevel("Intro Stage") )
+	if ( !PT_LevelManagerLoadLevel("Second Stage") )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenCreate!\n");
 	}

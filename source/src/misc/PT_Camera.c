@@ -93,52 +93,52 @@ void PT_CameraSetPosition( Sint32 x, Sint32 y ) {
 }
 
 void PT_CameraGetRenderDistance( Uint32* startColumn, Uint32* startRow, Uint32* maxColumn, Uint32* maxRow,
-	Uint32 tileLayerWidth, Uint32 tileLayerHeight, Uint16 tileSize ) {
+	Uint32 tileLayerWidth, Uint32 tileLayerHeight, Uint16 tilewidth, Uint16 tileheight ) {
 	
 	
 	//Horizontal: Logic
 	if ( ptCamera->x != 0 )
 	{
-		*startColumn =  (ptCamera->x < 0 ? -(ptCamera->x / tileSize) : ptCamera->x) / tileSize; 
-		*maxColumn = (ptCamera->width / tileSize) + (*startColumn) + 1;
+		*startColumn =  (ptCamera->x < 0 ? -(ptCamera->x / tilewidth) : ptCamera->x) / tilewidth; 
+		*maxColumn = (ptCamera->width / tilewidth) + (*startColumn) + 1;
 	}
 	else {
 		*startColumn = 0;
-		*maxColumn = ptCamera->width / tileSize;
+		*maxColumn = ptCamera->width / tilewidth;
 	}
 	
 	//Horizontal: Limits
-	if ( tileSize * tileLayerWidth <= ptCamera->width )
+	if ( tilewidth * tileLayerWidth <= ptCamera->width )
 	{
 		*startColumn = 0;
-		*maxColumn = (tileSize * tileLayerWidth) / tileSize;
+		*maxColumn = tileLayerWidth;
 	}
-	if ( ptCamera->x >= (Sint32)(tileSize * tileLayerWidth) - ptCamera->width )
+	else if ( ptCamera->x >= (Sint32)(tilewidth * tileLayerWidth) - ptCamera->width )
 	{
-		*startColumn = ((tileSize * tileLayerWidth) - ptCamera->width) / tileSize;
+		*startColumn = ((tilewidth * tileLayerWidth) - ptCamera->width) / tilewidth;
 		*maxColumn = tileLayerWidth;
 	}
 	
 	//Vertical: Logic
 	if ( ptCamera->y != 0 )
 	{
-		*startRow = (ptCamera->y < 0 ? -(ptCamera->y / tileSize) : ptCamera->y) / tileSize;
-		*maxRow = (ptCamera->height / tileSize) + (*startRow) + 1;		
+		*startRow = (ptCamera->y < 0 ? -(ptCamera->y / tileheight) : ptCamera->y) / tileheight;
+		*maxRow = (ptCamera->height / tileheight) + (*startRow) + 1;		
 	}
 	else {
 		*startRow = 0;
-		*maxRow = ptCamera->height / tileSize;
+		*maxRow = ptCamera->height / tileheight;
 	}
 	
 	//Vertical: Limits
-	if ( tileSize * tileLayerHeight <= ptCamera->height )
+	if ( tileheight * tileLayerHeight <= ptCamera->height )
 	{
 		*startRow = 0;
-		*maxRow = (tileSize * tileLayerHeight) / tileSize;
+		*maxRow = tileLayerHeight;
 	}
-	if ( ptCamera->y >= (Sint32)(tileSize * tileLayerHeight) - ptCamera->height )
+	else if ( ptCamera->y >= (Sint32)(tileheight * tileLayerHeight) - ptCamera->height )
 	{
-		*startRow = ((tileSize * tileLayerHeight) - ptCamera->height) / tileSize;
+		*startRow = ((tileheight * tileLayerHeight) - ptCamera->height) / tileheight;
 		*maxRow = tileLayerHeight;
 	}
 }//PT_CameraGetRenderDistance
