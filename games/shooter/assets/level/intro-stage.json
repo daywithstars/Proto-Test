@@ -49,19 +49,6 @@
         {
          "columns":2,
          "firstgid":10,
-         "image":"..\/img\/level\/tileset.bmp",
-         "imageheight":64,
-         "imagewidth":64,
-         "margin":0,
-         "name":"tileset",
-         "spacing":0,
-         "tilecount":4,
-         "tileheight":32,
-         "tilewidth":32
-        }, 
-        {
-         "columns":2,
-         "firstgid":14,
          "image":"..\/img\/level\/tileset3.png",
          "imageheight":64,
          "imagewidth":64,

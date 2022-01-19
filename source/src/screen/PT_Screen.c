@@ -140,6 +140,25 @@ SDL_bool PT_ScreenLoadSprites( PT_Screen* _this, json_value* jsonValue ) {
 	return SDL_TRUE;
 }//PT_ScreenLoadSprites
 
+SDL_bool PT_ScreenLoadLevels( PT_Screen* _this, json_value* jsonValue ) {
+	if ( !_this || !jsonValue )
+	{
+		return SDL_FALSE;
+	}
+	
+	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "level");
+	if ( entry.name )
+	{
+		if ( !PT_LevelManagerLoadLevel(entry.value->u.string.ptr) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenLoadLevels!\n");
+			return SDL_FALSE;
+		}	
+	}
+
+	return SDL_TRUE;
+}//PT_ScreenLoadLevels
+
 //===================================== PUBLIC Functions
 
 PT_Screen* PT_ScreenCreate( json_value* jsonValue ) {
@@ -159,22 +178,9 @@ PT_Screen* PT_ScreenCreate( json_value* jsonValue ) {
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenCreate: Cannot load sprites\n");
 	}
-	
-	if ( !PT_LevelManagerCreate() )
+	if ( !PT_ScreenLoadLevels(_this, jsonValue) )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenCreate: Cannot create PT_LevelManager!\n");
-	}
-	else {
-		if ( !PT_LevelManagerSetup() )
-		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-			"PT: PT_ScreenCreate: Cannot create PT_LevelManager!\n");
-			PT_LevelManagerDestroy();
-		}
-	}
-	if ( !PT_LevelManagerLoadLevel("Second Stage") )
-	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenCreate!\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenCreate: Cannot load levels\n");
 	}
 	
 	SDL_Log("===== PT: PT_ScreenCreate =====\n");
@@ -211,8 +217,6 @@ void PT_ScreenDestroy( PT_Screen* _this ) {
 		
 		free(_this->sprites);
 	}
-	
-	PT_LevelManagerDestroy();
 	
 	free(_this);
 }//PT_ScreenDestroy

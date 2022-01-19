@@ -3,7 +3,6 @@
 
 	"settings": {
 		"name": "Screen MainMenu",
-		"tag": "first-screen",
 	},
 	
 	"sprites": [

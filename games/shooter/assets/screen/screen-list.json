@@ -1,6 +1,6 @@
 {
 	"screens": [
-		"screen-main-menu",
 		"screen-play",
+		"screen-main-menu",
 	]
 }

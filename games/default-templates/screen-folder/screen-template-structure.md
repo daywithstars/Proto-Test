@@ -14,7 +14,9 @@ This template is the screen container, that will have everything you want in tha
 	"sprites": [
 		"<sprite-template>",
 		"<sprite-template>",
-	]
+	],
+	
+	"level": "<your-level-name>"
 }
 
 ```
@@ -33,7 +35,16 @@ This template is the screen container, that will have everything you want in tha
       - If multiple screens are tagged with "first-screen" then, All screens with the Proto-Test will be loaded and set the last screen from the screen-list.json to be the first screen.  
       
 - **"sprites"** The array of sprites from that screen.
-  - Not required
+  - Not required (you can just put the array and done.)
   - **"&lt;sprite-template&gt;"** sprite-template file name. 
+
+- **"level"** The level to be automatically loaded into that screen. 
+  - Not required 
+  - **"&lt;your-level-name&gt;"** The level name from level-list-template.json
+
+
+
+
+
 
 

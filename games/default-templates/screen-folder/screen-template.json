@@ -9,6 +9,8 @@
 	"sprites": [
 		"<sprite-template>",
 		"<sprite-template>",
-	]
+	],
+	
+	"level": "<your-level-name>"
 }
 

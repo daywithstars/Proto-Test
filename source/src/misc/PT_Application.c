@@ -21,6 +21,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Graphics.h>
 #include <PT_ScreenManager.h>
 #include <PT_SoundManager.h>
+#include <PT_LevelManager.h>
 #include <PT_Parse.h>
 #include <PT_Camera.h>
 
@@ -170,6 +171,18 @@ SDL_bool PT_ApplicationCreate( ) {
 	{
 		return SDL_FALSE;
 	}
+	if ( !PT_LevelManagerCreate() )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate: Cannot create PT_LevelManager!\n");
+	}
+	else {
+		if ( !PT_LevelManagerSetup() )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+			"PT: PT_ApplicationCreate: Cannot create PT_LevelManager!\n");
+			PT_LevelManagerDestroy();
+		}
+	}
 
 	if ( !PT_CameraCreate() )
 	{
@@ -187,8 +200,6 @@ SDL_bool PT_ApplicationCreate( ) {
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate!\n");
 	}
 	
-	PT_SoundManagerPlayMusic("SS2-intro", 2);
-	
 	SDL_Log("PT: PT_ApplicationCreate: Game: \"%s\", successful initialized\n", 
 	(char*)ptApplication->gameName->utf8_string);
 	
@@ -201,6 +212,7 @@ void PT_ApplicationDestroy( ) {
 	
 	if ( ptApplication )
 	{
+		PT_LevelManagerDestroy();
 		PT_ScreenManagerDestroy();
 		PT_SoundManagerDestroy();
 		

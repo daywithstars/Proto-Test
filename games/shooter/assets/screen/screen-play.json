@@ -3,6 +3,9 @@
 
 	"settings": {
 		"name": "Screen Play",
+		"tag": "first-screen",
 	},
+	
+	"level": "Intro Stage",
 }
 
