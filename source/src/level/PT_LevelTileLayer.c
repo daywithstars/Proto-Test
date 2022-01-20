@@ -37,6 +37,7 @@ PT_LevelLayer* PT_LevelTileLayerCreate( json_value* jsonValue, Uint16 tilewidth,
 	PT_LevelTileLayer* _this = (PT_LevelTileLayer*)malloc(sizeof(PT_LevelTileLayer));
 	if ( !_this )
 	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTileLayerCreate: Not enough memory\n");
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(PT_LevelTileLayer));

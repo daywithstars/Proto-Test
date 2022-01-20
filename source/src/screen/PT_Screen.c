@@ -23,7 +23,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Graphics.h>
 #include <PT_InputManager.h>
 #include <PT_Keyboard.h>
-#include <PT_SpriteFabric.h>
+#include <PT_SpriteFactory.h>
 
 
 struct pt_screen {
@@ -122,7 +122,7 @@ SDL_bool PT_ScreenLoadSprites( PT_Screen* _this, json_value* jsonValue ) {
 				json_object_entry spriteTemplateEntry = PT_ParseGetObjectEntry(parse, "type");
 				if ( spriteTemplateEntry.name )
 				{
-					_this->sprites[i] = PT_SpriteFabricGet(
+					_this->sprites[i] = PT_SpriteFactoryGet(
 						entry.value->u.array.values[i]->u.string.ptr,
 						spriteTemplateEntry.value->u.string.ptr
 					);

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(proto-test)
+project(Proto-Test)
 
 if (MSVC)
 	add_compile_options(/W4)
@@ -40,14 +40,14 @@ include_directories(
 )
 	
 	
-add_executable(prot ${project_src})
+add_executable(${PROJECT_NAME} ${project_src})
 
-set_property(TARGET prot PROPERTY C_STANDARD 11)
+set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 11)
 
 if (WIN32)
-	target_link_libraries(prot SDL2main SDL2 SDL2_image SDL2_mixer)
+	target_link_libraries(${PROJECT_NAME} -lmingw32 SDL2main SDL2 SDL2_image SDL2_mixer)
 else()
-	target_link_libraries(prot SDL2 SDL2_image SDL2_mixer)
+	target_link_libraries(${PROJECT_NAME} SDL2 SDL2_image SDL2_mixer)
 endif()
 
 

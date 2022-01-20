@@ -92,10 +92,6 @@ void PT_SpriteDestroy( PT_Sprite* _this ) {
 	{
 		free(_this->srcRect);
 	}
-	if ( _this->dstRect )
-	{
-		free(_this->dstRect);
-	}
 	PT_AnimationListDestroy(_this->animationList);
 	PT_BehaviorDestroy(_this->behavior);
 	
@@ -166,13 +162,13 @@ void PT_SpriteGrab( void* _data, SDL_FPoint mousePosition ) {
 	
 	//Test collision then set positions
 	const SDL_Rect mouseRect = { (int)mousePosition.x, (int)mousePosition.y, 4, 4 };
-	const SDL_Rect spriteRect = { (int)_this->dstRect->x, (int)_this->dstRect->y,
-		(int)_this->dstRect->w, (int)_this->dstRect->h };
+	const SDL_Rect spriteRect = { (int)_this->dstRect.x, (int)_this->dstRect.y,
+		(int)_this->dstRect.w, (int)_this->dstRect.h };
 	
 	if ( SDL_HasIntersection(&mouseRect, &spriteRect) )
 	{	
-		_this->dstRect->x = mousePosition.x - spriteRect.w / 2;
-		_this->dstRect->y = mousePosition.y - spriteRect.h / 2;
+		_this->dstRect.x = mousePosition.x - spriteRect.w / 2;
+		_this->dstRect.y = mousePosition.y - spriteRect.h / 2;
 	}
 }//PT_SpriteGrab
 
@@ -189,8 +185,8 @@ void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime ) {
 		PT_BehaviorUpdate(_this->behavior, (void*)_this, elapsedTime);
 	}
 
-	_this->dstRect->x += _this->speedX * elapsedTime * _this->dirX;
-	_this->dstRect->y += _this->speedY * elapsedTime * _this->dirY;
+	_this->dstRect.x += _this->speedX * elapsedTime * _this->dirX;
+	_this->dstRect.y += _this->speedY * elapsedTime * _this->dirY;
 	
 	if ( _this->update )
 	{
@@ -201,7 +197,7 @@ void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime ) {
 void PT_SpriteDraw( PT_Sprite* _this ) {
 	if ( _this->imageName ) 
 	{
-		PT_GraphicsDrawTextureF((char*)_this->imageName->utf8_string, _this->srcRect, _this->dstRect,
+		PT_GraphicsDrawTextureF((char*)_this->imageName->utf8_string, _this->srcRect, &_this->dstRect,
 			0.0, NULL, SDL_FLIP_NONE);
 	}
 	if ( _this->draw )
@@ -248,16 +244,14 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 				jsonValue->u.object.values[i].value->u.array.values[3]->u.integer;
 			}
 			else if ( !strcmp("dstRect", jsonValue->u.object.values[i].name) )
-			{
-				_this->dstRect = (SDL_FRect*)malloc(sizeof(SDL_Rect));
-				
-				_this->dstRect->x = 
+			{	
+				_this->dstRect.x = 
 				jsonValue->u.object.values[i].value->u.array.values[0]->u.dbl;
-				_this->dstRect->y =
+				_this->dstRect.y =
 				jsonValue->u.object.values[i].value->u.array.values[1]->u.dbl;
-				_this->dstRect->w = 
+				_this->dstRect.w = 
 				jsonValue->u.object.values[i].value->u.array.values[2]->u.dbl;
-				_this->dstRect->h = 
+				_this->dstRect.h = 
 				jsonValue->u.object.values[i].value->u.array.values[3]->u.dbl;
 			}
 			else if ( !strcmp("animations", jsonValue->u.object.values[i].name) )

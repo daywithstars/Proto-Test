@@ -27,7 +27,7 @@ typedef struct {
 	int dirX, dirY;
 	float speedX, speedY;
 	SDL_Rect* srcRect;
-	SDL_FRect* dstRect;
+	SDL_FRect dstRect;
 	PT_AnimationList* animationList;
 	PT_Animation currentAnimation;
 	struct pt_behavior* behavior;

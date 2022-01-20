@@ -19,6 +19,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Parse.h>
 #include <PT_String.h>
 #include <PT_LevelTileLayer.h>
+#include <PT_LevelObjectLayer.h>
 
 
 
@@ -199,6 +200,15 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 		{
 			_this->layers[i] = PT_LevelTileLayerCreate(entry.value->u.array.values[i],
 				_this->tilewidth, _this->tileheight, _this->numTilesets, _this->tilesets);
+			if ( !_this->layers[i] )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
+				return SDL_FALSE;
+			}
+		}
+		else if ( PT_StringMatchFast(entry2.value->u.string.ptr, "objectgroup"))
+		{
+			_this->layers[i] = PT_LevelObjectLayerCreate(entry.value->u.array.values[i]);
 			if ( !_this->layers[i] )
 			{
 				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
