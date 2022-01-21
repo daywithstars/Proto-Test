@@ -296,6 +296,10 @@ void PT_GraphicsRenderFillRect( const SDL_Rect* rect ) {
 	SDL_RenderFillRect(ptGraphics->renderer, rect);
 }//PT_GraphicsRenderFillRect
 
+void PT_GraphicsRenderFillRectF( const SDL_FRect* rect ) {
+	SDL_RenderFillRectF(ptGraphics->renderer, rect);
+}//PT_GraphicsRenderFillRectF
+
 void PT_GraphicsDrawTexture( const char* utf8_name, const SDL_Rect* srcRect, const SDL_Rect* dstRect,
 	const double angle, const SDL_Point* center, const SDL_RendererFlip flip ) {
 	

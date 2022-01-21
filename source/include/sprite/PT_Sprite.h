@@ -18,18 +18,25 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <PT_String.h>
 #include <PT_AnimationList.h>
+#include <PT_Collider.h>
 
 
 struct pt_behavior;
 
 typedef struct {
 	PT_String* imageName;	
+	
 	int dirX, dirY;
 	float speedX, speedY;
 	SDL_Rect* srcRect;
 	SDL_FRect dstRect;
+	
 	PT_AnimationList* animationList;
 	PT_Animation currentAnimation;
+	
+	unsigned int numColliders;
+	PT_Collider* colliders;
+	
 	struct pt_behavior* behavior;
 	
 	

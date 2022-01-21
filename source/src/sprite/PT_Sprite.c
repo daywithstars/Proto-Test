@@ -93,6 +93,14 @@ void PT_SpriteDestroy( PT_Sprite* _this ) {
 		free(_this->srcRect);
 	}
 	PT_AnimationListDestroy(_this->animationList);
+	if ( _this->colliders )
+	{
+		for ( unsigned int i = 0; i < _this->numColliders; i++ )
+		{
+			PT_ColliderDestroy(&_this->colliders[i]);
+		}
+		free(_this->colliders);
+	}
 	PT_BehaviorDestroy(_this->behavior);
 	
 	if ( _this->destroy )
@@ -204,6 +212,11 @@ void PT_SpriteDraw( PT_Sprite* _this ) {
 	{
 		_this->draw(_this->_data);
 	}
+	/*for ( unsigned int i = 0; i < _this->numColliders; i++ )
+	{	
+		const SDL_Color color = { 200, 200, 200, 100 };
+		PT_ColliderDraw(&_this->colliders[i], color, _this->dstRect.x, _this->dstRect.y);
+	}*/
 }//PT_SpriteDraw
 
 
@@ -348,6 +361,111 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 					{
 						_this->currentAnimation = anim;
 					}
+				}
+			}
+			else if ( !strcmp("colliders", jsonValue->u.object.values[i].name) )
+			{
+				_this->colliders = (PT_Collider*)malloc(
+					sizeof(PT_Collider) * jsonValue->u.object.values[i].value->u.array.length );
+				if ( !_this->colliders )
+				{
+					SDL_Log("PT: PT_SpriteParse: Not enough memory!\n");
+					continue;
+				}	
+				_this->numColliders = jsonValue->u.object.values[i].value->u.array.length;
+				
+				for ( unsigned int j = 0; j < _this->numColliders; j++ )
+				{
+					_this->colliders[j] = PT_ColliderCreate();
+					
+					
+					//Collider.type
+					json_object_entry entry = 
+					PT_ParseGetObjectEntry_json_value(
+						jsonValue->u.object.values[i].value->u.array.values[j], "type");
+					if ( !entry.name )
+					{
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteParse!\n");
+					}
+					
+					if ( PT_StringMatchFast(entry.value->u.string.ptr, "PT_COLLIDER_TYPE_RECTANGLE") )
+					{
+						float x, y, w, h;
+	
+						//fields.x
+						entry = 
+						PT_ParseGetObjectEntry_json_value(
+							jsonValue->u.object.values[i].value->u.array.values[j], "fields x");
+							
+						if ( entry.value->type == json_integer )
+						{
+							x = entry.value->u.integer;
+						}
+						else if ( entry.value->type == json_double )
+						{
+							x = entry.value->u.dbl;
+						}
+						
+						//fields.y
+						entry = 
+						PT_ParseGetObjectEntry_json_value(
+							jsonValue->u.object.values[i].value->u.array.values[j], "fields y");
+							
+						if ( entry.value->type == json_integer )
+						{
+							y = entry.value->u.integer;
+						}
+						else if ( entry.value->type == json_double )
+						{
+							y = entry.value->u.dbl;
+						}
+						
+						//fields.w
+						entry = 
+						PT_ParseGetObjectEntry_json_value(
+							jsonValue->u.object.values[i].value->u.array.values[j], "fields w");
+							
+						if ( entry.value->type == json_integer )
+						{
+							w = entry.value->u.integer;
+						}
+						else if ( entry.value->type == json_double )
+						{
+							w = entry.value->u.dbl;
+						}
+						
+						//fields.h
+						entry = 
+						PT_ParseGetObjectEntry_json_value(
+							jsonValue->u.object.values[i].value->u.array.values[j], "fields h");
+							
+						if ( entry.value->type == json_integer )
+						{
+							h = entry.value->u.integer;
+						}
+						else if ( entry.value->type == json_double )
+						{
+							h = entry.value->u.dbl;
+						}
+						
+						PT_ColliderSetRect(&_this->colliders[j], x, y, w, h);
+					}	
+					
+					//Collider.name
+					entry = 
+					PT_ParseGetObjectEntry_json_value(
+						jsonValue->u.object.values[i].value->u.array.values[j], "name");
+					if ( !entry.name )
+					{
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteParse!\n");
+					}
+					
+					if ( !PT_ColliderSetName(&_this->colliders[j], entry.value->u.string.ptr) )
+					{
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteParse!\n");
+					}
+					
+					
 				}
 			}
 			else if ( !strcmp("behavior", jsonValue->u.object.values[i].name) )

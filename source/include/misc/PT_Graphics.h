@@ -97,6 +97,8 @@ void PT_GraphicsSetRenderDrawColor( SDL_Color color );
 */ 
 void PT_GraphicsRenderFillRect( const SDL_Rect* rect );
 
+void PT_GraphicsRenderFillRectF( const SDL_FRect* rect );
+
 /**
 * \brief Draws an previous loaded texture to the current rendering target.
 *

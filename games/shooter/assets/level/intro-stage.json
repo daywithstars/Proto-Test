@@ -27,7 +27,7 @@
                         {
                          "name":"template",
                          "type":"string",
-                         "value":"sprite-sample"
+                         "value":"sprite-shooter-sheet"
                         }],
                  "rotation":0,
                  "type":"PT_Sprite",

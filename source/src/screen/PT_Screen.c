@@ -34,10 +34,6 @@ struct pt_screen {
 	unsigned int numSprites;
 };
 
-
-Uint8 colorTar = 1;
-Uint8 colorValue = 0;
-
 SDL_bool PT_ScreenParseSettings( PT_Screen* _this, json_value* jsonValue ) {
 	/*
 		see the template: games/default-templates/screen-folder/screen-template.json

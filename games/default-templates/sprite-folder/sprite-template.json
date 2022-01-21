@@ -31,6 +31,22 @@
 			"frame-row-max": 2,
 		},
 	],
+	"colliders": [
+		{
+			"type": "$collider-type$",
+			"name": "<collider-name>",
+			
+			"fields": {
+			}
+		},
+		{
+			"type": "$collider-type$",
+			"name": "<collider-name>",
+			
+			"fields": {
+			}
+		}
+	],
 	"behavior": "<behaviorName>",
 	
 	"misc": {
