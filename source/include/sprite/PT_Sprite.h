@@ -30,6 +30,7 @@ typedef struct {
 	float speedX, speedY;
 	SDL_Rect* srcRect;
 	SDL_FRect dstRect;
+	SDL_bool cameraTarget;
 	
 	PT_AnimationList* animationList;
 	PT_Animation currentAnimation;
@@ -41,6 +42,7 @@ typedef struct {
 	
 	
 	void* _data;
+	void (*collision)(void* _data, PT_Collider, PT_Collider);
 	void (*update)(void* _data, Sint32);
 	void (*draw)(void* _data);
 	void (*destroy)(void* _data);
@@ -53,6 +55,8 @@ PT_Sprite* PT_SpriteCreate( const char* utf8_spriteTemplate, void* _data,
 void PT_SpriteDestroy( PT_Sprite* _this );
 
 
+void PT_SpriteAddCollisionCallback( PT_Sprite* _this, 
+	void (*callback)(void* _data, PT_Collider, PT_Collider) );
 void PT_SpriteAddUpdateCallback( PT_Sprite* _this, void (*callback)(void* _data, Sint32 elapsedTime) );
 void PT_SpriteAddDrawCallback( PT_Sprite* _this, void (*callback)(void* _data) );
 void PT_SpriteAddDestroyCallback( PT_Sprite* _this, void (*callback)(void* _data) );
@@ -71,6 +75,8 @@ SDL_bool PT_SpriteChangeAnimation( void* _data, const char* utf8_string );
 
 //Misc callbacks declarations.
 void PT_SpriteGrab( void* _data, SDL_FPoint mousePosition );
+
+void PT_SpriteCollisionWith( PT_Sprite* _this, PT_Collider own, PT_Collider target );
 
 void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime );
 void PT_SpriteDraw( PT_Sprite* _this );

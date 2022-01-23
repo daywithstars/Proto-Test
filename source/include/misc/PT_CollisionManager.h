@@ -1,5 +1,5 @@
 /*
-Copyright 2021 daywithstars
+Copyright 2022 daywithstars
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -9,26 +9,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-#ifndef _PT_SHOOTER_H_
-#define _PT_SHOOTER_H_
+#ifndef _PT_COLLISIONMANAGER_H_
+#define _PT_COLLISIONMANAGER_H_
 
-#include <json.h>
+#include <SDL_stdinc.h>
 
 #include <PT_Sprite.h>
 
-typedef struct pt_shooter PT_Shooter;
+
+SDL_bool PT_CollisionManagerCreate();
+void PT_CollisionManagerDestroy();
+
+void PT_CollisionManagerAdd( const char* utf8_group, PT_Sprite* sprite );
+
+void PT_CollisionManagerUpdate( );
 
 
-PT_Sprite* PT_ShooterCreate( const char* utf8_spriteTemplate );
-
-void PT_ShooterDestroy( void* _data ); 
-
-void PT_ShooterCollisionWith( void* _data, PT_Collider own, PT_Collider target );
-
-void PT_ShooterUpdate( void* _data, Sint32 elapsedTime );
-void PT_ShooterDraw( void* _data );
-
-#endif /* _PT_SHOOTER_H_ */
+#endif /* _PT_COLLISIONMANAGER_H_ */
 
 
 

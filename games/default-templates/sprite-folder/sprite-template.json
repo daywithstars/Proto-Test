@@ -1,5 +1,6 @@
 {
 	"type": "$SpriteType$",
+	"tag": "<yourTagName>",
 	"image": "<ImageToUse>",
 	"speedX": 0.1,
 	"speedY": 0.2,

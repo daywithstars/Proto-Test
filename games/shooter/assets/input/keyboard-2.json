@@ -1,0 +1,15 @@
+{
+	"file": "keyboard-2.json",
+	
+	"settings": {
+		"name": "Map-keyboard-2"
+	},
+	
+	"buttons-map": [
+		{ "input-left": "kyd-h-a" },
+		{ "input-right": "kyd-h-d" },
+		{ "input-up": "kyd-h-w" },
+		{ "input-down": "kyd-h-s" },
+		{ "no-buttons": "kyd-none" },
+	]
+}

@@ -50,6 +50,7 @@ PT_Sprite* PT_ShooterCreate( const char* utf8_spriteTemplate ) {
 	
 	
 	//add callbacks to sprite
+	PT_SpriteAddCollisionCallback(sprite, PT_ShooterCollisionWith);
 	PT_SpriteAddUpdateCallback(sprite, PT_ShooterUpdate);
 	PT_SpriteAddDrawCallback(sprite, PT_ShooterDraw);
 	PT_SpriteAddDestroyCallback(sprite, PT_ShooterDestroy);
@@ -67,6 +68,10 @@ void PT_ShooterDestroy( void* _data ) {
 	
 	free(_this);
 }//PT_ShooterDestroy
+
+void PT_ShooterCollisionWith( void* _data, PT_Collider own, PT_Collider target ) {
+	PT_Shooter* _this = (PT_Shooter*)_data;
+}//PT_ShooterCollisionWith
 
 void PT_ShooterUpdate( void* _data, Sint32 elapsedTime ) {
 	PT_Shooter* _this = (PT_Shooter*)_data;

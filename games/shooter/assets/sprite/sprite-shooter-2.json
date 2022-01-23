@@ -35,28 +35,28 @@
 	"colliders": [
 		{
 			"type": "PT_COLLIDER_TYPE_RECTANGLE",
-			"name": "top collider",
+			"name": "front collider",
 			
 			"fields": {
 				"x": 10,
 				"y": 5,
-				"w": 10,
+				"w": 50,
 				"h": 10,
 			}
 		},
 		{
 			"type": "PT_COLLIDER_TYPE_RECTANGLE",
-			"name": "bottom collider",
+			"name": "back collider",
 			
 			"fields": {
-				"x": 30,
+				"x": 10,
 				"y": 50,
-				"w": 10,
+				"w": 50,
 				"h": 10,
 			}
 		}
 	],
-	"behavior": "shooter-behavior",
+	"behavior": "shooter-behavior-2",
 	
 	"misc": {
 	}

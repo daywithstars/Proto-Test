@@ -90,13 +90,31 @@ SDL_bool PT_ColliderSetRect( PT_Collider* _this, float x, float y, float w, floa
 	return SDL_TRUE;
 }//PT_ColliderSetRect
 
-void PT_ColliderDraw( PT_Collider* _this, SDL_Color color, float relativeX, float relativeY ) {
-	if ( _this->type == PT_COLLIDER_TYPE_RECTANGLE )
+SDL_bool PT_ColliderTestCollision( PT_Collider _this, float _thisRelativeX, float _thisRelativeY, PT_Collider other, float otherRelativeX, float otherRelativeY ) {
+	if ( _this.type == PT_COLLIDER_TYPE_RECTANGLE )
+	{
+		if ( other.type == PT_COLLIDER_TYPE_RECTANGLE )
+		{
+			return !( (_this.rect->x + _thisRelativeX) + _this.rect->w < (other.rect->x + otherRelativeX) 								||
+				(_this.rect->x + _thisRelativeX) > (other.rect->x + otherRelativeX) + other.rect->w 
+							||
+				(_this.rect->y + _thisRelativeY) + _this.rect->h < (other.rect->y + otherRelativeY)
+							||
+				(_this.rect->y + _thisRelativeY) > (other.rect->y + otherRelativeY) + other.rect->h 
+			 );
+		}
+	}
+	
+	return SDL_FALSE;
+}//PT_ColliderTestCollision
+
+void PT_ColliderDraw( PT_Collider _this, SDL_Color color, float relativeX, float relativeY ) {
+	if ( _this.type == PT_COLLIDER_TYPE_RECTANGLE )
 	{
 		PT_GraphicsSetRenderDrawColor(color);
 		
-		const SDL_FRect rect = { _this->rect->x + relativeX, _this->rect->y + relativeY, 
-			_this->rect->w, _this->rect->h };
+		const SDL_FRect rect = { _this.rect->x + relativeX, _this.rect->y + relativeY, 
+			_this.rect->w, _this.rect->h };
 			
 		PT_GraphicsRenderFillRectF(&rect);
 	}

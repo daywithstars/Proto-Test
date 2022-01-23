@@ -22,6 +22,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_ScreenManager.h>
 #include <PT_SoundManager.h>
 #include <PT_LevelManager.h>
+#include <PT_CollisionManager.h>
 #include <PT_Parse.h>
 #include <PT_Camera.h>
 
@@ -95,6 +96,7 @@ SDL_bool PT_ApplicationParseSettings( ) {
 }//PT_ApplicationParseSettings
 
 void PT_ApplicationUpdate( Sint32 elapsedTime ) {
+	PT_CollisionManagerUpdate();
 	PT_ScreenManagerUpdate(elapsedTime);
 }//PT_ApplicationUpdate
 
@@ -171,6 +173,10 @@ SDL_bool PT_ApplicationCreate( ) {
 	{
 		return SDL_FALSE;
 	}
+	if ( !PT_CollisionManagerCreate() )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate!\n");
+	}
 	if ( !PT_LevelManagerCreate() )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate: Cannot create PT_LevelManager!\n");
@@ -215,6 +221,7 @@ void PT_ApplicationDestroy( ) {
 		PT_LevelManagerDestroy();
 		PT_ScreenManagerDestroy();
 		PT_SoundManagerDestroy();
+		PT_CollisionManagerDestroy();
 		
 		//To present sounds threads lose information before using it. 
 		while ( !ptApplication->canExit ) { }

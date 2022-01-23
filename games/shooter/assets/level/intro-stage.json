@@ -35,6 +35,23 @@
                  "width":66.6666666666667,
                  "x":156,
                  "y":34.6666666666667
+                }, 
+                {
+                 "height":74.6666666666667,
+                 "id":6,
+                 "name":"Some random object",
+                 "properties":[
+                        {
+                         "name":"template",
+                         "type":"string",
+                         "value":"sprite-shooter-2"
+                        }],
+                 "rotation":0,
+                 "type":"PT_Sprite",
+                 "visible":true,
+                 "width":66.6666666666667,
+                 "x":181.333333333333,
+                 "y":196
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -55,7 +72,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":6,
+ "nextobjectid":7,
  "orientation":"orthogonal",
  "renderorder":"left-down",
  "tiledversion":"1.7.2",

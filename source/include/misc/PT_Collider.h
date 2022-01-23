@@ -36,7 +36,9 @@ void PT_ColliderDestroy( PT_Collider* _this );
 SDL_bool PT_ColliderSetName( PT_Collider* _this, const char* utf8_name );
 SDL_bool PT_ColliderSetRect( PT_Collider* _this, float x, float y, float w, float h );
 
-void PT_ColliderDraw( PT_Collider* _this, SDL_Color color, float relativeX, float relativeY );
+SDL_bool PT_ColliderTestCollision( PT_Collider _this, float _thisRelativeX, float _thisRelativeY, PT_Collider other, float otherRelativeX, float otherRelativeY );
+
+void PT_ColliderDraw( PT_Collider _this, SDL_Color color, float relativeX, float relativeY );
 
 
 #endif /* _PT_COLLIDIR_H_ */

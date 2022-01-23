@@ -15,34 +15,34 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <SDL_log.h>
 
-#include <PT_StringList.h>
+#include <PT_SpriteList.h>
 
 
-PT_StringList* PT_StringListCreate( PT_StringList* _this, const char* utf8_index, PT_String* value ) {
+PT_SpriteList* PT_SpriteListCreate( PT_SpriteList* _this, const char* utf8_index, PT_Sprite* value ) {
 
 	if ( !_this )
 	{
-		_this = (PT_StringList*)malloc(sizeof(PT_StringList));
+		_this = (PT_SpriteList*)malloc(sizeof(PT_SpriteList));
 		if ( !_this )
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringListCreate: Not enough memory\n");
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteListCreate: Not enough memory\n");
 			return NULL;
 		}
-		SDL_memset(_this, 0, sizeof(PT_StringList));
+		SDL_memset(_this, 0, sizeof(PT_SpriteList));
 		
 		_this->index = PT_StringCreate();
 		if ( !PT_StringInsert(&(_this->index), utf8_index, 0) )
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringListCreate!\n");
-			PT_StringListDestroy(_this);
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteListCreate!\n");
+			PT_SpriteListDestroy(_this, SDL_FALSE);
 			return NULL;
 		}
 		
-		_this->values = (PT_String**)malloc(sizeof(PT_String*));
+		_this->values = (PT_Sprite**)malloc(sizeof(PT_Sprite*));
 		if ( !_this->values )
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringListCreate: Not enough memory\n");
-			PT_StringListDestroy(_this);
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteListCreate: Not enough memory\n");
+			PT_SpriteListDestroy(_this, SDL_FALSE);
 			return NULL;
 		}
 		_this->numValues = 1;
@@ -50,10 +50,10 @@ PT_StringList* PT_StringListCreate( PT_StringList* _this, const char* utf8_index
 	}
 	else {	
 	
-		PT_String** newValues = (PT_String**)malloc(sizeof(PT_String*) * (_this->numValues + 1));
+		PT_Sprite** newValues = (PT_Sprite**)malloc(sizeof(PT_Sprite*) * (_this->numValues + 1));
 		if ( !newValues )
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringListCreate: Not enough memory\n");
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteListCreate: Not enough memory\n");
 			return _this;
 		}
 		
@@ -72,9 +72,9 @@ PT_StringList* PT_StringListCreate( PT_StringList* _this, const char* utf8_index
 	}
 	
 	return _this;
-}//PT_StringListCreate
+}//PT_SpriteListCreate
 
-void PT_StringListDestroy( PT_StringList* _this ) {
+void PT_SpriteListDestroy( PT_SpriteList* _this, SDL_bool freeSprites ) {
 	if ( !_this )
 	{
 		return;
@@ -83,13 +83,16 @@ void PT_StringListDestroy( PT_StringList* _this ) {
 
 	while ( _this )
 	{
-		PT_StringList* tmp = _this->next;
+		PT_SpriteList* tmp = _this->next;
 		
 		if ( _this->values )
 		{
-			for ( unsigned int i = 0; i < _this->numValues; i++ )
+			if ( freeSprites )
 			{
-				PT_StringDestroy(_this->values[i]);
+				for ( unsigned int i = 0; i < _this->numValues; i++ )
+				{
+					PT_SpriteDestroy(_this->values[i]);
+				}
 			}
 			free(_this->values);
 		}
@@ -99,62 +102,62 @@ void PT_StringListDestroy( PT_StringList* _this ) {
 		free(_this);
 		_this = tmp;
 	}
-}//PT_StringListDestroy
+}//PT_SpriteListDestroy 
 
-PT_StringList* PT_StringListAdd( PT_StringList* _this, const char* utf8_index, PT_String* value ) {
+PT_SpriteList* PT_SpriteListAdd( PT_SpriteList* _this, const char* utf8_index, PT_Sprite* value, SDL_bool freeRepeated ) {
 	
 	if ( !_this )
 	{
-		return PT_StringListCreate(NULL, utf8_index, value);
+		return PT_SpriteListCreate(NULL, utf8_index, value);
 	}
 	
-	PT_StringList* pList = _this;
+	PT_SpriteList* pList = _this;
 	while ( pList )
 	{
 		if ( PT_StringMatch(pList->index, utf8_index) )
 		{
-			if ( value )
+			if ( value && freeRepeated )
 			{
-				PT_StringDestroy(value);
+				PT_SpriteDestroy(value);
 			}
 			return _this;
 		}
 		pList = pList->next;
 	}
 
-	PT_StringList* newNode = PT_StringListCreate(NULL, utf8_index, value);
+	PT_SpriteList* newNode = PT_SpriteListCreate(NULL, utf8_index, value);
 	newNode->next = _this;
 	
 	return newNode;
-}//PT_StringListAdd
+}//PT_SpriteListAdd
 
-PT_StringList* PT_StringListCat( PT_StringList* _this, const char* utf8_index, PT_String* value ) {
+PT_SpriteList* PT_SpriteListCat( PT_SpriteList* _this, const char* utf8_index, PT_Sprite* value ) {
 	if ( !_this )
 	{
-		return PT_StringListCreate(NULL, utf8_index, value);
+		return PT_SpriteListCreate(NULL, utf8_index, value);
 	}
 	
-	PT_StringList* pList = _this;
+	PT_SpriteList* pList = _this;
 	while ( pList )
 	{
 		if ( PT_StringMatch(pList->index, utf8_index) )
 		{
 			if ( value )
 			{
-				_this = PT_StringListCreate(_this, NULL, value);
+				_this = PT_SpriteListCreate(_this, NULL, value);
 				return _this;
 			}
 		}
 		pList = pList->next;
 	}
 	
-	PT_StringList* newNode = PT_StringListCreate(NULL, utf8_index, value);
+	PT_SpriteList* newNode = PT_SpriteListCreate(NULL, utf8_index, value);
 	newNode->next = _this;
 	
 	return newNode;
-}//PT_StringListCat
+}//PT_SpriteListCat
 
-PT_StringList* PT_StringListGet( PT_StringList* _this, const char* utf8_index ) {
+PT_SpriteList* PT_SpriteListGet( PT_SpriteList* _this, const char* utf8_index ) {
 	while ( _this )
 	{
 		if ( PT_StringMatch(_this->index, utf8_index) )
@@ -166,7 +169,10 @@ PT_StringList* PT_StringListGet( PT_StringList* _this, const char* utf8_index ) 
 	}
 	
 	return NULL;
-}//PT_StringListGet
+}//PT_SpriteListGet
+
+
+
 
 
 

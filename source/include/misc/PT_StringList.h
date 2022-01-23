@@ -36,7 +36,7 @@ typedef struct pt_string_list {
 /** 
 * \brief Create the first PT_StringList Node or add more values to the node
 *
-* You can use this function to concatenate more values, but be sure to parse the correct _this/node. 
+* You can use this function to concatenate more values, but be sure to parse the correct _this/node(not recommended, instead use PT_StringListCat). 
 *
 * @param _this The PT_StringList pointer or NULL. 
 * @param utf8_index The index node name.

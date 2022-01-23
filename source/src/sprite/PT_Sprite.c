@@ -17,8 +17,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Sprite.h>
 #include <PT_Parse.h>
 #include <PT_Graphics.h>
-#include <PT_SoundManager.h>
+#include <PT_CollisionManager.h>
 #include <PT_Behavior.h>
+#include <PT_Camera.h>
 
 
 
@@ -111,6 +112,10 @@ void PT_SpriteDestroy( PT_Sprite* _this ) {
 	free(_this);
 }//PT_SpriteDestroy
 
+void PT_SpriteAddCollisionCallback( PT_Sprite* _this, 
+	void (*callback)(void* _data, PT_Collider, PT_Collider) ) {
+	_this->collision = callback;
+}
 void PT_SpriteAddUpdateCallback( PT_Sprite* _this, void (*callback)(void* _data, Sint32 elapsedTime) ) {
 	_this->update = callback;
 }
@@ -180,6 +185,15 @@ void PT_SpriteGrab( void* _data, SDL_FPoint mousePosition ) {
 	}
 }//PT_SpriteGrab
 
+void PT_SpriteCollisionWith( PT_Sprite* _this, PT_Collider own, PT_Collider target ) {
+	if ( _this->collision )
+	{
+		_this->collision(_this->_data, own, target);
+	}
+	
+	printf("PT_SpriteCollisionWith: tar.name: %s\n", (char*)target.name->utf8_string);
+}//PT_SpriteCollisionWith
+
 void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime ) {
 	PT_SpriteStopMoveHorizontal((void*)_this);
 	PT_SpriteStopMoveVertical((void*)_this);
@@ -205,18 +219,36 @@ void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime ) {
 void PT_SpriteDraw( PT_Sprite* _this ) {
 	if ( _this->imageName ) 
 	{
-		PT_GraphicsDrawTextureF((char*)_this->imageName->utf8_string, _this->srcRect, &_this->dstRect,
-			0.0, NULL, SDL_FLIP_NONE);
+		if ( _this->cameraTarget )
+		{
+			const SDL_FRect dst = { _this->dstRect.x + PT_CameraGetX(), 
+				_this->dstRect.y + PT_CameraGetY(), _this->dstRect.w, _this->dstRect.h };
+				
+			PT_GraphicsDrawTextureF((char*)_this->imageName->utf8_string, _this->srcRect, &dst,
+				0.0, NULL, SDL_FLIP_NONE);
+		}
+		else {
+			PT_GraphicsDrawTextureF((char*)_this->imageName->utf8_string, _this->srcRect, &_this->dstRect,
+							0.0, NULL, SDL_FLIP_NONE);
+		}
 	}
 	if ( _this->draw )
 	{
 		_this->draw(_this->_data);
 	}
-	/*for ( unsigned int i = 0; i < _this->numColliders; i++ )
+	for ( unsigned int i = 0; i < _this->numColliders; i++ )
 	{	
-		const SDL_Color color = { 200, 200, 200, 100 };
-		PT_ColliderDraw(&_this->colliders[i], color, _this->dstRect.x, _this->dstRect.y);
-	}*/
+		const SDL_Color color = { 200, 200, 200, 150 };
+		if ( _this->cameraTarget )
+		{
+			PT_ColliderDraw(_this->colliders[i], color, 
+			_this->dstRect.x + PT_CameraGetX(), _this->dstRect.y + PT_CameraGetY());
+		}
+		else
+		{
+			PT_ColliderDraw(_this->colliders[i], color, _this->dstRect.x, _this->dstRect.y);
+		}
+	}
 }//PT_SpriteDraw
 
 
@@ -230,7 +262,11 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 	{
 		for ( unsigned int i = 0; i < jsonValue->u.object.length; i++ )
 		{
-			if ( !strcmp("image", jsonValue->u.object.values[i].name) )
+			if ( !strcmp("tag", jsonValue->u.object.values[i].name) )
+			{
+				PT_CollisionManagerAdd(jsonValue->u.object.values[i].value->u.string.ptr, _this);
+			}
+			else if ( !strcmp("image", jsonValue->u.object.values[i].name) )
 			{
 				_this->imageName = PT_StringCreate();
 				PT_StringInsert(&_this->imageName, jsonValue->u.object.values[i].value->u.string.ptr, 0);
