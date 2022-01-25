@@ -196,8 +196,14 @@ void PT_SpriteCollisionWith( PT_Sprite* _this, PT_Collider own, PT_Collider targ
 }//PT_SpriteCollisionWith
 
 void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime ) {
-	PT_SpriteStopMoveHorizontal((void*)_this);
-	PT_SpriteStopMoveVertical((void*)_this);
+	if ( _this->tagStopHorizontal )
+	{
+		PT_SpriteStopMoveHorizontal((void*)_this);
+	}
+	if ( _this->tagStopVertical )
+	{
+		PT_SpriteStopMoveVertical((void*)_this);
+	}
 
 	if ( _this->animationList )
 	{
@@ -263,9 +269,45 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 	{
 		for ( unsigned int i = 0; i < jsonValue->u.object.length; i++ )
 		{
-			if ( !strcmp("tag", jsonValue->u.object.values[i].name) )
+			if ( !strcmp("tags", jsonValue->u.object.values[i].name) )
 			{
-				PT_CollisionManagerAdd(jsonValue->u.object.values[i].value->u.string.ptr, _this);
+				for ( unsigned int j = 0; j < jsonValue->u.object.values[i].value->u.object.length; j++ )
+				{
+					if ( !strcmp("collider", 
+						jsonValue->u.object.values[i].value->u.object.values[j].name) )
+					{
+						PT_CollisionManagerAdd(
+							jsonValue->u.object.values[i].value->u.object.values[j].value->u.string.ptr, 
+							_this);
+					}	
+					else if ( !strcmp("movement", 
+						jsonValue->u.object.values[i].value->u.object.values[j].name) )
+					{
+						for ( unsigned int k = 0; 
+						k < jsonValue->u.object.values[i].value->u.object.values[j].value->u.array.length;
+						k++ )
+						{
+							if ( 
+								!strcmp("constant-stop-vertical",
+								jsonValue->u.object.values[i]
+								.value->u.object.values[j]
+								.value->u.array.values[k]->u.string.ptr
+								) )
+							{
+								_this->tagStopVertical = SDL_TRUE;
+							}
+							if ( 
+								!strcmp("constant-stop-horizontal",
+								jsonValue->u.object.values[i]
+								.value->u.object.values[j]
+								.value->u.array.values[k]->u.string.ptr
+								) )
+							{
+								_this->tagStopHorizontal = SDL_TRUE;
+							}
+						}
+					}
+				}
 			}
 			else if ( !strcmp("image", jsonValue->u.object.values[i].name) )
 			{

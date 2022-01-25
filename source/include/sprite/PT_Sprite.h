@@ -24,6 +24,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 struct pt_behavior;
 
 typedef struct {
+	SDL_bool tagStopHorizontal;
+	SDL_bool tagStopVertical;
+
 	PT_String* imageName;	
 	
 	int dirX, dirY;

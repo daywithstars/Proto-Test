@@ -1,6 +1,12 @@
 {
 	"type": "PT_Sprite",
-	"tag": "shooterObjects",
+	"tags": {
+		"collider": "shooterObjcs",
+		"movement": [
+			"constant-stop-horizontal",
+			"constant-stop-vertical",
+		],
+	},
 	"image": "shooter-sheet",
 	"speedX": 0.18,
 	"speedY": 0.14,
