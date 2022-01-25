@@ -184,8 +184,21 @@ void PT_InputManagerParse( ) {
 	{
 		PT_String* inputHandlerPath = PT_StringCreate();
 		
-		PT_StringInsert(&inputHandlerPath, entry.value->u.array.values[i]->u.string.ptr, 0);
-		PT_StringInsert(&inputHandlerPath, "assets/input/", 0);
+		if ( !PT_StringInsert(&inputHandlerPath, ".json", 0) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputManagerParse!\n");
+			continue;
+		}
+		if ( !PT_StringInsert(&inputHandlerPath, entry.value->u.array.values[i]->u.string.ptr, 0) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputManagerParse!\n");
+			continue;
+		}
+		if ( !PT_StringInsert(&inputHandlerPath, "assets/input/", 0) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputManagerParse!\n");
+			continue;
+		}
 		
 		json_value* jsonValue = 
 		PT_ParseGetJsonValueFromFile((char*)inputHandlerPath->utf8_string, SDL_TRUE);
