@@ -18,6 +18,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_CollisionManager.h>
 #include <PT_SpriteList.h>
 #include <PT_Collider.h>
+#include <PT_Camera.h>
 
 
 
@@ -99,9 +100,29 @@ void PT_CollisionManagerCheckGroupCollision( unsigned int num, PT_Sprite** value
 				continue;
 			}
 			
-			PT_CollisionManagerCheckColliderCollision(values[i], values[j], 
-				values[i]->numColliders, values[i]->colliders,
-				values[j]->numColliders, values[j]->colliders);
+			//Only for sprites on the screen.
+			if ( values[i]->dstRect.x  <= PT_CameraGetX() + PT_CameraGetWidth() && 
+			values[i]->dstRect.x + values[i]->dstRect.w >= PT_CameraGetX() &&
+			values[i]->dstRect.y <= PT_CameraGetY() + PT_CameraGetHeight() &&
+			values[i]->dstRect.y + values[i]->dstRect.h >= PT_CameraGetY() )
+			{
+				
+				if ( values[j]->dstRect.x  <= PT_CameraGetX() + PT_CameraGetWidth() && 
+				values[j]->dstRect.x + values[j]->dstRect.w >= PT_CameraGetX() &&
+				values[j]->dstRect.y <= PT_CameraGetY() + PT_CameraGetHeight() &&
+				values[j]->dstRect.y + values[j]->dstRect.h >= PT_CameraGetY() )
+				{
+					PT_CollisionManagerCheckColliderCollision(values[i], values[j], 
+						values[i]->numColliders, values[i]->colliders,
+						values[j]->numColliders, values[j]->colliders);
+				}
+				else {
+					continue;
+				}
+			}
+			else {
+				break;
+			}
 		}
 	}
 }//PT_CollisionManagerCheckGroupCollision

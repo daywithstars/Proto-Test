@@ -35,7 +35,7 @@
 	"colliders": [
 		{
 			"type": "PT_COLLIDER_TYPE_RECTANGLE",
-			"name": "top collider",
+			"name": "sprite1 top collider",
 			
 			"fields": {
 				"x": 10,
@@ -46,7 +46,7 @@
 		},
 		{
 			"type": "PT_COLLIDER_TYPE_RECTANGLE",
-			"name": "bottom collider",
+			"name": "sprite1 bottom collider",
 			
 			"fields": {
 				"x": 30,
