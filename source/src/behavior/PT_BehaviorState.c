@@ -39,6 +39,7 @@ PT_BehaviorState* PT_BehaviorStateCreate( json_value* jsonValue, void* pBehavior
 	PT_BehaviorState* _this = (PT_BehaviorState*)malloc(sizeof(PT_BehaviorState));
 	if ( !_this )
 	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorStateCreate: Not enough memory\n");
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(PT_BehaviorState));
@@ -247,7 +248,7 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 					if ( !_this->events[i] )
 					{
 						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-						"PT: PT_BehaviorStateParse: Not enough memory for event[%d]\n", i);
+						"PT: PT_BehaviorStateParse: Event[%d]!\n", i);
 						break;
 					}
 				}

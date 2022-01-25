@@ -218,6 +218,7 @@ PT_String* PT_StringCreate( ) {
 	PT_String* _this = (PT_String*)SDL_malloc(sizeof(PT_String));
 	if ( !_this )
 	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringCreate: Not enough memory\n");
 		return NULL;
 	}
 	_this->utf8_string = NULL;
@@ -667,7 +668,7 @@ Uint64 PT_StringCountBasicString( const char* utf8_string ) {
 	
 	if ( !tmp )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringCountBasicString: Not enough memory\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_StringCountBasicString!\n");
 		return strCount;
 	}
 	if ( !PT_StringInsert(&tmp, utf8_string, 0) )

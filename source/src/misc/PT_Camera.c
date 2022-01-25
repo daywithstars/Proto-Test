@@ -46,6 +46,7 @@ SDL_bool PT_CameraCreate() {
 	ptCamera = (PT_Camera*)malloc(sizeof(PT_Camera));
 	if ( !ptCamera )
 	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CameraCreate: Not enough memory\n");
 		return SDL_FALSE;
 	}
 	SDL_memset(ptCamera, 0, sizeof(PT_Camera));

@@ -36,6 +36,7 @@ PT_Sprite* PT_DynamicImageCreate( const char* utf8_spriteTemplate ) {
 	PT_DynamicImage* _this = (PT_DynamicImage*)malloc(sizeof(struct pt_dynamic_image));
 	if ( !_this )
 	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_DynamicImageCreate: Not enough memory\n");
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(struct pt_dynamic_image));

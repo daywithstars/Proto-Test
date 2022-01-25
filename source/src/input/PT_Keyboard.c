@@ -13,6 +13,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stdlib.h>
 #include <malloc.h>
 
+#include <SDL_log.h>
+
 #include <PT_Keyboard.h>
 #include <PT_String.h>
 
@@ -32,6 +34,7 @@ PT_Keyboard* PT_KeyboardCreate( ) {
 	PT_Keyboard* _this = (PT_Keyboard*)malloc(sizeof(struct pt_keyboard));
 	if ( !_this )
 	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_KeyboardCreate: Not enough memory\n");
 		return NULL;
 	}
 	_this->keyEvent = SDL_FALSE;

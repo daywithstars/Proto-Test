@@ -9,6 +9,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <malloc.h>
+
+#include <SDL_log.h>
+
 #include <PT_CollisionManager.h>
 #include <PT_SpriteList.h>
 #include <PT_Collider.h>

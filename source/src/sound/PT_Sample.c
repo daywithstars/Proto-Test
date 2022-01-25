@@ -28,6 +28,7 @@ PT_Sample* PT_SampleCreate( ) {
 	PT_Sample* _this = (PT_Sample*)malloc(sizeof(PT_Sample));
 	if ( !_this )
 	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SampleCreate: Not enough memory\n");
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(PT_Sample));

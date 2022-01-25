@@ -57,7 +57,7 @@ SDL_bool PT_InputManagerCreate( ) {
 	if ( !ptInputManager->keyboard ) 
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_InputManagerCreate: Not enough memory!\n");
+		"PT: PT_InputManagerCreate!\n");
 		PT_InputManagerDestroy();
 		return SDL_FALSE;
 	}
@@ -66,7 +66,7 @@ SDL_bool PT_InputManagerCreate( ) {
 	if ( !ptInputManager->mouse )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_InputManagerCreate: Not enough memory!\n");
+		"PT: PT_InputManagerCreate!\n");
 		PT_InputManagerDestroy();
 		return SDL_FALSE;
 	}
@@ -215,7 +215,7 @@ void PT_InputManagerParse( ) {
 		if ( !inputHandler )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-			"PT: PT_InputManagerParse: Not enough memory\n");
+			"PT: PT_InputManagerParse!\n");
 			
 			json_value_free(jsonValue);
 			PT_StringDestroy(inputHandlerPath);

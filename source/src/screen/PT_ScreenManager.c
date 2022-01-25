@@ -71,8 +71,10 @@ SDL_bool PT_ScreenManagerCreate( ) {
 	ptScreenManager = (PT_ScreenManager*)malloc(sizeof(PT_ScreenManager));
 	if ( !ptScreenManager )
 	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenManagerCreate: Not enough memory\n");
 		return SDL_FALSE;
 	}
+	SDL_memset(ptScreenManager, 0, sizeof(PT_ScreenManager));
 	
 	ptScreenManager->firstScreen = NULL;
 	ptScreenManager->secondScreen = NULL;
@@ -177,7 +179,7 @@ void PT_ScreenManagerSetup( ) {
 								if ( !PT_ScreenManagerLoadScreen(entry.value->u.string.ptr) )
 								{
 									SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-									"PT: PT_ScreenManagerSetup\n");
+									"PT: PT_ScreenManagerSetup!\n");
 								}
 								else {
 									PT_ScreenManagerSetFirstScreen(entry.value->u.string.ptr);

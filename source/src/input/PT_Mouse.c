@@ -14,6 +14,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <malloc.h>
 #include <string.h>
 
+#include <SDL_log.h>
+
 #include <PT_Mouse.h>
 
 #define PT_MOUSE_NUM_BUTTONS 5
@@ -32,6 +34,7 @@ PT_Mouse* PT_MouseCreate( ) {
 	PT_Mouse* _this = (PT_Mouse*)malloc(sizeof(struct pt_mouse));
 	if ( !_this )
 	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_MouseCreate: Not enough memory\n");
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(struct pt_mouse));

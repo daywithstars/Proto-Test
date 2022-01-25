@@ -38,6 +38,7 @@ PT_Parse* PT_ParseCreate( ) {
 	PT_Parse* _this = (PT_Parse*)malloc(sizeof(struct pt_parse));
 	if ( !_this )
 	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseCreate: Not enough memory\n");
 		return NULL;
 	}
 
@@ -274,7 +275,7 @@ json_object_entry PT_ParseGetObjectEntry_json_value( json_value* _json_value, co
 	if ( !sequenceFound )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_ParseGetObjectEntry_json_value: Not enough memory\n");
+		"PT: PT_ParseGetObjectEntry_json_value!\n");
 		return entry;
 	}	
 

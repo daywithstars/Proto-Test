@@ -13,6 +13,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stdlib.h>
 #include <malloc.h>
 
+#include <SDL_log.h>
+
 #include <PT_Shooter.h>
 #include <PT_Graphics.h>
 #include <PT_InputManager.h>
@@ -37,6 +39,7 @@ PT_Sprite* PT_ShooterCreate( const char* utf8_spriteTemplate ) {
 	PT_Shooter* _this = (PT_Shooter*)malloc(sizeof(struct pt_shooter));
 	if ( !_this )
 	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ShooterCreate: Not enough memory\n");
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(struct pt_shooter));

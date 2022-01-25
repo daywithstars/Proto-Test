@@ -13,6 +13,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stdlib.h>
 #include <malloc.h>
 
+#include <SDL_log.h>
+
 #include <PT_InputHandler.h>
 #include <PT_Sprite.h>
 #include <PT_Parse.h>
@@ -39,6 +41,7 @@ PT_InputHandler* PT_InputHandlerCreate( json_value* jsonValue ) {
 	PT_InputHandler* _this = (PT_InputHandler*)malloc(sizeof(PT_InputHandler));
 	if ( !_this )
 	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputHandlerCreate: Not enough memory\n");
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(PT_InputHandler));

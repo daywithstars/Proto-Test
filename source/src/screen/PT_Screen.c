@@ -87,6 +87,11 @@ SDL_bool PT_ScreenLoadSprites( PT_Screen* _this, json_value* jsonValue ) {
 	if ( entry.name )
 	{
 		_this->sprites = (PT_Sprite**)malloc(sizeof(PT_Sprite*) * entry.value->u.array.length);
+		if ( !_this->sprites )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenLoadSprites: Not enough memory\n");
+			return SDL_FALSE;
+		}
 		_this->numSprites = entry.value->u.array.length;
 		
 		PT_Parse *parse = PT_ParseCreate();

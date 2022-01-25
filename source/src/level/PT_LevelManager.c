@@ -13,6 +13,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stdlib.h>
 #include <malloc.h>
 
+#include <SDL_log.h>
+
 #include <PT_LevelManager.h>
 #include <PT_LevelList.h>
 #include <PT_Parse.h>
@@ -74,7 +76,7 @@ SDL_bool PT_LevelManagerSetup() {
 	PT_Parse* parse = PT_ParseCreate();
 	if ( !parse )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup: Not enough memory\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup!\n");
 		return SDL_FALSE;
 	}
 	
@@ -95,7 +97,7 @@ SDL_bool PT_LevelManagerSetup() {
 		PT_String* jsonLevelPath = PT_StringCreate();
 		if ( !jsonLevelPath )
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup: Not enough memory\n");
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup!\n");
 			break;
 		}
 		

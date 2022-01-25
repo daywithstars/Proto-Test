@@ -14,6 +14,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <malloc.h>
 #include <string.h>
 
+#include <SDL_log.h>
+
 #include <PT_Sprite.h>
 #include <PT_Parse.h>
 #include <PT_Graphics.h>
@@ -37,6 +39,7 @@ PT_Sprite* PT_SpriteCreate( const char* utf8_spriteTemplate, void* _data,
 	PT_Sprite* _this = (PT_Sprite*)malloc(sizeof(PT_Sprite));
 	if ( !_this )
 	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreate: Not enough memory\n");
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(PT_Sprite));
@@ -190,8 +193,6 @@ void PT_SpriteCollisionWith( PT_Sprite* _this, PT_Collider own, PT_Collider targ
 	{
 		_this->collision(_this->_data, own, target);
 	}
-	
-	printf("PT_SpriteCollisionWith: tar.name: %s\n", (char*)target.name->utf8_string);
 }//PT_SpriteCollisionWith
 
 void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime ) {

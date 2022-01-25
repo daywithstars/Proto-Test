@@ -14,6 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <malloc.h>
 
 #include <SDL_image.h>
+#include <SDL_log.h>
 
 #include <PT_Graphics.h>
 #include <PT_TextureList.h>

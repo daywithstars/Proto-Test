@@ -31,6 +31,7 @@ PT_LevelLayer* PT_LevelLayerCreate( void* layerData, json_value* jsonValue,
 	PT_LevelLayer* _this = (PT_LevelLayer*)malloc(sizeof(PT_LevelLayer));
 	if ( !_this )
 	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelLayerCreate: Not enough memory\n");
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(PT_LevelLayer));

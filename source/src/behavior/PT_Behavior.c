@@ -37,6 +37,7 @@ PT_Behavior* PT_BehaviorCreate( const char* utf8_behaviorTemplate ) {
 	PT_Behavior* _this = (PT_Behavior*)malloc(sizeof(PT_Behavior));
 	if ( !_this )
 	{	
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorCreate: Not enough memory\n");
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(PT_Behavior));
@@ -149,7 +150,7 @@ SDL_bool PT_BehaviorParse( PT_Behavior* _this, json_value* jsonValue ) {
 			);
 		if ( !newState )
 		{
-			SDL_Log("(*)PT: PT_BehaviorStateParse: Not enough memory\n");
+			SDL_Log("(*)PT: PT_BehaviorStateParse!\n");
 			return SDL_FALSE;
 		}
 		
