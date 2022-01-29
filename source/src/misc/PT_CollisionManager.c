@@ -145,6 +145,12 @@ void PT_CollisionManagerCheckColliderCollision( PT_Sprite* sprite_1, PT_Sprite* 
 			{
 				PT_SpriteCollisionWith(sprite_1, values_1[i], values_2[j]);
 				PT_SpriteCollisionWith(sprite_2, values_2[j], values_1[i]);
+				
+				sprite_1->collisionColliderName = values_1[i].name;
+				sprite_1->collisionTargetColliderName = values_2[j].name;
+				
+				sprite_2->collisionColliderName = values_2[j].name;
+				sprite_2->collisionTargetColliderName = values_1[i].name;
 			}
 		}
 	}

@@ -40,6 +40,8 @@ typedef struct {
 	
 	unsigned int numColliders;
 	PT_Collider* colliders;
+	PT_String* collisionColliderName;
+	PT_String* collisionTargetColliderName;
 	
 	struct pt_behavior* behavior;
 	

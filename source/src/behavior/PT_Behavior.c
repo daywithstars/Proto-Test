@@ -33,7 +33,7 @@ SDL_bool PT_BehaviorParse( PT_Behavior* _this, json_value* jsonValue );
 
 //===================================== PUBLIC Functions
 
-PT_Behavior* PT_BehaviorCreate( const char* utf8_behaviorTemplate ) {
+PT_Behavior* PT_BehaviorCreate( void* pSprite, const char* utf8_behaviorTemplate ) {
 	PT_Behavior* _this = (PT_Behavior*)malloc(sizeof(PT_Behavior));
 	if ( !_this )
 	{	
@@ -55,6 +55,7 @@ PT_Behavior* PT_BehaviorCreate( const char* utf8_behaviorTemplate ) {
 		return NULL;
 	}
 	
+	_this->pSprite = pSprite;
 	if ( !PT_BehaviorParse(_this, jsonValue) )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorCreate: Cannot parse\n");
@@ -146,7 +147,7 @@ SDL_bool PT_BehaviorParse( PT_Behavior* _this, json_value* jsonValue ) {
 		
 		PT_BehaviorState* newState = PT_BehaviorStateCreate(
 				entry.value->u.array.values[i],	
-				_this		
+				(void*)_this		
 			);
 		if ( !newState )
 		{

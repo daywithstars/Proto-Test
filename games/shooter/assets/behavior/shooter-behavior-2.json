@@ -74,6 +74,23 @@
 						}
 					},
 				},
+				{
+					"trigger": {
+
+					"type": "collision",
+
+						"value": {
+							"type": "change-direction",
+							"fields": {
+								"this-collider-name": "sprite2 bottom collider",
+								"target-collider-name": "sprite1 top collider",
+								
+								"dir-x": "rand",
+								"dir-y": -1,
+							}
+						}
+					},
+				},
 			],
 			
 			"always": [

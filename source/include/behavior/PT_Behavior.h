@@ -25,10 +25,12 @@ typedef struct pt_behavior {
 	PT_CallbackList* callbackList;
 	PT_BehaviorStateList* behaviorStateList;
 	PT_BehaviorState* currentState;
+	
+	void* pSprite;
 }PT_Behavior;
 
 
-PT_Behavior* PT_BehaviorCreate( const char* utf8_behaviorTemplate );
+PT_Behavior* PT_BehaviorCreate( void* pSprite, const char* utf8_behaviorTemplate );
 void PT_BehaviorDestroy( PT_Behavior* _this );
 
 void PT_BehaviorAddSimpleCallback( PT_Behavior* _this, const char* utf8_callbackName, 

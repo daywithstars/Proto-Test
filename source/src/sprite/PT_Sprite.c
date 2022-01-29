@@ -213,6 +213,8 @@ void PT_SpriteUpdate( PT_Sprite* _this, Sint32 elapsedTime ) {
 	{
 		PT_BehaviorUpdate(_this->behavior, (void*)_this, elapsedTime);
 	}
+	_this->collisionColliderName = NULL;
+	_this->collisionTargetColliderName = NULL;
 
 	_this->dstRect.x += _this->speedX * elapsedTime * _this->dirX;
 	_this->dstRect.y += _this->speedY * elapsedTime * _this->dirY;
@@ -550,7 +552,8 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 			else if ( !strcmp("behavior", jsonValue->u.object.values[i].name) )
 			{
 				
-				_this->behavior = PT_BehaviorCreate(
+				_this->behavior = PT_BehaviorCreate( 
+					(void*)_this,
 					jsonValue->u.object.values[i].value->u.string.ptr
 				);
 				

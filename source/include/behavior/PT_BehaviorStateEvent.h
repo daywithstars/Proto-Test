@@ -1,5 +1,5 @@
 /*
-Copyright 2021 daywithstars
+Copyright 2022 daywithstars
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -18,11 +18,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <json.h>
 
 #include <PT_String.h>
+#include <PT_Sprite.h>
 
 //Use "mask" with bitwise to bind TYPE with VALUE
 typedef enum {
 	PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_NONE                  =1,
-	PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_ALWAYS                 =2,
+	PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_ALWAYS                =2,
 	PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_TIMES                 =4,
 	PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_CONDITION             =8,
 	PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_TIMER                 =16,
@@ -31,7 +32,8 @@ typedef enum {
 	
 	PT_BEHAVIOR_STATE_EVENT_TRIGGER_VALUE_PLAY_SAMPLE          =128,
 	PT_BEHAVIOR_STATE_EVENT_TRIGGER_VALUE_PLAY_MUSIC           =256,
-	PT_BEHAVIOR_STATE_EVENT_TRIGGER_VALUE_CHANGE_SCREEN        =512
+	PT_BEHAVIOR_STATE_EVENT_TRIGGER_VALUE_CHANGE_DIRECTION     =512,
+	PT_BEHAVIOR_STATE_EVENT_TRIGGER_VALUE_CHANGE_SCREEN        =1024
 }PT_BehaviorStateEventTriggerFlags;
 
 
@@ -55,6 +57,16 @@ typedef struct {
 	//In construction
 	PT_BehaviorStateEventPlaySound sound;
 }PT_BehaviorStateEventCollisionPlaySound;
+
+typedef struct {
+	PT_String* collider_1_name;
+	PT_String* collider_2_name;
+	
+	int dirX;
+	int dirY;
+	
+	PT_Sprite* pSprite;
+}PT_BehaviorStateEventCollisionChangeDirection;
 
 
 
