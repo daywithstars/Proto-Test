@@ -40,37 +40,6 @@ typedef enum {
 
 
 typedef struct {
-	PT_String* name;
-	int loop;
-}PT_BehaviorStateEventPlaySound;
-
-
-/*
-	The mask result will be cast(from PT_BehaviorStateEventTriggerField) into one of these:
-*/
-typedef struct {
-	PT_String* keyMap;
-	PT_BehaviorStateEventPlaySound sound;
-}PT_BehaviorStateEventInputPlaySound;
-
-typedef struct {
-	//In construction
-	PT_BehaviorStateEventPlaySound sound;
-}PT_BehaviorStateEventCollisionPlaySound;
-
-typedef struct {
-	PT_String* collider_1_name;
-	PT_String* collider_2_name;
-	
-	int dirX;
-	int dirY;
-	
-	PT_Sprite* pSprite;
-}PT_BehaviorStateEventCollisionChangeDirection;
-
-
-
-typedef struct {
 	void* data;
 }PT_BehaviorStateEventTriggerField;
 
