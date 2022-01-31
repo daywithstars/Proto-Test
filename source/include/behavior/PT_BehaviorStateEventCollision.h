@@ -31,7 +31,9 @@ typedef struct {
 	PT_String* collider_1_name;
 	PT_String* collider_2_name;
 	
+	SDL_bool randDirX;
 	int dirX;
+	SDL_bool randDirY;
 	int dirY;
 	
 	PT_Sprite* pSprite;

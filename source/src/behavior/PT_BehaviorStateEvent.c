@@ -13,7 +13,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include <time.h>
 
 #include <SDL_stdinc.h>
 #include <SDL_log.h>
@@ -169,6 +168,37 @@ void PT_BehaviorStateEventUpdate( PT_BehaviorStateEvent* _this, Sint32 elapsedTi
 			
 			if ( collisionChangeDirection->pSprite->collisionColliderName )
 			{
+				if ( collisionChangeDirection->randDirX )
+				{
+					int value = rand() % 75;
+					if ( value <= 25 )
+					{
+						collisionChangeDirection->dirX = 1;
+					}
+					else if ( value > 25 && value <= 50 )
+					{
+						collisionChangeDirection->dirX = -1;
+					}
+					else {
+						collisionChangeDirection->dirX = 0;
+					}
+				}
+				if ( collisionChangeDirection->randDirY )
+				{
+					int value = rand() % 75;
+					if ( value <= 25 )
+					{
+						collisionChangeDirection->dirY = 1;
+					}
+					else if ( value > 25 && value <= 50 )
+					{
+						collisionChangeDirection->dirY = -1;
+					}
+					else {
+						collisionChangeDirection->dirY = 0;
+					}
+				}
+			
 				if ( PT_StringMatchFast(
 					(char*)collisionChangeDirection->pSprite->collisionColliderName->utf8_string,
 					(char*)collisionChangeDirection->collider_1_name->utf8_string) 

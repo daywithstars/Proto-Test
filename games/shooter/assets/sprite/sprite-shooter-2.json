@@ -36,6 +36,7 @@
 	],
 	"colliders": [
 		{
+			"visible": 1,
 			"type": "PT_COLLIDER_TYPE_RECTANGLE",
 			"name": "sprite2 top collider",
 			
@@ -47,6 +48,7 @@
 			}
 		},
 		{
+			"visible": 1,
 			"type": "PT_COLLIDER_TYPE_RECTANGLE",
 			"name": "sprite2 bottom collider",
 			

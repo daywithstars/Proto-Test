@@ -12,6 +12,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <time.h>
 
 #include <SDL_log.h>
 #include <SDL_stdinc.h>
@@ -30,9 +31,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 typedef struct {
 	SDL_bool running;
-	SDL_bool canExit;
 	
 	PT_String* gameName;
+	Uint32 srandCallCount;
 }PT_Application;
 
 extern PT_String* gRootDir;
@@ -96,6 +97,13 @@ SDL_bool PT_ApplicationParseSettings( ) {
 }//PT_ApplicationParseSettings
 
 void PT_ApplicationUpdate( Sint32 elapsedTime ) {
+	if ( (ptApplication->srandCallCount += elapsedTime) >= 5000 )
+	{
+		ptApplication->srandCallCount = 0;
+		time_t t;
+		srand((unsigned) time(&t));
+	}
+
 	PT_CollisionManagerUpdate();
 	PT_ScreenManagerUpdate(elapsedTime);
 }//PT_ApplicationUpdate
@@ -210,7 +218,7 @@ SDL_bool PT_ApplicationCreate( ) {
 	(char*)ptApplication->gameName->utf8_string);
 	
 	ptApplication->running = SDL_TRUE;
-	ptApplication->canExit = SDL_TRUE;
+	ptApplication->srandCallCount = 0;
 	return SDL_TRUE;
 }//PT_ApplicationCreate
 
@@ -222,9 +230,6 @@ void PT_ApplicationDestroy( ) {
 		PT_ScreenManagerDestroy();
 		PT_SoundManagerDestroy();
 		PT_CollisionManagerDestroy();
-		
-		//To present sounds threads lose information before using it. 
-		while ( !ptApplication->canExit ) { }
 		
 		PT_GraphicsDestroy();
 		PT_InputManagerDestroy();
@@ -244,10 +249,6 @@ void PT_ApplicationDestroy( ) {
 const PT_String* PT_ApplicationGetGameName( ) {
 	return ptApplication->gameName;
 }//PT_ApplicationGetGameName
-
-void PT_ApplicationCanExit( SDL_bool value ) {
-	ptApplication->canExit = value;
-}//PT_ApplicationCanExit
 
 void PT_ApplicationRun( ) {
 	PT_ApplicationMainLoop();

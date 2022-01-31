@@ -48,20 +48,6 @@ void PT_ApplicationDestroy( );
 const PT_String* PT_ApplicationGetGameName( );
 
 /**
-* \brief Set to SDL_TRUE if still running some background processing.
-*
-* @param value SDL_TRUE meaning the application can exits at any time.
-*
-* This function is required if you need some module that is already running for
-* that background processing before it exits.
-*
-* Do not use this function to processing that is called in iterations like in every 3 seconds
-* you create an thread and call this function with SDL_FALSE, or your application never exits if the
-* thread consumes more time than 3 seconds. 
-*/
-void PT_ApplicationCanExit( SDL_bool value );
-
-/**
 * \brief Run the application, this will remains until the application is running.
 */
 void PT_ApplicationRun( ); 

@@ -12,7 +12,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
-#include <time.h>
 
 #include <PT_BehaviorStateEventCollision.h>
 #include <PT_BehaviorState.h>
@@ -104,9 +103,6 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Collision_ChangeDirection(
 			return SDL_FALSE;
 		}
 		
-		time_t t;
-		srand((unsigned) time(&t));
-		
 		fieldsEntry = 
 		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields dir-x");
 		if ( fieldsEntry.name )
@@ -115,6 +111,8 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Collision_ChangeDirection(
 			{
 				if ( PT_StringMatchFast(fieldsEntry.value->u.string.ptr, "rand") )
 				{
+					collisionChangeDirection->randDirX = SDL_TRUE;
+				
 					int value = rand() % 75;
 					if ( value <= 25 )
 					{
@@ -153,6 +151,8 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Collision_ChangeDirection(
 			{
 				if ( PT_StringMatchFast(fieldsEntry.value->u.string.ptr, "rand") )
 				{
+					collisionChangeDirection->randDirY = SDL_TRUE;
+				
 					int value = rand() % 75;
 					if ( value <= 25 )
 					{

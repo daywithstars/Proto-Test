@@ -32,9 +32,26 @@
                  "rotation":0,
                  "type":"PT_Sprite",
                  "visible":true,
-                 "width":66,
+                 "width":64,
                  "x":128,
-                 "y":242
+                 "y":266
+                }, 
+                {
+                 "height":64,
+                 "id":11,
+                 "name":"Sprite spaceship 2",
+                 "properties":[
+                        {
+                         "name":"template",
+                         "type":"string",
+                         "value":"sprite-shooter-2"
+                        }],
+                 "rotation":0,
+                 "type":"PT_Sprite",
+                 "visible":true,
+                 "width":64,
+                 "x":126,
+                 "y":226
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -55,7 +72,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":11,
+ "nextobjectid":13,
  "orientation":"orthogonal",
  "renderorder":"left-down",
  "tiledversion":"1.7.2",
