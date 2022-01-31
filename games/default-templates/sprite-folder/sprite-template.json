@@ -40,15 +40,29 @@
 	],
 	"colliders": [
 		{
+			"visible": 1,
 			"type": "$collider-type$",
 			"name": "<collider-name>",
+			"color": {
+				"red": 200,
+				"green": 0,
+				"blue": 0,
+				"alpha": 140,
+			},
 			
 			"fields": {
 			}
 		},
 		{
+			"visible": 1,
 			"type": "$collider-type$",
 			"name": "<collider-name>",
+			"color": {
+				"red": 0,
+				"green": 220,
+				"blue": 0,
+				"alpha": 140,
+			},
 			
 			"fields": {
 			}

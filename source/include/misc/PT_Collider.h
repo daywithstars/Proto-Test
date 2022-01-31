@@ -25,6 +25,8 @@ typedef enum {
 typedef struct {
 	PT_ColliderType type;
 	PT_String* name;
+	SDL_bool visible;
+	SDL_Color color;
 	
 	SDL_FRect* rect;
 }PT_Collider;
@@ -34,11 +36,13 @@ PT_Collider PT_ColliderCreate();
 void PT_ColliderDestroy( PT_Collider* _this );
 
 SDL_bool PT_ColliderSetName( PT_Collider* _this, const char* utf8_name );
+void PT_ColliderSetVisible( PT_Collider* _this, SDL_bool value );
+void PT_ColliderSetColor( PT_Collider* _this, const SDL_Color color );
 SDL_bool PT_ColliderSetRect( PT_Collider* _this, float x, float y, float w, float h );
 
 SDL_bool PT_ColliderTestCollision( PT_Collider _this, float _thisRelativeX, float _thisRelativeY, PT_Collider other, float otherRelativeX, float otherRelativeY );
 
-void PT_ColliderDraw( PT_Collider _this, SDL_Color color, float relativeX, float relativeY );
+void PT_ColliderDraw( PT_Collider _this, float relativeX, float relativeY );
 
 
 #endif /* _PT_COLLIDIR_H_ */

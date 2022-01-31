@@ -247,15 +247,14 @@ void PT_SpriteDraw( PT_Sprite* _this ) {
 	}
 	for ( unsigned int i = 0; i < _this->numColliders; i++ )
 	{	
-		const SDL_Color color = { 200, 200, 200, 150 };
 		if ( _this->cameraTarget )
 		{
-			PT_ColliderDraw(_this->colliders[i], color, 
+			PT_ColliderDraw(_this->colliders[i], 
 			_this->dstRect.x + PT_CameraGetX(), _this->dstRect.y + PT_CameraGetY());
 		}
 		else
 		{
-			PT_ColliderDraw(_this->colliders[i], color, _this->dstRect.x, _this->dstRect.y);
+			PT_ColliderDraw(_this->colliders[i], _this->dstRect.x, _this->dstRect.y);
 		}
 	}
 }//PT_SpriteDraw
@@ -459,9 +458,70 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 				{
 					_this->colliders[j] = PT_ColliderCreate();
 					
-					
-					//Collider.type
+					//Collider.visible
 					json_object_entry entry = 
+					PT_ParseGetObjectEntry_json_value(
+						jsonValue->u.object.values[i].value->u.array.values[j], "visible");
+					if ( entry.name )
+					{
+						SDL_bool visible = SDL_FALSE;
+						
+						if ( entry.value->type == json_integer )
+						{
+							visible = entry.value->u.integer;
+						}
+						
+						PT_ColliderSetVisible(&_this->colliders[j], visible);
+					}	
+					
+					//Collider.color
+					entry = 
+					PT_ParseGetObjectEntry_json_value(
+						jsonValue->u.object.values[i].value->u.array.values[j], "color");
+					if ( entry.name )
+					{
+						entry = 
+						PT_ParseGetObjectEntry_json_value(
+							jsonValue->u.object.values[i].value->u.array.values[j], "color red");
+						Uint8 red = entry.value->type == json_integer ? entry.value->u.integer : 0;
+						
+						entry = 
+						PT_ParseGetObjectEntry_json_value(
+							jsonValue->u.object.values[i].value->u.array.values[j], "color green");
+						Uint8 green = entry.value->type == json_integer ? entry.value->u.integer : 0;
+						
+						entry = 
+						PT_ParseGetObjectEntry_json_value(
+							jsonValue->u.object.values[i].value->u.array.values[j], "color blue");
+						Uint8 blue = entry.value->type == json_integer ? entry.value->u.integer : 220;
+						
+						entry = 
+						PT_ParseGetObjectEntry_json_value(
+							jsonValue->u.object.values[i].value->u.array.values[j], "color alpha");
+						Uint8 alpha = entry.value->type == json_integer ? entry.value->u.integer : 140;
+							
+						const SDL_Color color = {
+							red,
+							green,
+							blue,
+							alpha
+						};
+						
+						PT_ColliderSetColor(&_this->colliders[j], color);
+					}
+					else {
+						const SDL_Color color = {
+							220,
+							0,
+							0,
+							140
+						};
+					
+						PT_ColliderSetColor(&_this->colliders[j], color);
+					}
+						
+					//Collider.type
+					entry = 
 					PT_ParseGetObjectEntry_json_value(
 						jsonValue->u.object.values[i].value->u.array.values[j], "type");
 					if ( !entry.name )

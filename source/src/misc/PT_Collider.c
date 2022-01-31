@@ -67,6 +67,14 @@ SDL_bool PT_ColliderSetName( PT_Collider* _this, const char* utf8_name ) {
 	return SDL_TRUE;
 }//PT_ColliderSetName
 
+void PT_ColliderSetVisible( PT_Collider* _this, SDL_bool value ) {
+	_this->visible = value;
+}//PT_ColliderSetVisible
+
+void PT_ColliderSetColor( PT_Collider* _this, const SDL_Color color ) {
+	_this->color = color;
+}//PT_ColliderSetColor
+
 SDL_bool PT_ColliderSetRect( PT_Collider* _this, float x, float y, float w, float h ) {
 	if ( _this->rect )
 	{
@@ -108,10 +116,15 @@ SDL_bool PT_ColliderTestCollision( PT_Collider _this, float _thisRelativeX, floa
 	return SDL_FALSE;
 }//PT_ColliderTestCollision
 
-void PT_ColliderDraw( PT_Collider _this, SDL_Color color, float relativeX, float relativeY ) {
+void PT_ColliderDraw( PT_Collider _this, float relativeX, float relativeY ) {
+	if ( !_this.visible )
+	{
+		return;
+	}
+	
 	if ( _this.type == PT_COLLIDER_TYPE_RECTANGLE )
 	{
-		PT_GraphicsSetRenderDrawColor(color);
+		PT_GraphicsSetRenderDrawColor(_this.color);
 		
 		const SDL_FRect rect = { _this.rect->x + relativeX, _this.rect->y + relativeY, 
 			_this.rect->w, _this.rect->h };
