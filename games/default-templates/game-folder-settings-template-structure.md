@@ -8,7 +8,12 @@ The file is the basic settings for the game in the folder game/your-game. All fi
 		"screenWidth": 640, 
 		"screenHeight": 480, 
 		"renderDrawColor": [255, 0, 0, 255] 
-	}
+	},
+	
+	"camera": {
+		"width": 640,
+		"height": 480,
+	},
 }
 ```
 
@@ -17,3 +22,9 @@ The file is the basic settings for the game in the folder game/your-game. All fi
   - **"screenHeight"** Means the height of the screen in pixels.
   - **"renderDrawColor"** Is the background clear color for the game.
     - [unsigned integer 8-bit, unsigned integer 8-bit, unsigned integer 8-bit, unsigned integer 8-bit,] This is the RGBA value, red, green, blue, alpha.
+    
+- **"camera"** Is the main camera, viewport size. 
+  - **"width"** 
+    - **value** integer.
+  - **"height"**
+    - **value** integer. 

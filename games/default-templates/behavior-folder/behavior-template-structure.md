@@ -82,10 +82,10 @@ When the button map is pressed, it will change the current animation to another 
 
 
 
-### event (optional)
+### events (optional)
 
 ```json
-"event": [
+"events": [
 	{
 	},
 ]
@@ -117,7 +117,7 @@ The object inside the array of objects from "event", that represent the trigger 
     - **input** It will execute once a **"&lt;input-template.buttons-map.name&gt;"** happens.
       - This requires in **"fields"**, **"key-map": "&lt;input-template.buttons-map.name&gt;"**
     - **collision** It will allows once the collision happens.
-      - In construction. 
+       
 
 ```json
 "value": {
@@ -127,20 +127,34 @@ The object inside the array of objects from "event", that represent the trigger 
 }
 ```
 
-This object is the final part.
+This object represents how fields will be filled for each **"TriggerType"**.
 
-- **"type"** Is the element value type.
-  - **"$ValueType$"** it can be:
-    - **"play-sample"** Play a sample when the **"$TriggerType$"** occurs. 
-      - Require **"sample-name": "&lt;SampleName&gt;** on **"fields"**.
-      - Require **"loop": integer** on **"fields"**.
-    - **"play-music"** Play a music when the **"$TriggerType$"** occurs.
-      - Require **"music-name": "&lt;MusicName&gt;** on **"fields"**.
-      - Require **"loop": integer** on **"fields"**.
-    - **"change-screen"** Change the screen.
-      - In construction
+- **"type"** Is the values that each **TriggerType** will search for it's respective fields. 
+  - List for **"TriggerType"** = **"input"**. 
+    - **"$ValueType$"** it can be:
+      - **"play-sample"** Play a sample when the **"$TriggerType$"** occurs. 
+        - Require **"sample-name": "&lt;SampleName&gt;** on **"fields"**.
+        - Require **"loop": integer** on **"fields"**.
+      - **"play-music"** Play a music when the **"$TriggerType$"** occurs.
+        - Require **"music-name": "&lt;MusicName&gt;** on **"fields"**.
+        - Require **"loop": integer** on **"fields"**.
+      - **"change-screen"** Change the screen.
+        - In construction
+  - List for **"TriggerType"** = **"collision"**. 
+    - **"$ValueType$"** it can be:
+      - **"change-direction"** Change the direction from a given sprite, based on its collider name.
+        - Require **"this-collider-name"**: "&lt;collider-name&gt;" The collider from this sprite behavior to be tested.
+        - Require **"target-collider-name"**: "&lt;collider-name&gt;" The target collider name.
+        - Require **"dir-x"**: 
+          - can be: integer, thats represents the direction on x-axis to move, can be: 1, -1 or 0.
+          - can be: "rand", strings that will give 1, -1 or 0 at collision.
+        - Require **"dir-y"**:
+          - can be: integer, thats represents the direction on y-axis to move, can be: 1, -1 or 0.
+          - can be: "rand", strings that will give 1, -1 or 0 at collision.
 
-#### Example
+#### Examples
+
+##### Input
 
 ```json
 "trigger": {
