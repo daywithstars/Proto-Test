@@ -35,6 +35,8 @@ SDL_bool PT_MouseGetButtonDown( PT_Mouse* _this, Uint8 button );
 SDL_bool PT_MouseGetButtonUp( PT_Mouse* _this, Uint8 button );
 SDL_bool PT_MouseGetButtonHold( PT_Mouse* _this, Uint8 button );
 
+SDL_bool PT_MouseGetButtonEvent( PT_Mouse* _this );
+
 Uint8 PT_MouseGetButtonByString( const char* string );
 
 #endif /* _PT_MOUSE_H_ */

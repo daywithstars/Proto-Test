@@ -86,7 +86,7 @@ void PT_LevelTileLayerDestroy( void* layerData ) {
 void PT_LevelTileLayerUpdate( void* layerData, Sint32 elapsedTime ) {
 	PT_LevelTileLayer* _this = (PT_LevelTileLayer*)layerData;
 	
-	if ( PT_InputManagerKeyboardGetKeyHold(SDL_SCANCODE_LEFT) )
+	/*if ( PT_InputManagerKeyboardGetKeyHold(SDL_SCANCODE_LEFT) )
 	{
 		x -= 0.1 * elapsedTime;
 	}
@@ -101,7 +101,7 @@ void PT_LevelTileLayerUpdate( void* layerData, Sint32 elapsedTime ) {
 	else if ( PT_InputManagerKeyboardGetKeyHold(SDL_SCANCODE_DOWN) )
 	{
 		y += 0.1 * elapsedTime;
-	}
+	}*/
 	
 	
 	PT_CameraSetPosition((Sint32)x, (Sint32)y);

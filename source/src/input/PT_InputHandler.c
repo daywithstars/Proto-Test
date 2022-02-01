@@ -144,6 +144,10 @@ SDL_bool PT_InputHandlerGetButtonState( PT_InputHandler* _this, const char* mapN
 		{
 			return !PT_InputManagerKeyboardGetKeyEvent();
 		}
+		else if ( inputType == PT_INPUT_HANDLER_INPUT_TYPE_MOUSE )
+		{
+			return !PT_InputManagerMouseGetButtonEvent();
+		}
 	}
 	
 	

@@ -9,6 +9,7 @@
 			
 			"input": {
 				"mouse-grab": "PT_SpriteGrab",
+				"mouse-no-buttons": "PT_SpriteMoveRight",
 			},
 			
 			"always": [
@@ -16,17 +17,5 @@
 				"sprite-stop-vertical",
 			]
 		},
-	 	{
-			"name": "dodge",
-			
-			"input": {
-				"input-left": "PT_SpriteMoveLeft",
-				"input-right": "PT_SpriteMoveRight",
-			},
-			
-			"always": [
-				"PT_SpriteMoveDown"
-			],
-		}
 	]
 }

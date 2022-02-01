@@ -12,5 +12,6 @@
 		{ "move-right-1": "kyd-h-right" },
 		{ "move-down-1": "kyd-h-down" },
 		{ "mouse-grab": "mse-hg-left" },
+		{ "mouse-no-buttons": "mse-none" },
 	]
 }

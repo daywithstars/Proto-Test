@@ -4,8 +4,8 @@
 		"collider": "shooterObjcs",
 	},
 	"image": "shooter-sheet",
-	"speedX": 0.18,
-	"speedY": 0.14,
+	"speedX": 0.05,
+	"speedY": 0.06,
 	"srcRect": [0, 0, 192, 128],
 	"dstRect": [120.0, 120.0, 64.0, 64.0],
 	"animations": [

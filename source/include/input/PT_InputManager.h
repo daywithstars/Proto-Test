@@ -90,6 +90,8 @@ SDL_bool PT_InputManagerMouseGetButtonDown( Uint8 button );
 SDL_bool PT_InputManagerMouseGetButtonUp( Uint8 button );
 SDL_bool PT_InputManagerMouseGetButtonHold( Uint8 button );
 
+SDL_bool PT_InputManagerMouseGetButtonEvent( );
+
 #endif /* _PT_INPUTMANAGER_H_ */
 
 

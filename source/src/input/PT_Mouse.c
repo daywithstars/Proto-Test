@@ -22,6 +22,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 struct pt_mouse {
+	SDL_bool buttonEvent;
+
 	Sint32 x, y;
 	Sint32 wheelX, wheelY;
 	SDL_bool buttonDown[PT_MOUSE_NUM_BUTTONS];
@@ -38,9 +40,6 @@ PT_Mouse* PT_MouseCreate( ) {
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(struct pt_mouse));
-	SDL_memset(_this->buttonDown, SDL_FALSE, sizeof(SDL_bool) * PT_MOUSE_NUM_BUTTONS);
-	SDL_memset(_this->buttonUp, SDL_FALSE, sizeof(SDL_bool) * PT_MOUSE_NUM_BUTTONS);
-	SDL_memset(_this->buttonHold, SDL_FALSE, sizeof(SDL_bool) * PT_MOUSE_NUM_BUTTONS);
 	
 	return _this;
 }//PT_MouseCreate
@@ -55,6 +54,7 @@ void PT_MouseDestroy( PT_Mouse* _this ) {
 }//PT_MouseDestroy
 
 void PT_MouseClearState( PT_Mouse* _this ) {
+	_this->buttonEvent = SDL_FALSE;
 	_this->wheelX = _this->wheelY = 0;
 	SDL_memset(_this->buttonDown, SDL_FALSE, sizeof(SDL_bool) * PT_MOUSE_NUM_BUTTONS);
 	SDL_memset(_this->buttonUp, SDL_FALSE, sizeof(SDL_bool) * PT_MOUSE_NUM_BUTTONS);
@@ -78,12 +78,14 @@ void PT_MouseUpdate( PT_Mouse* _this, const SDL_Event* ev ) {
 		_this->buttonDown[ev->button.button] = SDL_TRUE;
 		_this->buttonUp[ev->button.button] = SDL_FALSE;
 		_this->buttonHold[ev->button.button] = SDL_TRUE;
+		_this->buttonEvent = SDL_TRUE;
 	}
 	else if ( ev->type == SDL_MOUSEBUTTONUP )
 	{
 		_this->buttonDown[ev->button.button] = SDL_FALSE;
 		_this->buttonUp[ev->button.button] = SDL_TRUE;
 		_this->buttonHold[ev->button.button] = SDL_FALSE;
+		_this->buttonEvent = SDL_TRUE;
 	}
 }//PT_MouseUpdate
 
@@ -118,6 +120,10 @@ SDL_bool PT_MouseGetButtonHold( PT_Mouse* _this, Uint8 button ) {
 	}
 	return _this->buttonHold[button];
 }
+
+SDL_bool PT_MouseGetButtonEvent( PT_Mouse* _this ) {
+	return _this->buttonEvent;
+}//PT_MouseGetButtonEvent
 
 Uint8 PT_MouseGetButtonByString( const char* string ) {
 

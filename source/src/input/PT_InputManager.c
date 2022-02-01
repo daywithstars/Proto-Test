@@ -149,6 +149,10 @@ SDL_bool PT_InputManagerMouseGetButtonHold( Uint8 button ) {
 	return PT_MouseGetButtonHold(ptInputManager->mouse, button);
 }
 
+SDL_bool PT_InputManagerMouseGetButtonEvent( ) {
+	return PT_MouseGetButtonEvent(ptInputManager->mouse);
+}
+
 //===================================== PRIVATE Functions
 
 void PT_InputManagerParse( ) {
