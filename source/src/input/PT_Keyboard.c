@@ -635,6 +635,131 @@ SDL_Scancode PT_KeyboardGetScancodeByString( const char* string ) {
 		return SDL_SCANCODE_KP_EQUALSAS400;
 	}
 	
+	if ( PT_StringMatchFast(string, "international1") )
+	{
+		return SDL_SCANCODE_INTERNATIONAL1;
+	}
+	
+	if ( PT_StringMatchFast(string, "international2") )
+	{
+		return SDL_SCANCODE_INTERNATIONAL2;
+	}
+	if ( PT_StringMatchFast(string, "international3") )
+	{
+		return SDL_SCANCODE_INTERNATIONAL3;
+	}
+	if ( PT_StringMatchFast(string, "international4") )
+	{
+		return SDL_SCANCODE_INTERNATIONAL4;
+	}
+	if ( PT_StringMatchFast(string, "international5") )
+	{
+		return SDL_SCANCODE_INTERNATIONAL5;
+	}
+	if ( PT_StringMatchFast(string, "international6") )
+	{
+		return SDL_SCANCODE_INTERNATIONAL6;
+	}
+	if ( PT_StringMatchFast(string, "international7") )
+	{
+		return SDL_SCANCODE_INTERNATIONAL7;
+	}
+	if ( PT_StringMatchFast(string, "international8") )
+	{
+		return SDL_SCANCODE_INTERNATIONAL8;
+	}
+	if ( PT_StringMatchFast(string, "international9") )
+	{
+		return SDL_SCANCODE_INTERNATIONAL9;
+	}
+	
+	if ( PT_StringMatchFast(string, "lang1") )
+	{
+		return SDL_SCANCODE_LANG1;
+	}
+	if ( PT_StringMatchFast(string, "lang2") )
+	{
+		return SDL_SCANCODE_LANG2;
+	}
+	if ( PT_StringMatchFast(string, "lang3") )
+	{
+		return SDL_SCANCODE_LANG3;
+	}
+	if ( PT_StringMatchFast(string, "lang4") )
+	{
+		return SDL_SCANCODE_LANG4;
+	}
+	if ( PT_StringMatchFast(string, "lang5") )
+	{
+		return SDL_SCANCODE_LANG5;
+	}
+	if ( PT_StringMatchFast(string, "lang6") )
+	{
+		return SDL_SCANCODE_LANG6;
+	}
+	if ( PT_StringMatchFast(string, "lang7") )
+	{
+		return SDL_SCANCODE_LANG7;
+	}
+	if ( PT_StringMatchFast(string, "lang8") )
+	{
+		return SDL_SCANCODE_LANG8;
+	}
+	if ( PT_StringMatchFast(string, "lang9") )
+	{
+		return SDL_SCANCODE_LANG9;
+	}
+	
+	if ( PT_StringMatchFast(string, "alterase") )
+	{
+		return SDL_SCANCODE_ALTERASE;
+	}
+	if ( PT_StringMatchFast(string, "sysreq") )
+	{
+		return SDL_SCANCODE_SYSREQ;
+	}
+	if ( PT_StringMatchFast(string, "cancel") )
+	{
+		return SDL_SCANCODE_CANCEL;
+	}
+	if ( PT_StringMatchFast(string, "clear") )
+	{
+		return SDL_SCANCODE_CLEAR;
+	}
+	if ( PT_StringMatchFast(string, "prior") )
+	{
+		return SDL_SCANCODE_PRIOR;
+	}
+	if ( PT_StringMatchFast(string, "return2") )
+	{
+		return SDL_SCANCODE_RETURN2;
+	}
+	if ( PT_StringMatchFast(string, "separator") )
+	{
+		return SDL_SCANCODE_SEPARATOR;
+	}
+	if ( PT_StringMatchFast(string, "out") )
+	{
+		return SDL_SCANCODE_OUT;
+	}
+	if ( PT_StringMatchFast(string, "oper") )
+	{
+		return SDL_SCANCODE_OPER;
+	}
+	if ( PT_StringMatchFast(string, "clearagain") )
+	{
+		return SDL_SCANCODE_CLEARAGAIN;
+	}
+	if ( PT_StringMatchFast(string, "crsel") )
+	{
+		return SDL_SCANCODE_CRSEL;
+	}
+	if ( PT_StringMatchFast(string, "exsel") )
+	{
+		return SDL_SCANCODE_EXSEL;
+	}
+
+	
 	return SDL_SCANCODE_UNKNOWN;
 }//PT_KeyboardGetScancodeByString
 
