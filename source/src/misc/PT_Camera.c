@@ -24,6 +24,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 typedef struct pt_camera {
 	Sint32 x;
 	Sint32 y;
+	Sint32 saveX;
+	Sint32 saveY;
+	
 	Uint16 width;
 	Uint16 height;
 }PT_Camera;
@@ -183,6 +186,16 @@ SDL_bool PT_CameraParse( ) {
 	return SDL_TRUE;
 }//PT_CameraParse
 
+
+void PT_CameraSavePosition( ) {
+	ptCamera->saveX = ptCamera->x;
+	ptCamera->saveY = ptCamera->y;
+}
+
+void PT_CameraLoadPosition( ) {
+	ptCamera->x = ptCamera->saveX;
+	ptCamera->y = ptCamera->saveY;
+}
 
 
 

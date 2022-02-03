@@ -28,6 +28,9 @@ void PT_CameraSetPosition( Sint32 x, Sint32 y );
 
 void PT_CameraGetRenderDistance( Uint32* startColumn, Uint32* startRow, Uint32* maxColumn, Uint32* maxRow,
 	Uint32 tileLayerWidth, Uint32 tileLayerHeight, Uint16 tilewidth, Uint16 tileheight );
+	
+void PT_CameraSavePosition( );
+void PT_CameraLoadPosition( );
 
 #endif /* _PT_CAMERA_H_ */
 
