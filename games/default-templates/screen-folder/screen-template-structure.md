@@ -16,7 +16,10 @@ This template is the screen container, that will have everything you want in tha
 		"<sprite-template>",
 	],
 	
-	"level": "<your-level-name>"
+	"levels": [
+		"<your-level-name>",
+		"<your-level-name>",
+	],
 }
 
 ```
@@ -38,7 +41,7 @@ This template is the screen container, that will have everything you want in tha
   - Not required (you can just put the array and done.)
   - **"&lt;sprite-template&gt;"** sprite-template file name. 
 
-- **"level"** The level to be automatically loaded into that screen. 
+- **"levels"** The list of levels to be automatically loaded into that screen. The first level from the list will be the current level, the others will stay in the memory ram, so be careful to not run out of memory. 
   - Not required 
   - **"&lt;your-level-name&gt;"** The level name from level-list-template.json
 

@@ -25,7 +25,7 @@ typedef struct {
 	PT_LevelList* levelList;
 	PT_JsonList* jsonList;
 	
-	PT_Level* level;
+	PT_Level* currentLevel;
 	
 }PT_LevelManager;
 
@@ -58,8 +58,6 @@ void PT_LevelManagerDestroy( ) {
 	
 	PT_LevelListDestroy(ptLevelManager->levelList);
 	PT_JsonListDestroy(ptLevelManager->jsonList);
-	
-	PT_LevelDestroy(ptLevelManager->level);
 	
 	free(ptLevelManager);
 	ptLevelManager = NULL;
@@ -153,30 +151,36 @@ SDL_bool PT_LevelManagerLoadLevel( const char* utf8_levelName ) {
 		return SDL_FALSE;
 	}
 	
-	PT_LevelDestroy(ptLevelManager->level);
-	ptLevelManager->level = NULL;
-	
-	ptLevelManager->level = PT_LevelCreate(node->value);
-	if ( !ptLevelManager->level )
+	PT_Level* level = PT_LevelCreate(node->value);
+	if ( !level )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
 		"PT: PT_LevelManagerLoadLevel\n");
 		return SDL_FALSE;
 	}
 	
+	ptLevelManager->levelList = PT_LevelListAdd(ptLevelManager->levelList, utf8_levelName, level);
+	if ( !ptLevelManager->currentLevel )
+	{
+		if ( ptLevelManager->levelList )
+		{
+			ptLevelManager->currentLevel = ptLevelManager->levelList->value;
+		}
+	}
+	
 	return SDL_TRUE;
 }//PT_LevelManagerLoadLevel
 
 void PT_LevelManagerUpdate( Sint32 elapsedTime ) {
-	if ( ptLevelManager->level )
+	if ( ptLevelManager->currentLevel )
 	{
-		PT_LevelUpdate(ptLevelManager->level, elapsedTime);
+		PT_LevelUpdate(ptLevelManager->currentLevel, elapsedTime);
 	}
 }
 void PT_LevelManagerDraw( ) {
-	if ( ptLevelManager->level )
+	if ( ptLevelManager->currentLevel )
 	{
-		PT_LevelDraw(ptLevelManager->level);
+		PT_LevelDraw(ptLevelManager->currentLevel);
 	}
 }
 

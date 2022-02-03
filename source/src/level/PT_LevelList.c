@@ -75,6 +75,7 @@ PT_LevelList* PT_LevelListAdd( PT_LevelList* _this, const char* utf8_index, PT_L
 	{
 		if ( PT_StringMatch(pList->index, utf8_index) )
 		{
+			SDL_Log("(*)PT_LevelListAdd: Repeated level, destroying: %s\n", utf8_index);
 			if ( value )
 			{
 				PT_LevelDestroy(value);

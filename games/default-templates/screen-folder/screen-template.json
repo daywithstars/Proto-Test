@@ -11,6 +11,8 @@
 		"<sprite-template>",
 	],
 	
-	"level": "<your-level-name>"
+	"levels": [
+		"<your-level-name>"
+	],
 }
 

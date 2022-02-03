@@ -147,13 +147,16 @@ SDL_bool PT_ScreenLoadLevels( PT_Screen* _this, json_value* jsonValue ) {
 		return SDL_FALSE;
 	}
 	
-	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "level");
+	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "levels");
 	if ( entry.name )
 	{
-		if ( !PT_LevelManagerLoadLevel(entry.value->u.string.ptr) )
+		for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenLoadLevels!\n");
-			return SDL_FALSE;
+			if ( !PT_LevelManagerLoadLevel(entry.value->u.array.values[i]->u.string.ptr) )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenLoadLevels!\n");
+				return SDL_FALSE;
+			}
 		}	
 	}
 

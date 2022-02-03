@@ -6,6 +6,9 @@
 		"tag": "first-screen",
 	},
 	
-	"level": "Intro Stage",
+	"levels": [
+		"Frozen Lake",
+		"Intro Stage",
+	],
 }
 
