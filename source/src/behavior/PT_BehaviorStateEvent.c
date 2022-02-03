@@ -134,85 +134,12 @@ void PT_BehaviorStateEventUpdate( PT_BehaviorStateEvent* _this, Sint32 elapsedTi
 	//Input
 	if ( _this->flags & PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_INPUT )
 	{	
-		PT_BehaviorState* pBehaviorState = (PT_BehaviorState*)_this->pBehaviorState;
-		PT_Behavior* pBehavior = (PT_Behavior*)pBehaviorState->pBehavior;
-		PT_InputHandler* inputHandler = pBehavior->inputHandler;
-
-		
-		if ( _this->flags & PT_BEHAVIOR_STATE_EVENT_TRIGGER_VALUE_PLAY_SAMPLE )
-		{
-			PT_BehaviorStateEventInputPlaySound* inputPlaySound = 
-			(PT_BehaviorStateEventInputPlaySound*)_this->trigger.input.data;
-			
-			if ( 
-				PT_InputHandlerGetButtonState(inputHandler, (char*)inputPlaySound->keyMap->utf8_string) 
-			   )
-			{	
-				PT_SoundManagerPlaySample((char*)inputPlaySound->sound.name->utf8_string,
-				inputPlaySound->sound.loop);
-			}
-		}
-		else if ( _this->flags & PT_BEHAVIOR_STATE_EVENT_TRIGGER_VALUE_PLAY_MUSIC )
-		{
-			printf("music input\n");
-		}
+	PT_BehaviorStateEventInputUpdate(_this);
 	}
 	//Collision
 	else if ( _this->flags & PT_BEHAVIOR_STATE_EVENT_TRIGGER_TYPE_COLLISION )
 	{
-		//Collision ChangeDirection
-		if ( _this->flags & PT_BEHAVIOR_STATE_EVENT_TRIGGER_VALUE_CHANGE_DIRECTION )
-		{
-			PT_BehaviorStateEventCollisionChangeDirection* collisionChangeDirection =
-			(PT_BehaviorStateEventCollisionChangeDirection*)_this->trigger.collision.data;
-			
-			if ( collisionChangeDirection->pSprite->collisionColliderName )
-			{
-				if ( collisionChangeDirection->randDirX )
-				{
-					int value = rand() % 75;
-					if ( value <= 25 )
-					{
-						collisionChangeDirection->dirX = 1;
-					}
-					else if ( value > 25 && value <= 50 )
-					{
-						collisionChangeDirection->dirX = -1;
-					}
-					else {
-						collisionChangeDirection->dirX = 0;
-					}
-				}
-				if ( collisionChangeDirection->randDirY )
-				{
-					int value = rand() % 75;
-					if ( value <= 25 )
-					{
-						collisionChangeDirection->dirY = 1;
-					}
-					else if ( value > 25 && value <= 50 )
-					{
-						collisionChangeDirection->dirY = -1;
-					}
-					else {
-						collisionChangeDirection->dirY = 0;
-					}
-				}
-			
-				if ( PT_StringMatchFast(
-					(char*)collisionChangeDirection->pSprite->collisionColliderName->utf8_string,
-					(char*)collisionChangeDirection->collider_1_name->utf8_string) 
-						&&
-					PT_StringMatchFast(
-					(char*)collisionChangeDirection->pSprite->collisionTargetColliderName->utf8_string,
-					(char*)collisionChangeDirection->collider_2_name->utf8_string)
-					)
-				{
-					collisionChangeDirection->pSprite->dirX = collisionChangeDirection->dirX;
-					collisionChangeDirection->pSprite->dirY = collisionChangeDirection->dirY;
-				}
-			}
-		}
+		PT_BehaviorStateEventCollisionUpdate(_this);
 	}
 }//PT_BehaviorStateEventUpdate
 

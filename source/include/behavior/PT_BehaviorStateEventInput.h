@@ -33,6 +33,8 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Input_PlayMusic(
 	PT_BehaviorStateEvent* _this, json_value* jsonValue );
 SDL_bool PT_BehaviorStateEventParseTrigger_Input_ChangeScreen( 
 	PT_BehaviorStateEvent* _this, json_value* jsonValue );
+	
+void PT_BehaviorStateEventInputUpdate( PT_BehaviorStateEvent* _this );
 
 
 #endif /* _PT_BEHAVIORSTATEEVENTINPUT_H_ */

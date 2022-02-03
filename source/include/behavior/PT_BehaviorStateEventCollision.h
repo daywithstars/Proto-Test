@@ -43,6 +43,8 @@ typedef struct {
 SDL_bool PT_BehaviorStateEventParseTrigger_Collision_ChangeDirection( 
 	PT_BehaviorStateEvent* _this, json_value* jsonValue );
 	
+void PT_BehaviorStateEventCollisionUpdate( PT_BehaviorStateEvent* _this );
+	
 
 #endif /* _PT_BEHAVIORSTATEEVENTCOLLISION_H_ */
 

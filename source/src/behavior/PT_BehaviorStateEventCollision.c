@@ -231,5 +231,62 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Collision_ChangeDirection(
 	return SDL_TRUE;
 }//PT_BehaviorStateEventParseTrigger_Collision_ChangeDirection
 
+void PT_BehaviorStateEventCollisionUpdate( PT_BehaviorStateEvent* _this ) {
+
+	//ChangeDirection
+	if ( _this->flags & PT_BEHAVIOR_STATE_EVENT_TRIGGER_VALUE_CHANGE_DIRECTION )
+	{
+		PT_BehaviorStateEventCollisionChangeDirection* collisionChangeDirection =
+		(PT_BehaviorStateEventCollisionChangeDirection*)_this->trigger.collision.data;
+		
+		if ( collisionChangeDirection->pSprite->collisionColliderName )
+		{
+			if ( collisionChangeDirection->randDirX )
+			{
+				int value = rand() % 75;
+				if ( value <= 25 )
+				{
+					collisionChangeDirection->dirX = 1;
+				}
+				else if ( value > 25 && value <= 50 )
+				{
+					collisionChangeDirection->dirX = -1;
+				}
+				else {
+					collisionChangeDirection->dirX = 0;
+				}
+			}
+			if ( collisionChangeDirection->randDirY )
+			{
+				int value = rand() % 75;
+				if ( value <= 25 )
+				{
+					collisionChangeDirection->dirY = 1;
+				}
+				else if ( value > 25 && value <= 50 )
+				{
+					collisionChangeDirection->dirY = -1;
+				}
+				else {
+					collisionChangeDirection->dirY = 0;
+				}
+			}
+		
+			if ( PT_StringMatchFast(
+				(char*)collisionChangeDirection->pSprite->collisionColliderName->utf8_string,
+				(char*)collisionChangeDirection->collider_1_name->utf8_string) 
+					&&
+				PT_StringMatchFast(
+				(char*)collisionChangeDirection->pSprite->collisionTargetColliderName->utf8_string,
+				(char*)collisionChangeDirection->collider_2_name->utf8_string)
+				)
+			{
+				collisionChangeDirection->pSprite->dirX = collisionChangeDirection->dirX;
+				collisionChangeDirection->pSprite->dirY = collisionChangeDirection->dirY;
+			}
+		}
+	}
+	
+}//PT_BehaviorStateEventCollisionUpdate
 
 

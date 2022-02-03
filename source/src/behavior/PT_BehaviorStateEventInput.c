@@ -14,6 +14,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <malloc.h>
 
 #include <PT_BehaviorStateEventInput.h>
+#include <PT_BehaviorState.h>
+#include <PT_Behavior.h>
+#include <PT_InputManager.h>
+#include <PT_SoundManager.h>
 #include <PT_Parse.h>
 
 
@@ -243,6 +247,31 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Input_ChangeScreen(
 }//PT_BehaviorStateEventParseTrigger_Input_ChangeScreen
 	
 	
+void PT_BehaviorStateEventInputUpdate( PT_BehaviorStateEvent* _this ) {
+	PT_BehaviorState* pBehaviorState = (PT_BehaviorState*)_this->pBehaviorState;
+	PT_Behavior* pBehavior = (PT_Behavior*)pBehaviorState->pBehavior;
+	PT_InputHandler* inputHandler = pBehavior->inputHandler;
+
 	
+	//Play sample
+	if ( _this->flags & PT_BEHAVIOR_STATE_EVENT_TRIGGER_VALUE_PLAY_SAMPLE )
+	{
+		PT_BehaviorStateEventInputPlaySound* inputPlaySound = 
+		(PT_BehaviorStateEventInputPlaySound*)_this->trigger.input.data;
+		
+		if ( 
+			PT_InputHandlerGetButtonState(inputHandler, (char*)inputPlaySound->keyMap->utf8_string) 
+		   )
+		{	
+			PT_SoundManagerPlaySample((char*)inputPlaySound->sound.name->utf8_string,
+			inputPlaySound->sound.loop);
+		}
+	}
+	//Play music
+	else if ( _this->flags & PT_BEHAVIOR_STATE_EVENT_TRIGGER_VALUE_PLAY_MUSIC )
+	{
+		printf("music input\n");
+	}
+}//PT_BehaviorStateEventInputUpdate
 	
 	
