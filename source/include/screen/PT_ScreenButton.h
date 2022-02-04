@@ -9,26 +9,26 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-#ifndef _PT_SHOOTER_H_
-#define _PT_SHOOTER_H_
+#ifndef _PT_SCREENBUTTON_H_
+#define _PT_SCREENBUTTON_H_
 
 #include <json.h>
 
 #include <PT_Sprite.h>
 
-typedef struct pt_shooter PT_Shooter;
+typedef struct pt_screen_button PT_ScreenButton;
 
 
-PT_Sprite* PT_ShooterCreate( const char* utf8_spriteTemplate );
+PT_Sprite* PT_ScreenButtonCreate( const char* utf8_spriteTemplate );
 
-void PT_ShooterDestroy( void* _data ); 
+void PT_ScreenButtonDestroy( void* _data ); 
 
-void PT_ShooterCollisionWith( void* _data, PT_Collider own, PT_Collider target );
+void PT_ScreenButtonCollisionWith( void* _data, PT_Collider own, PT_Collider target );
 
-void PT_ShooterUpdate( void* _data, Sint32 elapsedTime );
-void PT_ShooterDraw( void* _data );
+void PT_ScreenButtonUpdate( void* _data, Sint32 elapsedTime );
+void PT_ScreenButtonDraw( void* _data );
 
-#endif /* _PT_SHOOTER_H_ */
+#endif /* _PT_SCREENBUTTON_H_ */
 
 
 

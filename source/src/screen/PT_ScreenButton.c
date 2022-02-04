@@ -15,36 +15,36 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <SDL_log.h>
 
-#include <PT_Platformer.h>
+#include <PT_ScreenButton.h>
 #include <PT_Graphics.h>
 #include <PT_InputManager.h>
 
 
 
-struct pt_platformer {
-	double gravity;
+struct pt_screen_button {
+	int something;//tmp
 };
 
 
 
 //===================================== PRIVATE Functions
 
-SDL_bool PT_PlatformerParse( PT_Sprite* sprite, void* _data, json_value* jsonValue );
+SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonValue );
 
 
 //===================================== PUBLIC Functions
 
-PT_Sprite* PT_PlatformerCreate( const char* utf8_spriteTemplate ) {
+PT_Sprite* PT_ScreenButtonCreate( const char* utf8_spriteTemplate ) {
 
-	PT_Platformer* _this = (PT_Platformer*)malloc(sizeof(struct pt_platformer));
+	PT_ScreenButton* _this = (PT_ScreenButton*)malloc(sizeof(struct pt_screen_button));
 	if ( !_this )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_PlatformerCreate: Not enough memory\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonCreate: Not enough memory\n");
 		return NULL;
 	}
-	SDL_memset(_this, 0, sizeof(struct pt_platformer));
+	SDL_memset(_this, 0, sizeof(struct pt_screen_button));
 	
-	PT_Sprite* sprite = PT_SpriteCreate(utf8_spriteTemplate, (void*)_this, PT_PlatformerParse);
+	PT_Sprite* sprite = PT_SpriteCreate(utf8_spriteTemplate, (void*)_this, PT_ScreenButtonParse);
 	if ( !sprite )
 	{
 		free(_this);
@@ -53,49 +53,55 @@ PT_Sprite* PT_PlatformerCreate( const char* utf8_spriteTemplate ) {
 	
 	
 	//add callbacks to sprite
-	PT_SpriteAddUpdateCallback(sprite, PT_PlatformerUpdate);
-	PT_SpriteAddDrawCallback(sprite, PT_PlatformerDraw);
-	PT_SpriteAddDestroyCallback(sprite, PT_PlatformerDestroy);
+	PT_SpriteAddCollisionCallback(sprite, PT_ScreenButtonCollisionWith);
+	PT_SpriteAddUpdateCallback(sprite, PT_ScreenButtonUpdate);
+	PT_SpriteAddDrawCallback(sprite, PT_ScreenButtonDraw);
+	PT_SpriteAddDestroyCallback(sprite, PT_ScreenButtonDestroy);
 	
 	return sprite;
-}//PT_PlatformerCreate
+}//PT_ScreenButtonCreate
 
-void PT_PlatformerDestroy( void* _data ) {
+void PT_ScreenButtonDestroy( void* _data ) {
 	if ( !_data )
 	{
 		return;
 	}
 
-	PT_Platformer* _this = (PT_Platformer*)_data;
+	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
 	
 	free(_this);
-}//PT_PlatformerDestroy
+}//PT_ScreenButtonDestroy
 
-void PT_PlatformerUpdate( void* _data, Sint32 elapsedTime ) {
-	PT_Platformer* _this = (PT_Platformer*)_data;
+void PT_ScreenButtonCollisionWith( void* _data, PT_Collider own, PT_Collider target ) {
+	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
+}//PT_ScreenButtonCollisionWith
+
+void PT_ScreenButtonUpdate( void* _data, Sint32 elapsedTime ) {
+	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
 	
 
-}//PT_PlatformerUpdate
+}//PT_ScreenButtonUpdate
 
-void PT_PlatformerDraw( void* _data ) {
-	PT_Platformer* _this = (PT_Platformer*)_data;
+void PT_ScreenButtonDraw( void* _data ) {
+	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
 
-}//PT_PlatformerDraw
+}//PT_ScreenButtonDraw
 
 
 //===================================== PRIVATE Functions
 
-SDL_bool PT_PlatformerParse( PT_Sprite* sprite, void* _data, json_value* jsonValue ) {
+SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonValue ) {
 	/*
 		see the template: games/default-templates/sprite-folder/sprite-template.json
 	*/
-	PT_Platformer* _this = (PT_Platformer*)_data;
+	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
 
 
 
 
 	return SDL_TRUE;
-}//PT_PlatformerParse
+}//PT_ScreenButtonParse
+
 
 
 
