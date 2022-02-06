@@ -1,0 +1,6 @@
+{
+	"name": "Tile Screen",
+	"font-data": "Rowdies/Rowdies-Light.ttf",
+	"size-px": 26,
+	"color": [160, 0, 210, 255],
+}

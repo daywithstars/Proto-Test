@@ -9,21 +9,44 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-/** 
-* \file 
-*
-* The Proto Test global variable(s) file.
-*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <malloc.h>
 
-#include <PT_String.h>
+#include <SDL_log.h>
+
+#include <PT_Font.h>
 
 
-/** \var gRootDir
-* \brief The variable that represents the path to the game folder.
-*
-* This variable is feed internally into PT_Application.  
-*/
-PT_String* gRootDir = NULL;
+PT_Font* PT_FontCreate( json_value* jsonValue ) {
+	PT_Font* _this = (PT_Font*)malloc(sizeof(PT_Font));
+	if ( !_this )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_Font: Not enough memory\n");
+		return NULL;
+	}
+	SDL_memset(_this, 0, sizeof(PT_Font));
+	
+	
+	return _this;
+}//PT_FontCreate
+
+void PT_FontDestroy( PT_Font* _this ) {
+	if ( !_this )
+	{
+		return;
+	}
+	
+	if ( _this->font )
+	{
+		TTF_CloseFont(_this->font);
+	}
+	
+	free(_this);
+}//PT_FontDestroy
+
+
+
 
 
 

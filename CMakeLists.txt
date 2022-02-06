@@ -11,6 +11,7 @@ endif()
 #Add the path to new folders with files and go to the folder build and call cmake ..
 file(GLOB project_src 
 	"source/src/behavior/*.c"
+	"source/src/font/*.c"
 	"source/src/input/*.c"
 	"source/src/level/*.c"
 	"source/src/misc/*.c"
@@ -27,6 +28,7 @@ file(GLOB project_src
 include_directories(
 	"/usr/include/SDL2" # Here you put the path to SDL2/image/mixer include files.  
 	"source/include/behavior"
+	"source/include/font"
 	"source/include/input"
 	"source/include/level"
 	"source/include/misc"
@@ -45,9 +47,9 @@ add_executable(${PROJECT_NAME} ${project_src})
 set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 11)
 
 if (WIN32)
-	target_link_libraries(${PROJECT_NAME} -lmingw32 SDL2main SDL2 SDL2_image SDL2_mixer)
+	target_link_libraries(${PROJECT_NAME} -lmingw32 SDL2main SDL2 SDL2_image SDL2_mixer SDL2_ttf)
 else()
-	target_link_libraries(${PROJECT_NAME} SDL2 SDL2_image SDL2_mixer)
+	target_link_libraries(${PROJECT_NAME} SDL2 SDL2_image SDL2_mixer SDL2_ttf)
 endif()
 
 

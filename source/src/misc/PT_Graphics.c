@@ -1,5 +1,5 @@
 /*
-Copyright 2021 daywithstars
+Copyright 2022 daywithstars
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -15,9 +15,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <SDL_image.h>
 #include <SDL_log.h>
+#include <SDL_ttf.h>
 
 #include <PT_Graphics.h>
 #include <PT_TextureList.h>
+#include <PT_FontList.h>
 #include <PT_Parse.h>
 
 extern PT_String* gRootDir;
@@ -31,6 +33,7 @@ struct pt_graphics {
 	SDL_Color clearColor;
 	
 	PT_TextureList* textureList;
+	PT_FontList* fontList;
 };
 
 static PT_Graphics* ptGraphics = NULL;
@@ -162,6 +165,9 @@ void PT_GraphicsParseImages() {
 	PT_ParseDestroy(parseFolders);
 }//PT_GraphicsParseImages
 
+void PT_GraphicsParseFonts( ) {
+}//PT_GraphicsParseFonts
+
 SDL_bool PT_GraphicsCreate( ) {
 	if ( ptGraphics ) 
 	{
@@ -173,6 +179,11 @@ SDL_bool PT_GraphicsCreate( ) {
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
 		"PT: PT_GraphicsCreate: Cannot load support to PNG image, use the default .bmp\n");
 	}
+	if ( TTF_Init() < 0 )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+		"PT: PT_GraphicsCreate: Cannot load the ttf engine.\n");
+	}
 	
 	ptGraphics = (PT_Graphics*)malloc(sizeof(struct pt_graphics));
 	if ( !ptGraphics )
@@ -180,9 +191,7 @@ SDL_bool PT_GraphicsCreate( ) {
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsCreate: Not enough memory\n");
 		return SDL_FALSE;
 	}
-	ptGraphics->textureList = NULL;
-	ptGraphics->window = NULL;
-	ptGraphics->renderer = NULL;
+	SDL_memset(ptGraphics, 0, sizeof(PT_Graphics));
 	
 	if ( !PT_GraphicsParseSettings() )
 	{
@@ -237,6 +246,7 @@ void PT_GraphicsDestroy() {
 	ptGraphics = NULL;
 	
 	IMG_Quit();
+	TTF_Quit();
 }//PT_GraphicsDestroy
 
 int PT_GraphicsShowSimpleMessageBox(Uint32 flags, const char *utf8_title, const char *utf8_message) {

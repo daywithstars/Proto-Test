@@ -1,0 +1,6 @@
+{
+	"name": "<your-personalized-font-name>",
+	"font-data": "$font-folder-name$/<the-font-file-name>.ttf",
+	"size-px": 16,
+	"color": [160, 0, 210, 255],
+}

@@ -9,21 +9,24 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-/** 
-* \file 
-*
-* The Proto Test global variable(s) file.
-*/
+#ifndef _PT_FONT_H_
+#define _PT_FONT_H_
 
-#include <PT_String.h>
+#include <json.h>
+
+#include <SDL_pixels.h>
+#include <SDL_ttf.h>
 
 
-/** \var gRootDir
-* \brief The variable that represents the path to the game folder.
-*
-* This variable is feed internally into PT_Application.  
-*/
-PT_String* gRootDir = NULL;
+typedef struct {
+	SDL_Color color;
+	TTF_Font* font;
+}PT_Font;
+
+PT_Font* PT_FontCreate( json_value* jsonValue );
+void PT_FontDestroy( PT_Font* _this );
+
+#endif /* _PT_FONT_H_ */
 
 
 

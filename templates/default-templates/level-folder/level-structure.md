@@ -26,6 +26,6 @@ The position x, y from template will be ignored and will be used the x, y from T
 
 Example:
 
-![Level object example](../img/level-example/level-object-properties.png)
+![Level object example](../data-images/level-example/level-object-properties.png)
 
 

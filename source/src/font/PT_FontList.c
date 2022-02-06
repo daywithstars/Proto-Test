@@ -15,16 +15,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <SDL_log.h>
 
-#include <PT_MusicList.h>
-#include <PT_String.h>
+#include <PT_FontList.h>
 
 
-PT_MusicList* PT_MusicListCreate( const char* utf8_index, PT_Music* value ) {
-	PT_MusicList* _this = (PT_MusicList*)malloc(sizeof(PT_MusicList));
+
+PT_FontList* PT_FontListCreate( const char* utf8_index, PT_Font* value ) {
+	PT_FontList* _this = (PT_FontList*)malloc(sizeof(PT_FontList));
 	
 	if ( !_this )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_MusicListCreate: Not enough memory\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_FontListCreate: Not enough memory\n");
 		return NULL;
 	}
 	
@@ -32,14 +32,14 @@ PT_MusicList* PT_MusicListCreate( const char* utf8_index, PT_Music* value ) {
 	_this->index = PT_StringCreate();
 	if ( !PT_StringInsert(&(_this->index), utf8_index, 0) )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_MusicListCreate!\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_FontListCreate!\n");
 	}
 	_this->next = NULL;
 	
 	return _this;
-}//PT_MusicListCreate
+}//PT_FontListCreate
 
-void PT_MusicListDestroy( PT_MusicList* _this ) {
+void PT_FontListDestroy( PT_FontList* _this ) {
 	if ( !_this )
 	{
 		return;
@@ -48,28 +48,28 @@ void PT_MusicListDestroy( PT_MusicList* _this ) {
 
 	while ( _this )
 	{
-		PT_MusicList* tmp = _this->next;
+		PT_FontList* tmp = _this->next;
 		
 		if ( _this->value )
 		{
-			PT_MusicDestroy(_this->value);
+			PT_FontDestroy(_this->value);
 		}
 		PT_StringDestroy(_this->index);
 		
 		free(_this);
 		_this = tmp;
 	}
-}//PT_MusicListDestroy
+}//PT_FontListDestroy
 
-PT_MusicList* PT_MusicListAdd( PT_MusicList* _this, const char* utf8_index, PT_Music* value ) {
+PT_FontList* PT_FontListAdd( PT_FontList* _this, const char* utf8_index, PT_Font* value ) {
 	
 	if ( !_this )
 	{
-		return PT_MusicListCreate(utf8_index, value);
+		return PT_FontListCreate(utf8_index, value);
 	}
 
 
-	PT_MusicList* pList = _this;
+	PT_FontList* pList = _this;
 	
 	while ( pList )
 	{
@@ -77,20 +77,20 @@ PT_MusicList* PT_MusicListAdd( PT_MusicList* _this, const char* utf8_index, PT_M
 		{
 			if ( value )
 			{
-				PT_MusicDestroy(value);
+				PT_FontDestroy(value);
 			}
 			return _this;
 		}
 		pList = pList->next;
 	}
 
-	PT_MusicList* newNode = PT_MusicListCreate(utf8_index, value);
+	PT_FontList* newNode = PT_FontListCreate(utf8_index, value);
 	newNode->next = _this;
 	
 	return newNode;
-}//PT_MusicListAdd
+}//PT_FontListAdd
 
-PT_MusicList* PT_MusicListGet( PT_MusicList* _this, const char* utf8_index ) {
+PT_FontList* PT_FontListGet( PT_FontList* _this, const char* utf8_index ) {
 	while ( _this )
 	{
 		if ( PT_StringMatch(_this->index, utf8_index) )
@@ -102,7 +102,8 @@ PT_MusicList* PT_MusicListGet( PT_MusicList* _this, const char* utf8_index ) {
 	}
 	
 	return NULL;
-}//PT_MusicListGet
+}//PT_FontListGet
+
 
 
 
