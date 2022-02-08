@@ -15,7 +15,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <SDL_image.h>
 #include <SDL_log.h>
-#include <SDL_ttf.h>
 
 #include <PT_Graphics.h>
 #include <PT_TextureList.h>
@@ -33,6 +32,7 @@ struct pt_graphics {
 	SDL_Color clearColor;
 	
 	PT_TextureList* textureList;
+	PT_TextureList* fontTextureList;
 	PT_FontList* fontList;
 };
 
@@ -165,8 +165,6 @@ void PT_GraphicsParseImages() {
 	PT_ParseDestroy(parseFolders);
 }//PT_GraphicsParseImages
 
-void PT_GraphicsParseFonts( ) {
-}//PT_GraphicsParseFonts
 
 SDL_bool PT_GraphicsCreate( ) {
 	if ( ptGraphics ) 
@@ -231,6 +229,8 @@ void PT_GraphicsDestroy() {
 	}
 	
 	PT_TextureListDestroy(ptGraphics->textureList);
+	PT_TextureListDestroy(ptGraphics->fontTextureList);
+	PT_FontListDestroy(ptGraphics->fontList);
 
 	if ( ptGraphics->renderer )
 	{
@@ -291,6 +291,140 @@ void PT_GraphicsLoadTexture( const char* utf8_filePath, const char* utf8_name ) 
 	PT_StringDestroy(path);
 }//PT_GraphicsLoadTexture
 
+TTF_Font* PT_GraphicsLoadFont( const char* utf8_filePath, int fontSize, SDL_bool defaultPath ) {
+	PT_String* path = PT_StringCreate();
+	
+	if ( !PT_StringInsert(&path, utf8_filePath, 0) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFont!\n");
+		PT_StringDestroy(path);
+		return NULL;
+	}
+	if ( defaultPath )
+	{
+		if ( !PT_StringInsert(&path, (char*)gRootDir->utf8_string, 0) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFont!\n");
+			PT_StringDestroy(path);
+			return NULL;
+		}
+	}
+	
+	TTF_Font* font = TTF_OpenFont((char*)path->utf8_string, fontSize);
+	if ( !font )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFont: %s\n", TTF_GetError());
+		PT_StringDestroy(path);
+		return NULL;
+	}
+	
+	return font;
+}//PT_GraphicsLoadFont
+
+SDL_bool PT_GraphicsLoadFonts( ) {
+	PT_Parse* parse = PT_ParseCreate();
+	if ( !parse )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
+		return SDL_FALSE;
+	}
+	if ( !PT_ParseOpenFile(parse, "assets/font/font-list.json", SDL_TRUE) )
+	{
+		PT_ParseDestroy(parse);
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
+		return SDL_FALSE;
+	}
+	
+	json_object_entry entry = PT_ParseGetObjectEntry(parse, "font-list");
+	if ( !entry.name )
+	{
+		PT_ParseDestroy(parse);
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
+		return SDL_FALSE;
+	}
+	
+	for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
+	{
+		PT_String* fontPath = PT_StringCreate();
+		if ( !fontPath )
+		{
+			PT_ParseDestroy(parse);
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
+			return SDL_FALSE;
+		}
+		if ( !PT_StringInsert(&fontPath, ".json", 0) )
+		{
+			PT_StringDestroy(fontPath);
+			PT_ParseDestroy(parse);
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
+			return SDL_FALSE;
+		}
+		if ( !PT_StringInsert(&fontPath, entry.value->u.array.values[i]->u.string.ptr, 0) )
+		{
+			PT_StringDestroy(fontPath);
+			PT_ParseDestroy(parse);
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
+			return SDL_FALSE;
+		}
+		if ( !PT_StringInsert(&fontPath, "assets/font/", 0) )
+		{
+			PT_StringDestroy(fontPath);
+			PT_ParseDestroy(parse);
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
+			return SDL_FALSE;	
+		}
+		
+		
+		PT_Parse* fontParse = PT_ParseCreate();
+		if ( !fontParse )
+		{
+			PT_StringDestroy(fontPath);
+			PT_ParseDestroy(parse);
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
+			return SDL_FALSE;
+		}
+		if ( !PT_ParseOpenFile(fontParse, (char*)fontPath->utf8_string, SDL_TRUE) )
+		{
+			PT_StringDestroy(fontPath);
+			PT_ParseDestroy(parse);
+			PT_ParseDestroy(fontParse);
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
+			return SDL_FALSE;
+		}
+		
+		PT_Font* font = PT_FontCreate(PT_ParseGetJsonValuePointer(fontParse));
+		if ( !font )
+		{
+			PT_StringDestroy(fontPath);
+			PT_ParseDestroy(parse);
+			PT_ParseDestroy(fontParse);
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
+			return SDL_FALSE;
+		}
+		
+		json_object_entry fontEntry = PT_ParseGetObjectEntry(fontParse, "name");
+		if ( !fontEntry.name )
+		{
+			PT_StringDestroy(fontPath);
+			PT_ParseDestroy(parse);
+			PT_ParseDestroy(fontParse);
+			PT_FontDestroy(font);
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+			"PT: PT_GraphicsLoadFonts: Cannot find \"name\" on font-template.json\n");
+			return SDL_FALSE;
+		}
+		
+		ptGraphics->fontList = PT_FontListAdd(ptGraphics->fontList, fontEntry.value->u.string.ptr, font);
+		
+		PT_StringDestroy(fontPath);
+		PT_ParseDestroy(fontParse);
+	}
+	
+	PT_ParseDestroy(parse);
+	
+	return SDL_TRUE;
+}//PT_GraphicsLoadFonts
+
 void PT_GraphicsSetViewport( const SDL_Rect* rect ) {
 	SDL_RenderSetViewport(ptGraphics->renderer, rect);
 }//PT_GraphicsSetViewport
@@ -310,6 +444,36 @@ void PT_GraphicsRenderFillRect( const SDL_Rect* rect ) {
 void PT_GraphicsRenderFillRectF( const SDL_FRect* rect ) {
 	SDL_RenderFillRectF(ptGraphics->renderer, rect);
 }//PT_GraphicsRenderFillRectF
+
+void PT_GraphicsRenderTextSolid( const char* utf8_font, const char* utf8_text, 
+	const char* utf8_fontTextureName ) {
+	
+	PT_FontList* node = PT_FontListGet(ptGraphics->fontList, utf8_font);
+	if ( !node )
+	{
+		SDL_Log("(*)PT: PT_GraphicsRenderTextSolid: Cannot find font: %s\n", utf8_font);
+		return;
+	}
+	SDL_Surface* surface = TTF_RenderUTF8_Solid(node->value->font, utf8_text, node->value->color);
+	if ( !surface )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsRenderTextSolid: %s\n", TTF_GetError());
+		return;
+	}
+	
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(ptGraphics->renderer, surface);
+	if ( !texture )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsRenderTextSolid: %s\n", TTF_GetError());
+		SDL_FreeSurface(surface);
+		return;
+	}
+	
+	ptGraphics->fontTextureList = 
+		PT_TextureListAdd(ptGraphics->fontTextureList, utf8_fontTextureName, texture);
+	
+	SDL_FreeSurface(surface);
+}//PT_GraphicsRenderTextSolid
 
 void PT_GraphicsDrawTexture( const char* utf8_name, const SDL_Rect* srcRect, const SDL_Rect* dstRect,
 	const double angle, const SDL_Point* center, const SDL_RendererFlip flip ) {
@@ -334,6 +498,21 @@ void PT_GraphicsDrawTextureF( const char* utf8_name, const SDL_Rect* srcRect, co
 	
 	SDL_RenderCopyExF(ptGraphics->renderer, node->value, srcRect, dstRect, angle, center, flip);
 }//PT_GraphicsDrawTextureF
+
+void PT_GraphicsDrawFontTexture( const char* utf8_name, const SDL_Rect* srcRect, int x, int y,
+	const double angle, const SDL_Point* center, const SDL_RendererFlip flip ) {
+
+	PT_TextureList* node = PT_TextureListGet(ptGraphics->fontTextureList, utf8_name);
+	if ( !node )
+	{
+		return;
+	}
+
+	int w, h;
+	SDL_QueryTexture(node->value, NULL, NULL, &w, &h);
+	const SDL_Rect dstRect = { x, y, w, h };
+	SDL_RenderCopyEx(ptGraphics->renderer, node->value, srcRect, &dstRect, angle, center, flip);
+}//PT_GraphicsDrawFontTexture
 
 void PT_GraphicsRenderClear() {
 	SDL_SetRenderDrawColor(ptGraphics->renderer, 

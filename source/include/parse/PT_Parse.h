@@ -112,16 +112,18 @@ SDL_bool PT_ParseSaveFile( PT_Parse* _this, const char* utf8_filePath, SDL_bool 
 json_value* PT_ParseGetJsonValueFromFile( const char* utf8_filePath, SDL_bool defaultPath );
 
 /**
-* \brief Use to function to get the top to read-only the internal json_value.
+* \brief Use this function to get the first read-only internal json_value.
+*
+* Do not free the pointer, it will be free by PT_ParseDestroy. 
 *
 * @param _this PT_Parse pointer.
 *
-* \returns The const ponter to the internal loaded json_value.
+* \returns The ponter to the internal loaded json_value.
 *
 * \sa PT_ParseLoadTemplate
 * \sa PT_ParseOpenFile
 */
-const json_value* PT_ParseGetJsonValuePointer( PT_Parse* _this );
+json_value* PT_ParseGetJsonValuePointer( PT_Parse* _this );
 
 /**
 * \brief This function returns the json_object_entry. 

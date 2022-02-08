@@ -20,6 +20,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #define _PT_GRAPHICS_H_
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 
 typedef struct pt_graphics PT_Graphics;
@@ -55,6 +56,10 @@ int PT_GraphicsShowSimpleMessageBox(Uint32 flags, const char *utf8_title, const 
 * \sa PT_GraphicsRenderClear
 */
 void PT_GraphicsLoadTexture( const char* utf8_filePath, const char* utf8_name );
+
+TTF_Font* PT_GraphicsLoadFont( const char* utf8_filePath, int fontSize, SDL_bool defaultPath );
+
+SDL_bool PT_GraphicsLoadFonts( );
 
 void PT_GraphicsSetViewport( const SDL_Rect* rect );
 
@@ -99,6 +104,9 @@ void PT_GraphicsRenderFillRect( const SDL_Rect* rect );
 
 void PT_GraphicsRenderFillRectF( const SDL_FRect* rect );
 
+void PT_GraphicsRenderTextSolid( const char* utf8_font, const char* utf8_text, 
+	const char* utf8_fontTextureName );
+
 /**
 * \brief Draws an previous loaded texture to the current rendering target.
 *
@@ -120,6 +128,9 @@ void PT_GraphicsDrawTexture( const char* utf8_name, const SDL_Rect* srcRect, con
 	
 void PT_GraphicsDrawTextureF( const char* utf8_name, const SDL_Rect* srcRect, const SDL_FRect* dstRect,
 	const double angle, const SDL_FPoint* center, const SDL_RendererFlip flip );
+
+void PT_GraphicsDrawFontTexture( const char* utf8_name, const SDL_Rect* srcRect, int x, int y,
+	const double angle, const SDL_Point* center, const SDL_RendererFlip flip );
 
 /**
 * \brief Clear the current rendering target with the drawing color. 

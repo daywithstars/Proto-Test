@@ -243,7 +243,7 @@ json_value* PT_ParseGetJsonValueFromFile( const char* utf8_filePath, SDL_bool de
 	return jsonValue;
 }//PT_ParseGetJsonValueFromFile
 
-const json_value* PT_ParseGetJsonValuePointer( PT_Parse* _this ) {
+json_value* PT_ParseGetJsonValuePointer( PT_Parse* _this ) {
 	return _this->jsonValue;
 }//PT_ParseGetJsonValuePointer
 
@@ -281,7 +281,8 @@ json_object_entry PT_ParseGetObjectEntry_json_value( json_value* _json_value, co
 
 	if ( !_json_value )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseGetObjectEntry_json_value: Invalid _json_value\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_ParseGetObjectEntry_json_value: Invalid _json_value\n");
 		PT_StringDestroy(sequenceFound);
 		return entry;
 	}

@@ -177,6 +177,10 @@ SDL_bool PT_ApplicationCreate( ) {
 		PT_ApplicationDestroy();
 		return SDL_FALSE;
 	}
+	if ( !PT_GraphicsLoadFonts() )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate: Cannot load fonts\n");
+	}
 	if ( !PT_InputManagerCreate() )
 	{
 		return SDL_FALSE;

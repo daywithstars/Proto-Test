@@ -187,6 +187,8 @@ PT_Screen* PT_ScreenCreate( json_value* jsonValue ) {
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenCreate: Cannot load levels\n");
 	}
 	
+	PT_GraphicsRenderTextSolid("Title Screen", "Proto-Test", "title-screen-text");
+	
 	SDL_Log("===== PT: PT_ScreenCreate =====\n");
 	SDL_Log("* Screen: %s: created\n", (char*)_this->name->utf8_string);
 	SDL_Log("* --File: %s\n", (char*)_this->fileName->utf8_string);
@@ -235,12 +237,15 @@ void PT_ScreenUpdate( PT_Screen* _this, Sint32 elapsedTime ) {
 }//PT_ScreenUpdate
 
 void PT_ScreenDraw( PT_Screen* _this ) {
+
 	PT_LevelManagerDraw();
 	
 	for ( unsigned int i = 0; i < _this->numSprites; i++ )
 	{
 		PT_SpriteDraw(_this->sprites[i]);
 	}
+	
+	PT_GraphicsDrawFontTexture("title-screen-text", NULL, 100, 10, 0.0, NULL, SDL_FLIP_NONE);
 }//PT_ScreenDraw
 
 
