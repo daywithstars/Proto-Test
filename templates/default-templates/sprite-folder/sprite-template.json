@@ -40,7 +40,7 @@
 	],
 	"colliders": [
 		{
-			"visible": 1,
+			"visible": true,
 			"type": "$collider-type$",
 			"name": "<collider-name>",
 			"color": {
@@ -54,7 +54,7 @@
 			}
 		},
 		{
-			"visible": 1,
+			"visible": true,
 			"type": "$collider-type$",
 			"name": "<collider-name>",
 			"color": {

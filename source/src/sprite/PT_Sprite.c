@@ -470,6 +470,10 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 						{
 							visible = entry.value->u.integer;
 						}
+						if ( entry.value->type == json_boolean )
+						{
+							visible = entry.value->u.boolean;
+						}
 						
 						PT_ColliderSetVisible(&_this->colliders[j], visible);
 					}	

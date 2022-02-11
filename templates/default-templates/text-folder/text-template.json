@@ -1,5 +1,6 @@
 {
 	"font": "<your-font-template.name>",
 	"texture-name": "<name-this-text-texture>",
+	"position": [10, 20],
 	"text": "your text, do not put break line in this string, instead use \n",
 }

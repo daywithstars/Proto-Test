@@ -8,5 +8,22 @@
 	"camera": {
 		"width": 640,
 		"height": 480,
+		
+		"colliders": [
+			{
+				"visible": true,
+				"type": "$collider-type$",
+				"name": "<collider-name>",
+				"color": {
+					"red": 200,
+					"green": 0,
+					"blue": 0,
+					"alpha": 140,
+				},
+				
+				"fields": {
+				}
+			},
+		],
 	},
 }

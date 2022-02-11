@@ -131,6 +131,13 @@ SDL_bool PT_TextParse( PT_Text* _this, json_value* jsonValue ) {
 		return SDL_FALSE;	
 	}
 	
+	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "position");
+	if ( entry.name )
+	{
+		_this->x = entry.value->u.array.values[0]->u.integer;	
+		_this->y = entry.value->u.array.values[1]->u.integer;	
+	}
+	
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "text");
 	if ( !entry.name )
 	{
