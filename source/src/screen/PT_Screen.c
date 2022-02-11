@@ -22,8 +22,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Parse.h>
 #include <PT_Graphics.h>
 #include <PT_InputManager.h>
-#include <PT_Keyboard.h>
 #include <PT_SpriteFactory.h>
+#include <PT_Text.h>
 
 
 struct pt_screen {
@@ -32,6 +32,8 @@ struct pt_screen {
 	
 	PT_Sprite** sprites;
 	unsigned int numSprites;
+	
+	PT_Text *text;
 };
 
 SDL_bool PT_ScreenParseSettings( PT_Screen* _this, json_value* jsonValue ) {
@@ -187,7 +189,13 @@ PT_Screen* PT_ScreenCreate( json_value* jsonValue ) {
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenCreate: Cannot load levels\n");
 	}
 	
-	PT_GraphicsRenderTextSolid("Title Screen", "Proto-Test", "title-screen-text");
+	PT_Parse* parse = PT_ParseCreate();
+	
+	PT_ParseOpenFile(parse, "assets/text/text-test.json", SDL_TRUE);
+	
+	_this->text = PT_TextCreate(PT_ParseGetJsonValuePointer(parse));
+	
+	PT_ParseDestroy(parse);
 	
 	SDL_Log("===== PT: PT_ScreenCreate =====\n");
 	SDL_Log("* Screen: %s: created\n", (char*)_this->name->utf8_string);
@@ -224,6 +232,8 @@ void PT_ScreenDestroy( PT_Screen* _this ) {
 		free(_this->sprites);
 	}
 	
+	PT_TextDestroy(_this->text);
+	
 	free(_this);
 }//PT_ScreenDestroy
 
@@ -245,7 +255,7 @@ void PT_ScreenDraw( PT_Screen* _this ) {
 		PT_SpriteDraw(_this->sprites[i]);
 	}
 	
-	PT_GraphicsDrawFontTexture("title-screen-text", NULL, 100, 10, 0.0, NULL, SDL_FLIP_NONE);
+	PT_TextDraw(_this->text);
 }//PT_ScreenDraw
 
 

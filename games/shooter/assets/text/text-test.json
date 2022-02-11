@@ -1,0 +1,5 @@
+{
+	"font": "Title Screen",
+	"texture-name": "test-text",
+	"text": "your text, do not add manual line break on this, instead use file from text-template-structure.md",
+}
