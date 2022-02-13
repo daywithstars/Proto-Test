@@ -15,6 +15,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <SDL_rect.h>
 #include <SDL_pixels.h>
 
+#include <json.h>
+
 #include <PT_String.h>
 
 typedef enum {
@@ -32,13 +34,8 @@ typedef struct {
 }PT_Collider;
 
 
-PT_Collider PT_ColliderCreate();
+PT_Collider PT_ColliderCreate( json_value* jsonValue );
 void PT_ColliderDestroy( PT_Collider* _this );
-
-SDL_bool PT_ColliderSetName( PT_Collider* _this, const char* utf8_name );
-void PT_ColliderSetVisible( PT_Collider* _this, SDL_bool value );
-void PT_ColliderSetColor( PT_Collider* _this, const SDL_Color color );
-SDL_bool PT_ColliderSetRect( PT_Collider* _this, float x, float y, float w, float h );
 
 SDL_bool PT_ColliderTestCollision( PT_Collider _this, float _thisRelativeX, float _thisRelativeY, PT_Collider other, float otherRelativeX, float otherRelativeY );
 

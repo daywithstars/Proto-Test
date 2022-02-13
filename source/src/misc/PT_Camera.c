@@ -19,6 +19,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Camera.h>
 #include <PT_Parse.h>
 #include <PT_Graphics.h>
+#include <PT_Collider.h>
 
 
 typedef struct pt_camera {
@@ -29,6 +30,9 @@ typedef struct pt_camera {
 	
 	Uint16 width;
 	Uint16 height;
+	
+	PT_Collider* colliders;
+	unsigned int numColliders;
 }PT_Camera;
 
 static PT_Camera* ptCamera = NULL;
@@ -67,6 +71,16 @@ void PT_CameraDestroy() {
 	if ( !ptCamera )
 	{
 		return;
+	}
+	
+	if ( ptCamera->colliders )
+	{
+		for ( unsigned int i = 0; i < ptCamera->numColliders; i++ )
+		{
+			PT_ColliderDestroy(&ptCamera->colliders[i]);
+		}
+		
+		free(ptCamera->colliders);
 	}
 	
 	free(ptCamera);
@@ -180,6 +194,30 @@ SDL_bool PT_CameraParse( ) {
 		return SDL_FALSE;
 	}
 	ptCamera->height = entry.value->u.integer;
+	
+	entry = PT_ParseGetObjectEntry(parse, "camera colliders");
+	if ( entry.name )
+	{
+		ptCamera->colliders = (PT_Collider*)malloc(sizeof(PT_Collider) * entry.value->u.array.length);
+		if ( !ptCamera->colliders )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CameraParse: Not enough memory\n");
+			PT_ParseDestroy(parse);
+			return SDL_FALSE;
+		}
+		ptCamera->numColliders = entry.value->u.array.length;
+		
+		
+		for ( unsigned int i = 0; i < ptCamera->numColliders; i++ )
+		{
+			ptCamera->colliders[i] = PT_ColliderCreate(entry.value->u.array.values[i]);
+			if ( !ptCamera->colliders[i].name )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CameraParse!\n");
+				continue;
+			}
+		}
+	}
 
 	
 	PT_ParseDestroy(parse);

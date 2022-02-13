@@ -12,8 +12,8 @@
 		"colliders": [
 			{
 				"visible": true,
-				"type": "$collider-type$",
-				"name": "<collider-name>",
+				"type": "PT_COLLIDER_TYPE_RECTANGLE",
+				"name": "left-screen-collider",
 				"color": {
 					"red": 200,
 					"green": 0,
@@ -22,6 +22,10 @@
 				},
 				
 				"fields": {
+					"x": 0,
+					"y": 0,
+					"w": 640,
+					"h": 480,
 				}
 			},
 		],

@@ -13,9 +13,37 @@
          "width":30,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":2,
+         "name":"Object Layer 1",
+         "objects":[
+                {
+                 "height":93.9393939393939,
+                 "id":1,
+                 "name":"Sprite",
+                 "properties":[
+                        {
+                         "name":"template",
+                         "type":"string",
+                         "value":"sprite-shooter-2"
+                        }],
+                 "rotation":0,
+                 "type":"PT_Sprite",
+                 "visible":true,
+                 "width":109.090909090909,
+                 "x":142.424242424242,
+                 "y":54.5454545454545
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":2,
- "nextobjectid":1,
+ "nextlayerid":3,
+ "nextobjectid":2,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.7.2",

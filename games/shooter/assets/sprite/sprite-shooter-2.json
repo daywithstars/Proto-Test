@@ -36,24 +36,30 @@
 	],
 	"colliders": [
 		{
-			"visible": 1,
+			"visible": true,
 			"type": "PT_COLLIDER_TYPE_RECTANGLE",
 			"name": "sprite2 top collider",
 			
 			"fields": {
-				"x": 10,
+				"x": 6,
 				"y": 5,
 				"w": 50,
 				"h": 10,
 			}
 		},
 		{
-			"visible": 1,
+			"visible": true,
 			"type": "PT_COLLIDER_TYPE_RECTANGLE",
 			"name": "sprite2 bottom collider",
+			"color": {
+				"red": 50,
+				"green": 200,
+				"blue": 220,
+				"alpha": 100
+			},
 			
 			"fields": {
-				"x": 10,
+				"x": 6,
 				"y": 50,
 				"w": 50,
 				"h": 10,
