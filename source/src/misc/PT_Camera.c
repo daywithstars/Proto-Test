@@ -161,6 +161,23 @@ void PT_CameraGetRenderDistance( Uint32* startColumn, Uint32* startRow, Uint32* 
 	}
 }//PT_CameraGetRenderDistance
 
+void PT_CameraSavePosition( ) {
+	ptCamera->saveX = ptCamera->x;
+	ptCamera->saveY = ptCamera->y;
+}
+
+void PT_CameraLoadPosition( ) {
+	ptCamera->x = ptCamera->saveX;
+	ptCamera->y = ptCamera->saveY;
+}
+
+void PT_CameraDraw( ) {
+	for ( unsigned int i = 0; i < ptCamera->numColliders; i++ )
+	{
+		PT_ColliderDraw(ptCamera->colliders[i], ptCamera->x, ptCamera->y);
+	}
+}//PT_CameraDraw
+
 //===================================== PRIVATE Functions
 
 SDL_bool PT_CameraParse( ) {
@@ -223,17 +240,6 @@ SDL_bool PT_CameraParse( ) {
 	PT_ParseDestroy(parse);
 	return SDL_TRUE;
 }//PT_CameraParse
-
-
-void PT_CameraSavePosition( ) {
-	ptCamera->saveX = ptCamera->x;
-	ptCamera->saveY = ptCamera->y;
-}
-
-void PT_CameraLoadPosition( ) {
-	ptCamera->x = ptCamera->saveX;
-	ptCamera->y = ptCamera->saveY;
-}
 
 
 

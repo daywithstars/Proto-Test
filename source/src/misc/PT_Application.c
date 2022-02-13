@@ -111,6 +111,7 @@ void PT_ApplicationUpdate( Sint32 elapsedTime ) {
 void PT_ApplicationDraw( ) {
 	PT_GraphicsRenderClear();
 	PT_ScreenManagerDraw();
+	PT_CameraDraw();
 	PT_GraphicsRenderPresent();
 }//PT_ApplicationDraw
 

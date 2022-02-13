@@ -13,7 +13,7 @@
 			{
 				"visible": true,
 				"type": "PT_COLLIDER_TYPE_RECTANGLE",
-				"name": "left-screen-collider",
+				"name": "camera-left-screen-collider",
 				"color": {
 					"red": 200,
 					"green": 0,
@@ -24,8 +24,62 @@
 				"fields": {
 					"x": 0,
 					"y": 0,
-					"w": 640,
+					"w": 10,
 					"h": 480,
+				}
+			},
+			{
+				"visible": true,
+				"type": "PT_COLLIDER_TYPE_RECTANGLE",
+				"name": "camera-right-screen-collider",
+				"color": {
+					"red": 0,
+					"green": 0,
+					"blue": 200,
+					"alpha": 140,
+				},
+				
+				"fields": {
+					"x": 630,
+					"y": 0,
+					"w": 10,
+					"h": 480,
+				}
+			},
+			{
+				"visible": true,
+				"type": "PT_COLLIDER_TYPE_RECTANGLE",
+				"name": "camera-top-screen-collider",
+				"color": {
+					"red": 0,
+					"green": 200,
+					"blue": 0,
+					"alpha": 140,
+				},
+				
+				"fields": {
+					"x": 10,
+					"y": 0,
+					"w": 620,
+					"h": 10,
+				}
+			},
+			{
+				"visible": true,
+				"type": "PT_COLLIDER_TYPE_RECTANGLE",
+				"name": "camera-bottom-screen-collider",
+				"color": {
+					"red": 200,
+					"green": 200,
+					"blue": 200,
+					"alpha": 190,
+				},
+				
+				"fields": {
+					"x": 10,
+					"y": 470,
+					"w": 620,
+					"h": 10,
 				}
 			},
 		],

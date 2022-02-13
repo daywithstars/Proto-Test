@@ -32,6 +32,8 @@ void PT_CameraGetRenderDistance( Uint32* startColumn, Uint32* startRow, Uint32* 
 void PT_CameraSavePosition( );
 void PT_CameraLoadPosition( );
 
+void PT_CameraDraw( );
+
 #endif /* _PT_CAMERA_H_ */
 
 
