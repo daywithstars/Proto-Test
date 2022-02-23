@@ -81,7 +81,25 @@ void PT_CollisionHandlerUpdate( PT_CollisionHandler* _this ) {
 		PT_CollisionHandlerCheckGroupCollision(pList->numValues, pList->values, _this->cameraLimits);
 		pList = pList->next;
 	}
-}//PT_CollisionHandlerUpdate
+}//PT_CollisionHandlerUpdate  
+
+void PT_CollisionHandlerTestSpriteAgainstCollider( PT_Sprite* sprite, PT_Collider collider ) {
+
+	if ( sprite->dstRect.x  <= PT_CameraGetX() + PT_CameraGetWidth() && 
+		sprite->dstRect.x + sprite->dstRect.w >= PT_CameraGetX() &&
+		sprite->dstRect.y <= PT_CameraGetY() + PT_CameraGetHeight() &&
+		sprite->dstRect.y + sprite->dstRect.h >= PT_CameraGetY() )
+	{
+		for ( unsigned int i = 0; i < sprite->numColliders; i++ )
+		{
+			if ( PT_ColliderTestCollision(sprite->colliders[i], sprite->dstRect.x, sprite->dstRect.y,
+				collider, PT_CameraGetX(), PT_CameraGetY()) )
+			{
+				PT_SpriteCollisionWith(sprite, sprite->colliders[i], collider);
+			}
+		}
+	}
+}//PT_CollisionHandlerTestSpriteToCollider
 
 //===================================== PRIVATE Functions
 

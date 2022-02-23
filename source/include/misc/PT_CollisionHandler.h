@@ -26,6 +26,8 @@ void PT_CollisionHandlerAdd( PT_CollisionHandler* _this, const char* utf8_group,
 
 void PT_CollisionHandlerUpdate( PT_CollisionHandler* _this );
 
+void PT_CollisionHandlerTestSpriteAgainstCollider( PT_Sprite* sprite, PT_Collider collider );
+
 
 #endif /* _PT_COLLISIONHANDLER_H_ */
 

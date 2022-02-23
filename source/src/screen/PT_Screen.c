@@ -24,6 +24,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_InputManager.h>
 #include <PT_CollisionManager.h>
 #include <PT_SpriteFactory.h>
+#include <PT_Camera.h>
 
 
 
@@ -77,7 +78,6 @@ SDL_bool PT_ScreenParseSettings( PT_Screen* _this, json_value* jsonValue ) {
 		}
 		
 		//setup collison handler
-		
 		PT_String* collisionHandlerName = PT_StringCreate();
 		if ( !collisionHandlerName )
 		{
@@ -280,6 +280,17 @@ void PT_ScreenUpdate( PT_Screen* _this, Sint32 elapsedTime ) {
 	for ( unsigned int i = 0; i < _this->numSprites; i++ )
 	{
 		PT_SpriteUpdate(_this->sprites[i], elapsedTime);
+		
+
+		unsigned int cameraNumColliders = 0;
+		PT_Collider* cameraColliders = NULL;
+		
+		PT_CameraGetColliders(&cameraColliders, &cameraNumColliders);
+		
+		for ( unsigned int j = 0; j < cameraNumColliders; j++ )
+		{
+			PT_CollisionHandlerTestSpriteAgainstCollider(_this->sprites[i], cameraColliders[j]);
+		}	
 	}
 	if ( _this->collisionHandler )
 	{

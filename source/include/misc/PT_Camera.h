@@ -14,6 +14,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <SDL_stdinc.h>
 
+#include <PT_Collider.h>
+
 
 SDL_bool PT_CameraCreate();
 void PT_CameraDestroy();
@@ -28,6 +30,8 @@ void PT_CameraSetPosition( Sint32 x, Sint32 y );
 
 void PT_CameraGetRenderDistance( Uint32* startColumn, Uint32* startRow, Uint32* maxColumn, Uint32* maxRow,
 	Uint32 tileLayerWidth, Uint32 tileLayerHeight, Uint16 tilewidth, Uint16 tileheight );
+
+void PT_CameraGetColliders( PT_Collider** colliders, unsigned int* num );
 	
 void PT_CameraSavePosition( );
 void PT_CameraLoadPosition( );

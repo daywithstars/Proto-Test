@@ -19,7 +19,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Camera.h>
 #include <PT_Parse.h>
 #include <PT_Graphics.h>
-#include <PT_Collider.h>
 
 
 typedef struct pt_camera {
@@ -160,6 +159,12 @@ void PT_CameraGetRenderDistance( Uint32* startColumn, Uint32* startRow, Uint32* 
 		*maxRow = tileLayerHeight;
 	}
 }//PT_CameraGetRenderDistance
+
+void PT_CameraGetColliders( PT_Collider** colliders, unsigned int* num ) {
+	
+	*colliders = ptCamera->colliders;
+	*num = ptCamera->numColliders;
+}
 
 void PT_CameraSavePosition( ) {
 	ptCamera->saveX = ptCamera->x;
