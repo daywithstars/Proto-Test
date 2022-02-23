@@ -1,7 +1,9 @@
 {
 	"type": "PT_Sprite",
 	"tags": {
-		"collider": "shooterObjcs",
+		"collider": {
+			"group": "shooterObjects",
+		},
 	},
 	"image": "shooter-sheet",
 	"speedX": 0.05,

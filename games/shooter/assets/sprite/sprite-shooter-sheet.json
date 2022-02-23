@@ -1,7 +1,9 @@
 {
 	"type": "PT_Sprite",
 	"tags": {
-		"collider": "shooterObjcs",
+		"collider": {
+			"group": "shooterObjects",
+		},
 		"movement": [
 			"constant-stop-horizontal",
 			"constant-stop-vertical",

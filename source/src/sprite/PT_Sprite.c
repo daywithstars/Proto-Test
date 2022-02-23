@@ -19,9 +19,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Sprite.h>
 #include <PT_Parse.h>
 #include <PT_Graphics.h>
-#include <PT_CollisionManager.h>
 #include <PT_Behavior.h>
 #include <PT_Camera.h>
+#include <PT_CollisionManager.h>
 
 
 
@@ -273,14 +273,26 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 			if ( !strcmp("tags", jsonValue->u.object.values[i].name) )
 			{
 				for ( unsigned int j = 0; j < jsonValue->u.object.values[i].value->u.object.length; j++ )
-				{
-					if ( !strcmp("collider", 
+				{	
+					if ( !strcmp("collider",
 						jsonValue->u.object.values[i].value->u.object.values[j].name) )
 					{
-						PT_CollisionManagerAdd(
-							jsonValue->u.object.values[i].value->u.object.values[j].value->u.string.ptr, 
-							_this);
-					}	
+						json_object_entry entry = 
+						PT_ParseGetObjectEntry_json_value(
+							jsonValue->u.object.values[i].value->u.object.values[j].value, "group"
+						);
+						
+						if ( entry.name )
+						{
+							PT_CollisionHandler* handler = 
+							PT_CollisionManagerGetCurrentHandler();
+							
+							if ( handler )
+							{
+								PT_CollisionHandlerAdd(handler, entry.value->u.string.ptr, _this);
+							}
+						}
+					}
 					else if ( !strcmp("movement", 
 						jsonValue->u.object.values[i].value->u.object.values[j].name) )
 					{

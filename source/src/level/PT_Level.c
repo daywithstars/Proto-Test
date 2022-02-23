@@ -17,9 +17,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <PT_Level.h>
 #include <PT_Parse.h>
-#include <PT_String.h>
 #include <PT_LevelTileLayer.h>
 #include <PT_LevelObjectLayer.h>
+#include <PT_CollisionManager.h>
 
 
 
@@ -31,7 +31,7 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue );
 
 //===================================== PUBLIC Functions
 
-PT_Level* PT_LevelCreate( json_value* jsonValue ) {
+PT_Level* PT_LevelCreate( json_value* jsonValue, const char* utf8_name ) {
 	PT_Level *_this = (PT_Level*)malloc(sizeof(PT_Level));
 	if ( !_this )
 	{
@@ -40,6 +40,60 @@ PT_Level* PT_LevelCreate( json_value* jsonValue ) {
 	}
 	SDL_memset(_this, 0, sizeof(PT_Level));
 	
+	_this->name = PT_StringCreate();
+	if ( !_this->name )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelCreate!\n");
+		PT_LevelDestroy(_this);
+		return NULL;
+	}
+	if ( !PT_StringInsert(&_this->name, utf8_name, 0) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelCreate!\n");
+		PT_LevelDestroy(_this);
+		return NULL;
+	}
+	
+	PT_String* collisionHandlerName = PT_StringCreate();
+	if ( !collisionHandlerName )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelCreate!\n");
+	}
+	else {
+		if ( !PT_StringInsert(&collisionHandlerName, utf8_name, 0) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelCreate!\n");
+			PT_StringDestroy(collisionHandlerName);
+		}
+		else {
+			if ( !PT_StringInsert(&collisionHandlerName, "level: ", 0) )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelCreate!\n");
+				PT_StringDestroy(collisionHandlerName);
+			}
+			else {
+				if ( !PT_CollisionManagerAddHandler((char*)collisionHandlerName->utf8_string, SDL_TRUE) )
+				{
+					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelCreate!\n");
+					PT_StringDestroy(collisionHandlerName);
+				}
+				else {
+					_this->collisionHandler =
+					PT_CollisionManagerGetHandler(
+						(char*)collisionHandlerName->utf8_string
+					);				
+					if ( !_this->collisionHandler )
+					{
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+						"PT: PT_LevelCreate: Cannot get collision handler\n");
+					}
+					
+					PT_StringDestroy(collisionHandlerName);
+				}
+			}
+		}
+	}
+	
 	if ( !PT_LevelParse(_this, jsonValue) )
 	{
 		PT_LevelDestroy(_this);
@@ -47,12 +101,15 @@ PT_Level* PT_LevelCreate( json_value* jsonValue ) {
 	}
 	
 	return _this;
-}
+}//PT_LevelCreate
+
 void PT_LevelDestroy( PT_Level* _this ) {
 	if ( !_this )
 	{
 		return;
 	}
+	
+	PT_StringDestroy(_this->name);
 	
 	if ( _this->layers )
 	{
@@ -79,6 +136,10 @@ void PT_LevelUpdate( PT_Level* _this, Sint32 elapsedTime ) {
 	for ( unsigned int i = 0; i < _this->numLayers; i++ )
 	{
 		PT_LevelLayerUpdate(_this->layers[i], elapsedTime);
+	}
+	if ( _this->collisionHandler )
+	{
+		PT_CollisionHandlerUpdate(_this->collisionHandler);
 	}
 }
 void PT_LevelDraw( PT_Level* _this ) {
@@ -208,7 +269,9 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 		}
 		else if ( PT_StringMatchFast(entry2.value->u.string.ptr, "objectgroup"))
 		{
-			_this->layers[i] = PT_LevelObjectLayerCreate(entry.value->u.array.values[i]);
+			PT_CollisionManagerSetCurrentHandler(_this->collisionHandler);
+			_this->layers[i] = PT_LevelObjectLayerCreate(entry.value->u.array.values[i],
+				(char*)_this->name->utf8_string);
 			if ( !_this->layers[i] )
 			{
 				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");

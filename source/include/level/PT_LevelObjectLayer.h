@@ -19,18 +19,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_String.h>
 #include <PT_LevelLayer.h>
 #include <PT_Sprite.h>
+#include <PT_CollisionHandler.h>
 
 
 typedef struct pt_level_object_layer {
+	PT_String* nameID;
+
 	PT_LevelLayer* pLayer;
 
 	unsigned int numSprites;
 	PT_Sprite** sprites;
 	
+	PT_CollisionHandler* collisionHandler;
+	
 }PT_LevelObjectLayer;
 
 
-PT_LevelLayer* PT_LevelObjectLayerCreate( json_value* jsonValue );
+PT_LevelLayer* PT_LevelObjectLayerCreate( json_value* jsonValue, const char* utf8_levelName );
 void PT_LevelObjectLayerDestroy( void* layerData );
 
 void PT_LevelObjectLayerUpdate( void* layerData, Sint32 elapsedTime );

@@ -37,12 +37,18 @@
                  "y":54.5454545454545
                 }],
          "opacity":1,
+         "properties":[
+                {
+                 "name":"limit-collision",
+                 "type":"bool",
+                 "value":true
+                }],
          "type":"objectgroup",
          "visible":true,
          "x":0,
          "y":0
         }],
- "nextlayerid":3,
+ "nextlayerid":4,
  "nextobjectid":2,
  "orientation":"orthogonal",
  "renderorder":"right-down",

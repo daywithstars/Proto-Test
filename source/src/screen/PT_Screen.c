@@ -22,8 +22,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Parse.h>
 #include <PT_Graphics.h>
 #include <PT_InputManager.h>
+#include <PT_CollisionManager.h>
 #include <PT_SpriteFactory.h>
-#include <PT_Text.h>
+
 
 
 struct pt_screen {
@@ -33,7 +34,7 @@ struct pt_screen {
 	PT_Sprite** sprites;
 	unsigned int numSprites;
 	
-	PT_Text *text;
+	PT_CollisionHandler* collisionHandler;
 };
 
 SDL_bool PT_ScreenParseSettings( PT_Screen* _this, json_value* jsonValue ) {
@@ -74,6 +75,52 @@ SDL_bool PT_ScreenParseSettings( PT_Screen* _this, json_value* jsonValue ) {
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
 			"PT: PT_ScreenParseSettings: Cannot find the property: file\n");
 		}
+		
+		//setup collison handler
+		
+		PT_String* collisionHandlerName = PT_StringCreate();
+		if ( !collisionHandlerName )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+			"PT: PT_ScreenParseSettings!\n");
+		}
+		else {
+			if ( !PT_StringInsert(&collisionHandlerName, (char*)_this->name->utf8_string, 0) )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+				"PT: PT_ScreenParseSettings!\n");
+				PT_StringDestroy(collisionHandlerName);
+			}
+			else {
+				if ( !PT_StringInsert(&collisionHandlerName, "screen: ", 0) )
+				{
+					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+					"PT: PT_ScreenParseSettings!\n");
+					PT_StringDestroy(collisionHandlerName);
+				}
+				else {
+					if ( 
+					!PT_CollisionManagerAddHandler((char*)collisionHandlerName->utf8_string, SDL_FALSE) 
+					)
+					{
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+						"PT: PT_ScreenParseSettings!\n");
+						PT_StringDestroy(collisionHandlerName);
+					}
+					else {
+						_this->collisionHandler =
+						PT_CollisionManagerGetHandler((char*)collisionHandlerName->utf8_string);
+						if ( !_this->collisionHandler )
+						{
+							SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+							"PT: PT_ScreenParseSettings: Cannot get collision handler\n");
+						}
+						
+						PT_StringDestroy(collisionHandlerName);
+					}
+				}
+			}
+		}
 	}
 	
 	return SDL_TRUE;
@@ -99,6 +146,7 @@ SDL_bool PT_ScreenLoadSprites( PT_Screen* _this, json_value* jsonValue ) {
 		PT_Parse *parse = PT_ParseCreate();
 		PT_String* spriteTemplatePath = PT_StringCreate();
 		
+		PT_CollisionManagerSetCurrentHandler(_this->collisionHandler);
 		for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
 		{
 			_this->sprites[i] = NULL;
@@ -138,7 +186,6 @@ SDL_bool PT_ScreenLoadSprites( PT_Screen* _this, json_value* jsonValue ) {
 		PT_StringDestroy(spriteTemplatePath);
 		PT_ParseDestroy(parse);
 	}
-	
 	
 	return SDL_TRUE;
 }//PT_ScreenLoadSprites
@@ -189,14 +236,6 @@ PT_Screen* PT_ScreenCreate( json_value* jsonValue ) {
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenCreate: Cannot load levels\n");
 	}
 	
-	PT_Parse* parse = PT_ParseCreate();
-	
-	PT_ParseOpenFile(parse, "assets/text/text-test.json", SDL_TRUE);
-	
-	_this->text = PT_TextCreate(PT_ParseGetJsonValuePointer(parse));
-	
-	PT_ParseDestroy(parse);
-	
 	SDL_Log("===== PT: PT_ScreenCreate =====\n");
 	SDL_Log("* Screen: %s: created\n", (char*)_this->name->utf8_string);
 	SDL_Log("* --File: %s\n", (char*)_this->fileName->utf8_string);
@@ -232,8 +271,6 @@ void PT_ScreenDestroy( PT_Screen* _this ) {
 		free(_this->sprites);
 	}
 	
-	PT_TextDestroy(_this->text);
-	
 	free(_this);
 }//PT_ScreenDestroy
 
@@ -243,6 +280,10 @@ void PT_ScreenUpdate( PT_Screen* _this, Sint32 elapsedTime ) {
 	for ( unsigned int i = 0; i < _this->numSprites; i++ )
 	{
 		PT_SpriteUpdate(_this->sprites[i], elapsedTime);
+	}
+	if ( _this->collisionHandler )
+	{
+		PT_CollisionHandlerUpdate(_this->collisionHandler);
 	}
 }//PT_ScreenUpdate
 
@@ -254,8 +295,6 @@ void PT_ScreenDraw( PT_Screen* _this ) {
 	{
 		PT_SpriteDraw(_this->sprites[i]);
 	}
-	
-	PT_TextDraw(_this->text);
 }//PT_ScreenDraw
 
 

@@ -18,6 +18,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_LevelObjectLayer.h>
 #include <PT_Parse.h>
 #include <PT_SpriteFactory.h>
+#include <PT_CollisionManager.h>
 
 
 //===================================== PRIVATE Functions
@@ -26,7 +27,7 @@ SDL_bool PT_LevelObjectLayerParse( void* layerData, json_value* jsonValue );
 
 //===================================== PUBLIC Functions
 
-PT_LevelLayer* PT_LevelObjectLayerCreate( json_value* jsonValue ) {
+PT_LevelLayer* PT_LevelObjectLayerCreate( json_value* jsonValue, const char* utf8_levelName ) {
 	
 	PT_LevelObjectLayer* _this = (PT_LevelObjectLayer*)malloc(sizeof(PT_LevelObjectLayer));
 	if ( !_this )
@@ -35,6 +36,22 @@ PT_LevelLayer* PT_LevelObjectLayerCreate( json_value* jsonValue ) {
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(PT_LevelObjectLayer));
+	
+	_this->nameID = PT_StringCreate();
+	if ( !_this->nameID )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelObjectCreate!\n");
+		PT_LevelObjectLayerDestroy(_this);
+		return NULL;
+	}
+	else {
+		if ( !PT_StringInsert(&_this->nameID, utf8_levelName, 0) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelObjectCreate!\n");
+			PT_LevelObjectLayerDestroy(_this);
+			return NULL;
+		}
+	}
 	
 	_this->pLayer = PT_LevelLayerCreate((void*)_this, jsonValue, PT_LevelObjectLayerParse);
 	if ( !_this->pLayer )
@@ -58,6 +75,7 @@ void PT_LevelObjectLayerDestroy( void* layerData ) {
 	
 	PT_LevelObjectLayer* _this = (PT_LevelObjectLayer*)layerData;
 	
+	PT_StringDestroy(_this->nameID);
 	if ( _this->sprites )
 	{
 		for ( unsigned int i = 0; i < _this->numSprites; i++ )
@@ -87,6 +105,10 @@ void PT_LevelObjectLayerDraw( void* layerData ) {
 	{
 		PT_SpriteDraw(_this->sprites[i]);
 	}
+	if ( _this->collisionHandler )
+	{
+		PT_CollisionHandlerUpdate(_this->collisionHandler);
+	}
 }//PT_LevelObjectLayerDraw
 
 //===================================== PRIVATE Functions
@@ -94,8 +116,59 @@ void PT_LevelObjectLayerDraw( void* layerData ) {
 SDL_bool PT_LevelObjectLayerParse( void* layerData, json_value* jsonValue ) {
 
 	PT_LevelObjectLayer* _this = (PT_LevelObjectLayer*)layerData;
-
-	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "objects");
+	
+	//Default properties.id 
+	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "id");
+	if ( entry.name )
+	{
+		int id = entry.value->u.integer;
+		char idstr[6];
+		sprintf(idstr, "%d", id);
+		
+		if ( !PT_StringInsert(&_this->nameID, idstr, 0) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+			"PT: PT_LevelObjectLayerParse: Cannot add id to nameID\n");
+		}
+		else {
+			if ( !PT_CollisionManagerAddHandler((char*)_this->nameID->utf8_string, SDL_TRUE) )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+				"PT: PT_LevelObjectLayerParse: Cannot add CollisionHandler\n");
+			}
+		}
+	}
+	else {
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_LevelObjectLayerParse: Cannot find element \"id\"\n");
+	}
+	
+	//Custom properties.limit-collision
+	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "properties");
+	if ( entry.name )
+	{
+		for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
+		{
+			json_value* arrayJsonValue = entry.value->u.array.values[i];
+			
+			json_object_entry entry2 = PT_ParseGetObjectEntry_json_value(arrayJsonValue, "name");
+			if ( entry2.name )
+			{
+				if ( !strcmp(entry2.value->u.string.ptr, "limit-collision") )
+				{
+					entry2 = PT_ParseGetObjectEntry_json_value(arrayJsonValue, "value");
+					if ( entry2.value->type == json_boolean && entry2.value->u.boolean )
+					{
+						PT_CollisionManagerSetCurrentHandlerByName((char*)_this->nameID->utf8_string);
+						_this->collisionHandler = PT_CollisionManagerGetCurrentHandler();
+					}
+				}
+			}
+		}
+	}
+	
+	//Default properties.objects
+	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "objects");
 	if ( entry.name )
 	{
 		if ( entry.value->u.array.length > 0 )

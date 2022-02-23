@@ -151,7 +151,7 @@ SDL_bool PT_LevelManagerLoadLevel( const char* utf8_levelName ) {
 		return SDL_FALSE;
 	}
 	
-	PT_Level* level = PT_LevelCreate(node->value);
+	PT_Level* level = PT_LevelCreate(node->value, utf8_levelName);
 	if ( !level )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,

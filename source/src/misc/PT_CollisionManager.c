@@ -16,31 +16,26 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <SDL_log.h>
 
 #include <PT_CollisionManager.h>
-#include <PT_SpriteList.h>
-#include <PT_Collider.h>
-#include <PT_Camera.h>
+#include <PT_CollisionHandlerList.h>
 
 
-
-typedef struct {
-	PT_SpriteList* list;
+typedef struct {	
+	PT_CollisionHandlerList* handlerList;
+	PT_CollisionHandler* currentHandler;
 }PT_CollisionManager;
 
 
 static PT_CollisionManager* ptCollisionManager = NULL;
 
 
-//===================================== PRIVATE Functions
 
-void PT_CollisionManagerCheckGroupCollision( unsigned int num, PT_Sprite** values );
-void PT_CollisionManagerCheckColliderCollision( PT_Sprite* sprite_1, PT_Sprite* sprite_2,
-	unsigned int num_1, PT_Collider* values_1,
-	unsigned int num_2, PT_Collider* values_2 );
+
+
 
 //===================================== PUBLIC Functions
 
 
-SDL_bool PT_CollisionManagerCreate() {
+SDL_bool PT_CollisionManagerCreate( ) {
 	if ( ptCollisionManager )
 	{
 		return SDL_TRUE;
@@ -48,116 +43,67 @@ SDL_bool PT_CollisionManagerCreate() {
 	ptCollisionManager = (PT_CollisionManager*)malloc(sizeof(PT_CollisionManager));
 	if ( !ptCollisionManager )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CollisionManagerCreate: Not enough memory\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CollisionManagerCreate: Not enough memory!\n");
 		return SDL_FALSE;
 	}
 	SDL_memset(ptCollisionManager, 0, sizeof(PT_CollisionManager));
-	
 
 	return SDL_TRUE;
 }//PT_CollisionManagerCreate
 
-void PT_CollisionManagerDestroy() {
+void PT_CollisionManagerDestroy( ) {
 	if ( !ptCollisionManager )
 	{
 		return;
 	}
 	
-	PT_SpriteListDestroy(ptCollisionManager->list, SDL_FALSE);
-	
+	PT_CollisionHandlerListDestroy(ptCollisionManager->handlerList);
+		
+
 	free(ptCollisionManager);
 	ptCollisionManager = NULL;
 }//PT_CollisionManagerDestroy
 
-void PT_CollisionManagerAdd( const char* utf8_group, PT_Sprite* sprite ) {
-
-	ptCollisionManager->list = PT_SpriteListCat(ptCollisionManager->list, utf8_group, sprite);
-}//PT_CollisionManagerAdd
-
-void PT_CollisionManagerUpdate( ) {
-	PT_SpriteList* pList = ptCollisionManager->list;
-	while ( pList )
+SDL_bool PT_CollisionManagerAddHandler( const char* utf8_handlerName, SDL_bool cameraLimits ) {
+	PT_CollisionHandler* handler = PT_CollisionHandlerCreate(cameraLimits);
+	if ( !handler )
 	{
-		PT_CollisionManagerCheckGroupCollision(pList->numValues, pList->values);
-		pList = pList->next;
-	}
-}//PT_CollisionManagerUpdate
-
-//===================================== PRIVATE Functions
-
-void PT_CollisionManagerCheckGroupCollision( unsigned int num, PT_Sprite** values ) {
-	if ( num < 2 )
-	{
-		return;
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,"PT: PT_CollisionManagerAddHandler!\n");
+		return SDL_FALSE;
 	}
 	
-	for ( unsigned int i = 0; i < num; i++ )
-	{
-		for ( unsigned int j = 0; j < num; j++ )
-		{
-			if ( i == j )
-			{
-				continue;
-			}
-			
-			//Only for sprites on the screen.
-			if ( values[i]->dstRect.x  <= PT_CameraGetX() + PT_CameraGetWidth() && 
-			values[i]->dstRect.x + values[i]->dstRect.w >= PT_CameraGetX() &&
-			values[i]->dstRect.y <= PT_CameraGetY() + PT_CameraGetHeight() &&
-			values[i]->dstRect.y + values[i]->dstRect.h >= PT_CameraGetY() )
-			{
-				
-				if ( values[j]->dstRect.x  <= PT_CameraGetX() + PT_CameraGetWidth() && 
-				values[j]->dstRect.x + values[j]->dstRect.w >= PT_CameraGetX() &&
-				values[j]->dstRect.y <= PT_CameraGetY() + PT_CameraGetHeight() &&
-				values[j]->dstRect.y + values[j]->dstRect.h >= PT_CameraGetY() )
-				{
-					PT_CollisionManagerCheckColliderCollision(values[i], values[j], 
-						values[i]->numColliders, values[i]->colliders,
-						values[j]->numColliders, values[j]->colliders);
-				}
-				else {
-					continue;
-				}
-			}
-			else {
-				break;
-			}
-		}
-	}
-}//PT_CollisionManagerCheckGroupCollision
+	ptCollisionManager->handlerList = 
+	PT_CollisionHandlerListAdd(ptCollisionManager->handlerList, utf8_handlerName, handler);
+	return SDL_TRUE;
+}//PT_CollisionManagerAddHandler
 
-void PT_CollisionManagerCheckColliderCollision( PT_Sprite* sprite_1, PT_Sprite* sprite_2,
-	unsigned int num_1, PT_Collider* values_1,
-	unsigned int num_2, PT_Collider* values_2 ) {
+PT_CollisionHandler* PT_CollisionManagerGetHandler( const char* utf8_handlerName ) {
+	PT_CollisionHandlerList* node = 
+	PT_CollisionHandlerListGet(ptCollisionManager->handlerList, utf8_handlerName);
 	
-	if ( num_1 == 0 || num_2 == 0 )
+	if ( !node )
 	{
-		return;
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_CollisionManagerGetHandler: Cannot find: %s CollisionHandler\n", utf8_handlerName);
+		return NULL;
 	}
 	
-	for ( unsigned int i = 0; i < num_1; i++ )
+	return node->value;
+}//PT_CollisionManagerGetHandler
+
+void PT_CollisionManagerSetCurrentHandler( PT_CollisionHandler* handler ) {
+	ptCollisionManager->currentHandler = handler;
+}
+PT_CollisionHandler* PT_CollisionManagerGetCurrentHandler( ) {	
+	return ptCollisionManager->currentHandler;
+}
+void PT_CollisionManagerSetCurrentHandlerByName( const char* utf8_handlerName ) {
+	PT_CollisionHandler* handler = PT_CollisionManagerGetHandler(utf8_handlerName);
+	if ( handler )
 	{
-		for ( unsigned int j = 0; j < num_2; j++ )
-		{
-			if ( PT_ColliderTestCollision(values_1[i], sprite_1->dstRect.x, sprite_1->dstRect.y,
-				values_2[j], sprite_2->dstRect.x, sprite_2->dstRect.y) )
-			{
-				PT_SpriteCollisionWith(sprite_1, values_1[i], values_2[j]);
-				PT_SpriteCollisionWith(sprite_2, values_2[j], values_1[i]);
-				
-				sprite_1->collisionColliderName = values_1[i].name;
-				sprite_1->collisionTargetColliderName = values_2[j].name;
-				
-				sprite_2->collisionColliderName = values_2[j].name;
-				sprite_2->collisionTargetColliderName = values_1[i].name;
-			}
-		}
+		ptCollisionManager->currentHandler = handler;
 	}
-}//PT_CollisionManagerCheckColliderCollision
-
-
-
+}
 
 
 

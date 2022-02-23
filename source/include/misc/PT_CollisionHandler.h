@@ -9,33 +9,25 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-#ifndef _PT_COLLISIONMANAGER_H_
-#define _PT_COLLISIONMANAGER_H_
+#ifndef _PT_COLLISIONHANDLER_H_
+#define _PT_COLLISIONHANDLER_H_
 
 #include <SDL_stdinc.h>
 
-#include <PT_CollisionHandler.h>
+#include <PT_Sprite.h>
 
 
-SDL_bool PT_CollisionManagerCreate( );
-void PT_CollisionManagerDestroy( );
+typedef struct pt_collision_handler PT_CollisionHandler;
 
-//This function add layers that are used to make containers with collision handlers.
-SDL_bool PT_CollisionManagerAddHandler( const char* utf8_handlerName, SDL_bool cameraLimits );
-/*
-* This function return a pointer to a previous handler added, in order to update only the handler you need.
-* Use this function right after add the handler, doing this on the initialization struct holder. 
-*/
-PT_CollisionHandler* PT_CollisionManagerGetHandler( const char* utf8_handlerName );
+PT_CollisionHandler* PT_CollisionHandlerCreate( SDL_bool cameraLimits );
+void PT_CollisionHandlerDestroy( PT_CollisionHandler* _this );
 
-//This function is used to set the current handler right before load/create sprites.
-void PT_CollisionManagerSetCurrentHandler( PT_CollisionHandler* handler );
-void PT_CollisionManagerSetCurrentHandlerByName( const char* utf8_handlerName );
+void PT_CollisionHandlerAdd( PT_CollisionHandler* _this, const char* utf8_group, PT_Sprite* sprite );
 
-//This function is used inside the sprite parse to get the current right handler.
-PT_CollisionHandler* PT_CollisionManagerGetCurrentHandler( );
+void PT_CollisionHandlerUpdate( PT_CollisionHandler* _this );
 
-#endif /* _PT_COLLISIONMANAGER_H_ */
+
+#endif /* _PT_COLLISIONHANDLER_H_ */
 
 
 

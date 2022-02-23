@@ -16,8 +16,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <json.h>
 
 #include <SDL_stdinc.h>
+
 #include <PT_LevelLayer.h>
 #include <PT_LevelTileset.h>
+#include <PT_String.h>
+#include <PT_CollisionHandler.h>
 
 
 
@@ -27,6 +30,8 @@ typedef enum {
 } PT_LevelOrientations;
 
 typedef struct pt_level {
+	PT_String* name;
+
 	PT_LevelOrientations orientation;
 	Uint32 width;
 	Uint32 height;
@@ -38,11 +43,13 @@ typedef struct pt_level {
 	
 	unsigned int numLayers;
 	PT_LevelLayer** layers;
+	
+	PT_CollisionHandler* collisionHandler;
 }PT_Level;
 
 
 
-PT_Level* PT_LevelCreate( json_value* jsonValue );
+PT_Level* PT_LevelCreate( json_value* jsonValue, const char* utf8_name );
 void PT_LevelDestroy( PT_Level* _this );
 
 void PT_LevelUpdate( PT_Level* _this, Sint32 elapsedTime );

@@ -19,7 +19,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #define _PT_TEXTURELIST_
 
 #include <SDL.h>
-#include <SDL_stdinc.h>
 
 #include <PT_String.h>
 

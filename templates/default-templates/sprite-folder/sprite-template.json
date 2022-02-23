@@ -1,7 +1,9 @@
 {
 	"type": "$SpriteType$",
 	"tags": {
-		"collider": "<yourTagName>",
+		"collider": {
+			"group": "<yourTagName>",
+		},
 		"movement": [
 			"$movement-tag",
 			"$movement-tag",

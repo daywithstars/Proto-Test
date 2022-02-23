@@ -21,8 +21,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Application.h>
 #include <PT_Graphics.h>
 #include <PT_ScreenManager.h>
-#include <PT_SoundManager.h>
 #include <PT_LevelManager.h>
+#include <PT_SoundManager.h>
 #include <PT_CollisionManager.h>
 #include <PT_Parse.h>
 #include <PT_Camera.h>
@@ -104,7 +104,6 @@ void PT_ApplicationUpdate( Sint32 elapsedTime ) {
 		srand((unsigned) time(&t));
 	}
 
-	PT_CollisionManagerUpdate();
 	PT_ScreenManagerUpdate(elapsedTime);
 }//PT_ApplicationUpdate
 
@@ -178,6 +177,11 @@ SDL_bool PT_ApplicationCreate( ) {
 		PT_ApplicationDestroy();
 		return SDL_FALSE;
 	}
+	if ( !PT_CollisionManagerCreate() )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_ApplicationCreate: Cannot create collision manager!\n");
+	}
 	if ( !PT_GraphicsLoadFonts() )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate: Cannot load fonts\n");
@@ -185,10 +189,6 @@ SDL_bool PT_ApplicationCreate( ) {
 	if ( !PT_InputManagerCreate() )
 	{
 		return SDL_FALSE;
-	}
-	if ( !PT_CollisionManagerCreate() )
-	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate!\n");
 	}
 	if ( !PT_LevelManagerCreate() )
 	{
@@ -231,10 +231,11 @@ void PT_ApplicationDestroy( ) {
 	
 	if ( ptApplication )
 	{
+		PT_CollisionManagerDestroy();
 		PT_LevelManagerDestroy();
 		PT_ScreenManagerDestroy();
 		PT_SoundManagerDestroy();
-		PT_CollisionManagerDestroy();
+	
 		
 		PT_GraphicsDestroy();
 		PT_InputManagerDestroy();

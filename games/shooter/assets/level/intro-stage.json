@@ -35,18 +35,7 @@
                  "width":270,
                  "x":-230,
                  "y":100
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":5,
-         "name":"Object Layer 1",
-         "objects":[
+                }, 
                 {
                  "height":64,
                  "id":10,
@@ -63,7 +52,18 @@
                  "width":64,
                  "x":128,
                  "y":266
-                }, 
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":5,
+         "name":"Object Layer 1",
+         "objects":[
                 {
                  "height":64,
                  "id":11,
@@ -82,6 +82,12 @@
                  "y":226
                 }],
          "opacity":1,
+         "properties":[
+                {
+                 "name":"limit-collision",
+                 "type":"bool",
+                 "value":true
+                }],
          "type":"objectgroup",
          "visible":true,
          "x":0,
