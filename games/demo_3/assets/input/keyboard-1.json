@@ -2,7 +2,7 @@
 	"file": "keyboard-1.json",
 	
 	"settings": {
-		"name": "Map-keyboard-1"
+		"name": "Keyboard 1"
 	},
 	
 	"buttons-map": [
@@ -10,7 +10,5 @@
 		{ "input-right": "kyd-h-right" },
 		{ "input-up": "kyd-h-up" },
 		{ "input-down": "kyd-h-down" },
-		{ "shot-button": "kyd-p-space" }, 
-		{ "no-buttons": "kyd-none" },
 	]
 }

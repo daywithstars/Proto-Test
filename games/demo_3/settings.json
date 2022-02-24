@@ -2,7 +2,7 @@
 	"graphics": {
 		"screenWidth": 640, 
 		"screenHeight": 480, 
-		"renderDrawColor": [220, 0, 0, 255] 
+		"renderDrawColor": [220, 220, 220, 255] 
 	},
 	
 	"camera": {

@@ -1,0 +1,29 @@
+{
+	"settings": {
+		"input-template": "Keyboard 1",
+	},
+	
+	"states": [
+		{
+			"name": "action",
+			
+			"input": {
+				"input-left": [
+					"PT_SpriteMoveLeft",
+				],
+				"input-right": [
+					"PT_SpriteMoveRight",
+				],
+				"input-up": [
+					"PT_SpriteMoveUp",
+				],
+				"input-down": [
+					"PT_SpriteMoveDown",
+				],
+			},
+		},
+	]
+}
+
+
+

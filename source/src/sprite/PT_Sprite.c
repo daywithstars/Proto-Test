@@ -189,6 +189,8 @@ void PT_SpriteGrab( void* _data, SDL_FPoint mousePosition ) {
 }//PT_SpriteGrab
 
 void PT_SpriteCollisionWith( PT_Sprite* _this, PT_Collider own, PT_Collider target ) {
+	_this->collisionColliderName = own.name;
+	_this->collisionTargetColliderName = target.name;
 
 	if ( _this->collision )
 	{

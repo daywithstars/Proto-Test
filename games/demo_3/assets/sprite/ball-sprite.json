@@ -1,0 +1,30 @@
+{
+	"type": "PT_Sprite",
+	"tags": {
+		"collider": {
+			"group": "gameObjs",
+		},
+	},
+	"image": "ball",
+	"speedX": 0.15,
+	"speedY": 0.16,
+	"srcRect": [0, 0, 15, 15],
+	"dstRect": [120.0, 120.0, 15.0, 15.0],
+	"colliders": [
+		{
+			"visible": false,
+			"type": "PT_COLLIDER_TYPE_RECTANGLE",
+			"name": "ball-default-collider",
+			
+			"fields": {
+				"x": 0,
+				"y": 0,
+				"w": 15,
+				"h": 15,
+			}
+		},
+	],
+	"behavior": "ball-behavior",
+} 
+
+

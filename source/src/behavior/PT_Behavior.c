@@ -12,6 +12,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <string.h>
 
 #include <json.h>
 
@@ -125,11 +126,14 @@ SDL_bool PT_BehaviorParse( PT_Behavior* _this, json_value* jsonValue ) {
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "settings input-template");
 	if ( entry.name )
 	{
-		_this->inputHandler = PT_InputManagerGetInputHandler(entry.value->u.string.ptr);
-		if ( !_this->inputHandler )
+		if ( strcmp(entry.value->u.string.ptr, "none") )
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorParse: Invalid inputHandler\n");
-			return SDL_FALSE;
+			_this->inputHandler = PT_InputManagerGetInputHandler(entry.value->u.string.ptr);
+			if ( !_this->inputHandler )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorParse: Invalid inputHandler\n");
+				return SDL_FALSE;
+			}
 		}
 	}
 	

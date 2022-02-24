@@ -94,7 +94,7 @@ void PT_CollisionHandlerTestSpriteAgainstCollider( PT_Sprite* sprite, PT_Collide
 		{
 			if ( PT_ColliderTestCollision(sprite->colliders[i], sprite->dstRect.x, sprite->dstRect.y,
 				collider, PT_CameraGetX(), PT_CameraGetY()) )
-			{
+			{	
 				PT_SpriteCollisionWith(sprite, sprite->colliders[i], collider);
 			}
 		}
@@ -173,12 +173,6 @@ void PT_CollisionHandlerCheckColliderCollision( PT_Sprite* sprite_1, PT_Sprite* 
 			{
 				PT_SpriteCollisionWith(sprite_1, values_1[i], values_2[j]);
 				PT_SpriteCollisionWith(sprite_2, values_2[j], values_1[i]);
-				
-				sprite_1->collisionColliderName = values_1[i].name;
-				sprite_1->collisionTargetColliderName = values_2[j].name;
-				
-				sprite_2->collisionColliderName = values_2[j].name;
-				sprite_2->collisionTargetColliderName = values_1[i].name;
 			}
 		}
 	}

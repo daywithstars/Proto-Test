@@ -3,141 +3,57 @@
  "infinite":false,
  "layers":[
         {
-         "data":[8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8],
-         "height":20,
-         "id":2,
-         "name":"Tile Layer 2",
-         "opacity":1,
-         "type":"tilelayer",
-         "visible":true,
-         "width":20,
-         "x":0,
-         "y":0
-        }, 
-        {
          "draworder":"topdown",
-         "id":6,
-         "name":"Object Layer 2",
+         "id":7,
+         "name":"Objects",
          "objects":[
                 {
-                 "height":480,
-                 "id":13,
-                 "name":"Airstrip",
+                 "height":15,
+                 "id":14,
+                 "name":"Ball",
                  "properties":[
                         {
                          "name":"template",
                          "type":"string",
-                         "value":"sprite-dynamic-image-1"
+                         "value":"ball-sprite"
                         }],
                  "rotation":0,
                  "type":"PT_Sprite",
                  "visible":true,
-                 "width":270,
-                 "x":-230,
-                 "y":100
+                 "width":15,
+                 "x":329.330088226346,
+                 "y":262.483115302708
                 }, 
                 {
-                 "height":64,
-                 "id":10,
-                 "name":"Sprite spaceship",
+                 "height":15,
+                 "id":15,
+                 "name":"Racket",
                  "properties":[
                         {
                          "name":"template",
                          "type":"string",
-                         "value":"sprite-shooter-sheet"
+                         "value":"racket-sprite"
                         }],
                  "rotation":0,
                  "type":"PT_Sprite",
                  "visible":true,
                  "width":64,
-                 "x":128,
-                 "y":266
+                 "x":285.371463340432,
+                 "y":374.124581685427
                 }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":5,
-         "name":"Object Layer 1",
-         "objects":[
-                {
-                 "height":64,
-                 "id":11,
-                 "name":"Sprite spaceship 2",
-                 "properties":[
-                        {
-                         "name":"template",
-                         "type":"string",
-                         "value":"sprite-shooter-2"
-                        }],
-                 "rotation":0,
-                 "type":"PT_Sprite",
-                 "visible":true,
-                 "width":64,
-                 "x":126,
-                 "y":226
-                }],
-         "opacity":1,
-         "properties":[
-                {
-                 "name":"limit-collision",
-                 "type":"bool",
-                 "value":true
-                }],
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "data":[5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 5, 5, 5, 5, 5, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 5, 5, 5, 5, 5, 5, 6, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-         "height":20,
-         "id":1,
-         "name":"Tile Layer 1",
-         "opacity":1,
-         "type":"tilelayer",
-         "visible":true,
-         "width":20,
          "x":0,
          "y":0
         }],
- "nextlayerid":7,
- "nextobjectid":14,
+ "nextlayerid":8,
+ "nextobjectid":16,
  "orientation":"orthogonal",
  "renderorder":"left-down",
  "tiledversion":"1.7.2",
  "tileheight":32,
- "tilesets":[
-        {
-         "columns":3,
-         "firstgid":1,
-         "image":"..\/img\/level\/tileset2.bmp",
-         "imageheight":96,
-         "imagewidth":96,
-         "margin":0,
-         "name":"tileset2",
-         "spacing":0,
-         "tilecount":9,
-         "tileheight":32,
-         "tilewidth":32
-        }, 
-        {
-         "columns":2,
-         "firstgid":10,
-         "image":"..\/img\/level\/tileset3.png",
-         "imageheight":64,
-         "imagewidth":64,
-         "margin":0,
-         "name":"tileset3",
-         "spacing":0,
-         "tilecount":4,
-         "tileheight":32,
-         "tilewidth":32
-        }],
+ "tilesets":[],
  "tilewidth":32,
  "type":"map",
  "version":"1.6",
