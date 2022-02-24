@@ -1,0 +1,13 @@
+{
+	"file": "screen-main-menu.json",
+
+	"settings": {
+		"name": "Screen MainMenu",
+	},
+	
+	"sprites": [
+		"sprite-dynamic-image-1",
+		"sprite-shooter-sheet",
+	]
+}
+

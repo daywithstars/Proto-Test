@@ -1,0 +1,96 @@
+{
+	"settings": {
+		"input-template": "Map-keyboard-1",
+	},
+	
+	"states": [
+		{
+			"name": "action",
+			
+			"input": {
+				"input-left": [
+					"PT_SpriteMoveLeft",
+					"change-animation-idle-anim"
+				],
+				"input-right": [
+					"PT_SpriteMoveRight",
+					"change-animation-idle-anim"
+				],
+				"input-up": [
+					"PT_SpriteMoveUp",
+					"change-animation-idle-anim",
+				],
+				"input-down": [
+					"PT_SpriteMoveDown",
+					"change-animation-idle-anim",
+				],
+				
+				"no-buttons": "change-animation-shot-anim",
+			},
+			
+			"events": [
+				{
+					"trigger": {
+
+					"type": "input",
+
+						"value": {
+							"type": "play-sample",
+							"fields": {
+								"key-map": "shot-button",
+								"sample-name": "jump",
+								"loop": 0
+							}
+						}
+					},
+				},
+				{
+					"trigger": {
+
+					"type": "none",
+
+						"value": {
+							"type": "play-music",
+							"fields": {
+								"key-map": "input-secret-technique",
+								"music-name": "special1",
+								"loop": 0
+							}
+						}
+					},
+				},
+				{
+					"trigger": {
+
+					"type": "input",
+
+						"value": {
+							"type": "change-screen",
+							"fields": {
+								"key-map": "input-secret technique",
+								"music-name": "special1",
+								"loop": 0
+							}
+						}
+					},
+				},
+			],
+			
+			"always": [
+				"sprite-stop-horizontal",
+				"sprite-stop-vertical",
+			]
+		},
+	 	{
+			"name": "dodge",
+			
+			"input": {
+				"input-left": "PT_SpriteMoveLeft",
+				"input-right": "PT_SpriteMoveRight",
+			},
+		}
+	]
+}
+
+
+

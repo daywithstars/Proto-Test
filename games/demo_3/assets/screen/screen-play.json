@@ -1,0 +1,14 @@
+{
+	"file": "screen-play.json",
+
+	"settings": {
+		"name": "Screen Play",
+		"tag": "first-screen",
+	},
+	
+	"levels": [
+		"Intro Stage",
+		"Frozen Lake",
+	],
+}
+

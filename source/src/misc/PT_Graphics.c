@@ -206,6 +206,13 @@ SDL_bool PT_GraphicsCreate( ) {
 		return SDL_FALSE;
 	}
 	
+	SDL_Surface* logo = IMG_Load("logo.png");
+	if ( logo )
+	{
+		SDL_SetWindowIcon(ptGraphics->window, logo);
+		SDL_FreeSurface(logo);
+	}
+	
 	ptGraphics->renderer = SDL_CreateRenderer(ptGraphics->window, -1, SDL_RENDERER_SOFTWARE);
 	if ( !ptGraphics->renderer )
 	{
@@ -217,6 +224,7 @@ SDL_bool PT_GraphicsCreate( ) {
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphcisCreate: %s\n", SDL_GetError());
 	}
+
 	
 	PT_GraphicsParseImages();
 	return SDL_TRUE;

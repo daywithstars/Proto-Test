@@ -1,0 +1,81 @@
+{
+	"type": "PT_Sprite",
+	"tags": {
+		"collider": {
+			"group": "shooterObjects",
+		},
+		"movement": [
+			"constant-stop-horizontal",
+			"constant-stop-vertical",
+		],
+	},
+	"image": "shooter-sheet",
+	"speedX": 0.18,
+	"speedY": 0.14,
+	"srcRect": [0, 0, 192, 128],
+	"dstRect": [120.0, 120.0, 64.0, 64.0],
+	"animations": [
+		{
+			"name": "idle-anim",
+			"frame-delay": 0,
+			"frame-width": 64,
+			"frame-height": 64,
+			"frame-column": 0,
+			"frame-column-dir": 0,
+			"frame-column-max": 3,
+			"frame-row": 1,
+			"frame-row-dir": 0,
+			"frame-row-max": 1,
+		},
+		{
+			"name": "shot-anim",
+			"frame-delay": 200,
+			"frame-width": 64,
+			"frame-height": 64,
+			"frame-column": 0,
+			"frame-column-dir": 1,
+			"frame-column-max": 3,
+			"frame-row": 0,
+			"frame-row-dir": 0,
+			"frame-row-max": 1,
+		},
+	],
+	"colliders": [
+		{
+			"visible": 1,
+			"type": "PT_COLLIDER_TYPE_RECTANGLE",
+			"name": "sprite1 top collider",
+			"color": {
+				"red": 220,
+				"green": 220,
+				"blue": 0,
+				"alpha": 140,
+			},
+			
+			"fields": {
+				"x": 27,
+				"y": 5,
+				"w": 10,
+				"h": 50,
+			}
+		},
+		{
+			"visible": 1,
+			"type": "PT_COLLIDER_TYPE_RECTANGLE",
+			"name": "sprite1 bottom collider",
+			
+			"fields": {
+				"x": 6,
+				"y": 28,
+				"w": 50,
+				"h": 10,
+			}
+		}
+	],
+	"behavior": "shooter-behavior",
+	
+	"misc": {
+	}
+} 
+
+

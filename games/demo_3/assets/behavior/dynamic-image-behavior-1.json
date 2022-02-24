@@ -1,0 +1,21 @@
+{
+	"settings": {
+		"input-template": "InputMap show-image",
+	},
+	
+	"states": [
+		{
+			"name": "action",
+			
+			"input": {
+				"mouse-grab": "PT_SpriteGrab",
+				"mouse-no-buttons": "PT_SpriteMoveRight",
+			},
+			
+			"always": [
+				"sprite-stop-horizontal",
+				"sprite-stop-vertical",
+			]
+		},
+	]
+}
