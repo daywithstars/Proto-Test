@@ -39,6 +39,9 @@ void PT_ColliderDestroy( PT_Collider* _this );
 
 SDL_bool PT_ColliderTestCollision( PT_Collider _this, float _thisRelativeX, float _thisRelativeY, PT_Collider other, float otherRelativeX, float otherRelativeY );
 
+SDL_bool PT_ColliderTestCollisionAgainstRectangle( PT_Collider _this, float _thisRelativeX,
+	float _thisRelativeY, SDL_Rect rect );
+
 void PT_ColliderDraw( PT_Collider _this, float relativeX, float relativeY );
 
 

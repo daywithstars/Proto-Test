@@ -84,6 +84,24 @@ SDL_bool PT_ColliderTestCollision( PT_Collider _this, float _thisRelativeX, floa
 	return SDL_FALSE;
 }//PT_ColliderTestCollision
 
+SDL_bool PT_ColliderTestCollisionAgainstRectangle( PT_Collider _this, float _thisRelativeX,
+	float _thisRelativeY, SDL_Rect rect ) {
+	
+	if ( _this.type == PT_COLLIDER_TYPE_RECTANGLE )
+	{
+		return !( (_this.rect->x + _thisRelativeX) + _this.rect->w < rect.x 					
+						||
+			(_this.rect->x + _thisRelativeX) > rect.x + rect.w 
+						||
+			(_this.rect->y + _thisRelativeY) + _this.rect->h < rect.y
+						||
+			(_this.rect->y + _thisRelativeY) > rect.y + rect.h 
+		 );
+	}
+	
+	return SDL_FALSE;
+}//PT_ColliderTestCollisionAgainstRectangle
+
 void PT_ColliderDraw( PT_Collider _this, float relativeX, float relativeY ) {
 	if ( !_this.visible )
 	{

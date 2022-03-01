@@ -21,6 +21,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <SDL_stdinc.h>
 #include <SDL_events.h>
 #include <SDL_scancode.h>
+#include <SDL_rect.h>
 
 #include <PT_InputHandler.h>
 
@@ -91,6 +92,8 @@ SDL_bool PT_InputManagerMouseGetButtonUp( Uint8 button );
 SDL_bool PT_InputManagerMouseGetButtonHold( Uint8 button );
 
 SDL_bool PT_InputManagerMouseGetButtonEvent( );
+
+SDL_Rect PT_InputManagerMouseGetRect( );
 
 #endif /* _PT_INPUTMANAGER_H_ */
 

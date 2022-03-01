@@ -155,6 +155,11 @@ void PT_SpriteStopMoveVertical( void* _data ) {
 }
 
 SDL_bool PT_SpriteChangeAnimation( void* _data, const char* utf8_string ) {
+	if ( PT_StringMatchFast(utf8_string, "none") )
+	{
+		return SDL_FALSE;
+	}
+
 	PT_Sprite* _this = (PT_Sprite*)_data;
 	
 	if ( _this->animationList )
@@ -483,6 +488,10 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 			}
 			else if ( !strcmp("behavior", jsonValue->u.object.values[i].name) )
 			{
+				if ( !strcmp("none", jsonValue->u.object.values[i].value->u.string.ptr) )
+				{
+					continue;
+				}
 				
 				_this->behavior = PT_BehaviorCreate( 
 					(void*)_this,

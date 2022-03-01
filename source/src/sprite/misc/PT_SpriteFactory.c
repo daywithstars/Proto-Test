@@ -11,7 +11,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <PT_SpriteFactory.h>
 #include <PT_String.h>
+
 #include <PT_DynamicImage.h>
+#include <PT_ScreenButton.h>
 
 
 
@@ -25,6 +27,10 @@ PT_Sprite* PT_SpriteFactoryGet( const char* utf8_spriteTemplate, const char* spr
 	else if ( PT_StringMatchFast(spriteType, "PT_DynamicImage") )
 	{
 		sprite = PT_DynamicImageCreate(utf8_spriteTemplate);
+	}
+	else if ( PT_StringMatchFast(spriteType, "PT_ScreenButton") )
+	{
+		sprite = PT_ScreenButtonCreate(utf8_spriteTemplate);
 	}
 	else {
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 

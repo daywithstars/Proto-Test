@@ -1,8 +1,8 @@
 {
 	"games": [
 		{ 
-			"name": "Demo 3", 
-			"folder-name": "demo_3" 
+			"name": "Shooter", 
+			"folder-name": "shooter" 
 		},
   	],
 }

@@ -14,6 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #define _PT_MOUSE_H_
 
 #include <SDL_stdinc.h>
+#include <SDL_rect.h>
 #include <SDL_events.h>
 
 
@@ -38,6 +39,10 @@ SDL_bool PT_MouseGetButtonHold( PT_Mouse* _this, Uint8 button );
 SDL_bool PT_MouseGetButtonEvent( PT_Mouse* _this );
 
 Uint8 PT_MouseGetButtonByString( const char* string );
+
+SDL_Rect PT_MouseGetRect( PT_Mouse* _this );
+
+void PT_MouseSetRect( PT_Mouse* _this, SDL_Rect rect );
 
 #endif /* _PT_MOUSE_H_ */
 

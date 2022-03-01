@@ -3,11 +3,11 @@
 
 	"settings": {
 		"name": "Screen MainMenu",
+		"tag": "first-screen",
 	},
 	
 	"sprites": [
-		"sprite-dynamic-image-1",
-		"sprite-shooter-sheet",
+		"sprite-button",
 	]
 }
 

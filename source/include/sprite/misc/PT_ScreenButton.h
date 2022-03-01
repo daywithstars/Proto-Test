@@ -16,6 +16,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <PT_Sprite.h>
 
+
+
 typedef struct pt_screen_button PT_ScreenButton;
 
 
@@ -23,10 +25,9 @@ PT_Sprite* PT_ScreenButtonCreate( const char* utf8_spriteTemplate );
 
 void PT_ScreenButtonDestroy( void* _data ); 
 
-void PT_ScreenButtonCollisionWith( void* _data, PT_Collider own, PT_Collider target );
-
 void PT_ScreenButtonUpdate( void* _data, Sint32 elapsedTime );
 void PT_ScreenButtonDraw( void* _data );
+
 
 #endif /* _PT_SCREENBUTTON_H_ */
 

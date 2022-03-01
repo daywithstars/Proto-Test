@@ -29,6 +29,8 @@ struct pt_mouse {
 	SDL_bool buttonDown[PT_MOUSE_NUM_BUTTONS];
 	SDL_bool buttonUp[PT_MOUSE_NUM_BUTTONS];
 	SDL_bool buttonHold[PT_MOUSE_NUM_BUTTONS];
+	
+	SDL_Rect rect;
 };
 
 
@@ -40,6 +42,9 @@ PT_Mouse* PT_MouseCreate( ) {
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(struct pt_mouse));
+	
+	_this->rect.w = 4;
+	_this->rect.h = 4;
 	
 	return _this;
 }//PT_MouseCreate
@@ -155,6 +160,16 @@ Uint8 PT_MouseGetButtonByString( const char* string ) {
 
 	return 0;
 }//PT_MouseGetButtonByString
+
+SDL_Rect PT_MouseGetRect( PT_Mouse* _this ) {
+	return _this->rect;
+}//PT_MouseGetRect
+
+void PT_MouseSetRect( PT_Mouse* _this, SDL_Rect rect ) {
+	_this->rect = rect;
+}//PT_MouseSetRect
+
+
 
 
 

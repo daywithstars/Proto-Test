@@ -153,6 +153,10 @@ SDL_bool PT_InputManagerMouseGetButtonEvent( ) {
 	return PT_MouseGetButtonEvent(ptInputManager->mouse);
 }
 
+SDL_Rect PT_InputManagerMouseGetRect( ) {
+	return PT_MouseGetRect(ptInputManager->mouse);
+}
+
 //===================================== PRIVATE Functions
 
 void PT_InputManagerParse( ) {
@@ -246,6 +250,34 @@ void PT_InputManagerParse( ) {
 		json_value_free(jsonValue);
 		PT_StringDestroy(inputHandlerPath);
 	}
+	
+	PT_ParseDestroy(parse);
+	
+	
+	// game/settings.json
+	parse = PT_ParseCreate();
+	
+	if ( !PT_ParseOpenFile(parse, "settings.json", SDL_TRUE) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputManagerParse!\n");
+		PT_ParseDestroy(parse);
+		return;
+	}
+	
+	//input.mouse.rect
+	entry = PT_ParseGetObjectEntry(parse, "input mouse rect");
+	if ( entry.name )
+	{
+		const SDL_Rect rect = {
+			entry.value->u.array.values[0]->u.integer, 
+			entry.value->u.array.values[1]->u.integer,
+			entry.value->u.array.values[2]->u.integer,
+			entry.value->u.array.values[3]->u.integer
+		};
+		
+		PT_MouseSetRect(ptInputManager->mouse, rect);
+	}
+	 
 	
 	PT_ParseDestroy(parse);
 }//PT_InputManagerParse

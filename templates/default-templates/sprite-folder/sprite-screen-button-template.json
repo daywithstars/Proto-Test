@@ -1,0 +1,35 @@
+{
+	"type": "$SpriteType$",
+	"tags": {
+		"collider": {
+			"group": "<yourTagName>",
+		},
+		"movement": [
+			"$movement-tag",
+			"$movement-tag",
+		],
+	},
+	"image": "<ImageToUse>",
+	"speedX": 0.1,
+	"speedY": 0.2,
+	"srcRect": [0, 0, 64, 64],
+	"dstRect": [0.0, 0.0, 64.0, 64.0],
+	"animations": [
+	],
+	"colliders": [
+	],
+	"behavior": "<behaviorName>",
+	
+	"misc": {
+		"button-name": "<yourButtonName>",
+		
+		"actions": {
+			"mouse-click": {
+				"change-screen": "<yourScreenName>",
+			},
+			"mouse-over": {
+				"change-animation": "<yourAnimationName>",
+			}
+		},
+	}
+} 
