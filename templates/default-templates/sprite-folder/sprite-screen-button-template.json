@@ -25,6 +25,7 @@
 		
 		"actions": {
 			"mouse-click": {
+				"button": "$mouse-button-name$",
 				"change-screen": "<yourScreenName>",
 			},
 			"mouse-over": {

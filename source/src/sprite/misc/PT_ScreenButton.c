@@ -21,6 +21,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_InputManager.h>
 #include <PT_ScreenManager.h>
 #include <PT_Parse.h>
+#include <PT_ObjectEntryConverter.h>
 
 
 typedef enum {
@@ -31,14 +32,16 @@ typedef enum {
 
 
 typedef struct {
+	PT_String* button;
 	PT_String* changeScreen;
 	PT_String* changeAnimation;
-}PT_ScreenButtonEventAction;
+}PT_ScreenButtonEventMouse;
 
 typedef struct {
 	PT_ScreenButtonEventType type;
-	PT_ScreenButtonEventAction action;
+	PT_ScreenButtonEventMouse mouse;
 }PT_ScreenButtonEvent;
+
 
 struct pt_screen_button {
 	PT_String* name;
@@ -93,8 +96,9 @@ void PT_ScreenButtonDestroy( void* _data ) {
 	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
 	
 	PT_StringDestroy(_this->name);
-	PT_StringDestroy(_this->event.action.changeScreen);
-	PT_StringDestroy(_this->event.action.changeAnimation);
+	PT_StringDestroy(_this->event.mouse.changeScreen);
+	PT_StringDestroy(_this->event.mouse.changeAnimation);
+	PT_StringDestroy(_this->event.mouse.button);
 	
 	free(_this);
 }//PT_ScreenButtonDestroy
@@ -106,19 +110,19 @@ void PT_ScreenButtonUpdate( void* _data, Sint32 elapsedTime ) {
 	
 	if ( _this->event.type & PT_SCREENBUTTON_EVENT_MOUSE_OVER )
 	{
-		if ( _this->event.action.changeAnimation )
+		if ( _this->event.mouse.changeAnimation )
 		{
 			//change animation
 		}
 	
 		if ( _this->event.type & PT_SCREENBUTTON_EVENT_MOUSE_CLICK )
 		{
-			if ( _this->event.action.changeScreen )
+			if ( _this->event.mouse.changeScreen )
 			{
 				//Change screen
-				if ( PT_ScreenManagerLoadScreen((char*)_this->event.action.changeScreen->utf8_string) )
+				if ( PT_ScreenManagerLoadScreen((char*)_this->event.mouse.changeScreen->utf8_string) )
 				{
-					PT_ScreenManagerSetFirstScreen((char*)_this->event.action.changeScreen->utf8_string);
+					PT_ScreenManagerSetFirstScreen((char*)_this->event.mouse.changeScreen->utf8_string);
 				}
 			}
 		}
@@ -142,54 +146,38 @@ SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonV
 	_this->pSprite = sprite;
 	
 	//misc.name
-	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "misc name");
-	if ( entry.name )
+	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "misc button-name");
+	_this->name = PT_ObjectEntryConverter_PT_String(entry);
+	if ( !_this->name )
 	{
-		_this->name = PT_StringCreate();
-		if ( !_this->name )
-		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
-			return SDL_FALSE;
-		}
-		if ( !PT_StringInsert(&_this->name, entry.value->u.string.ptr, 0) )
-		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
-			return SDL_FALSE;
-		}
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
+		return SDL_FALSE;
 	}
 	
 	//misc.actions
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "misc actions mouse-over change-animation");
-	if ( entry.name )
+	_this->event.mouse.changeAnimation = PT_ObjectEntryConverter_PT_String(entry);
+	if ( !_this->event.mouse.changeAnimation )
 	{
-		_this->event.action.changeAnimation = PT_StringCreate();
-		if ( !_this->event.action.changeAnimation )
-		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
-			return SDL_FALSE;
-		}
-		if ( !PT_StringInsert(&_this->event.action.changeAnimation, entry.value->u.string.ptr, 0) )
-		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
-			return SDL_FALSE;
-		}
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
+		return SDL_FALSE;
 	}
+	
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "misc actions mouse-click change-screen");
-	if ( entry.name )
+	_this->event.mouse.changeScreen = PT_ObjectEntryConverter_PT_String(entry);
+	if ( !_this->event.mouse.changeScreen )
 	{
-		_this->event.action.changeScreen = PT_StringCreate();
-		if ( !_this->event.action.changeScreen )
-		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
-			return SDL_FALSE;
-		}
-		if ( !PT_StringInsert(&_this->event.action.changeScreen, entry.value->u.string.ptr, 0) )
-		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
-			return SDL_FALSE;
-		}
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
+		return SDL_FALSE;
 	}
-
+	
+	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "misc actions mouse-click button");
+	_this->event.mouse.button = PT_ObjectEntryConverter_PT_String(entry);
+	if ( !_this->event.mouse.button )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
+		return SDL_FALSE;
+	}
 
 
 	return SDL_TRUE;
