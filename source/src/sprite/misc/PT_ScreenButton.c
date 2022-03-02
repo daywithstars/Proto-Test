@@ -19,6 +19,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_String.h>
 #include <PT_Graphics.h>
 #include <PT_InputManager.h>
+#include <PT_Mouse.h>
 #include <PT_ScreenManager.h>
 #include <PT_Parse.h>
 #include <PT_ObjectEntryConverter.h>
@@ -75,6 +76,8 @@ PT_Sprite* PT_ScreenButtonCreate( const char* utf8_spriteTemplate ) {
 	if ( !sprite )
 	{
 		PT_ScreenButtonDestroy(_this);
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_ScreenButtonCreate: Cannot create PT_ScreenButton\n");
 		return NULL;
 	}
 	
@@ -201,7 +204,9 @@ void PT_ScreenButtonListenEvent( PT_ScreenButton* _this ) {
 		{
 			_this->event.type |= PT_SCREENBUTTON_EVENT_MOUSE_OVER;
 			
-			if ( PT_InputManagerMouseGetButtonDown(1) )
+			
+			if ( PT_InputManagerMouseGetButtonDown(
+				PT_MouseGetButtonByString((char*)_this->event.mouse.button->utf8_string)) )
 			{
 				_this->event.type |= PT_SCREENBUTTON_EVENT_MOUSE_CLICK;
 			}

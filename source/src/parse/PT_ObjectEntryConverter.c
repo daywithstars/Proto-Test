@@ -17,7 +17,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 SDL_bool PT_ObjectEntryValidate( json_object_entry entry ) {
 	if ( !entry.value )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ObjectEntryValidate: Invalid entry\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_ObjectEntryValidate: Invalid entry or cannot find element\n");
 		return SDL_FALSE;
 	}
 	if ( entry.value->type == json_none ||

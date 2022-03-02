@@ -37,6 +37,7 @@
 				"change-animation": "none",
 			},
 			"mouse-click": {
+				"button": "left",
 				"change-screen": "Screen Play",
 			},
 		},

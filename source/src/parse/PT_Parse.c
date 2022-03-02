@@ -348,6 +348,7 @@ json_object_entry PT_ParseGetObjectEntry_json_value( json_value* _json_value, co
 	{
 		PT_StringDestroy(sequenceFound);
 		SDL_memset(&entry, 0, sizeof(json_object_entry));
+		
 		return entry;
 	}
 	
