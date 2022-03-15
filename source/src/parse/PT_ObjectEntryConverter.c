@@ -29,7 +29,7 @@ SDL_bool PT_ObjectEntryValidate( json_object_entry entry ) {
 	{
 		return SDL_FALSE;
 	}
-	
+	 
 	return SDL_TRUE;
 }//PT_ObjectEntryValidate
 
@@ -49,6 +49,34 @@ PT_String* PT_ObjectEntryConverter_PT_String( json_object_entry entry ) {
 	if ( entry.value->type == json_string )
 	{
 		if ( !PT_StringInsert(&pt_string, entry.value->u.string.ptr, 0) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+			"PT: PT_ObjectEntryConverter_PT_String!\n");
+			
+			PT_StringDestroy(pt_string);
+			return NULL;	
+		}
+	}
+	else if ( entry.value->type == json_integer )
+	{
+		char str[32];
+		sprintf(str, "%lu", entry.value->u.integer);
+		
+		if ( !PT_StringInsert(&pt_string, str, 0) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+			"PT: PT_ObjectEntryConverter_PT_String!\n");
+			
+			PT_StringDestroy(pt_string);
+			return NULL;	
+		}
+	}
+	else if ( entry.value->type == json_double )
+	{
+		char str[32];
+		sprintf(str, "%f", entry.value->u.dbl);
+		
+		if ( !PT_StringInsert(&pt_string, str, 0) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
 			"PT: PT_ObjectEntryConverter_PT_String!\n");
