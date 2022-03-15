@@ -43,7 +43,7 @@ SDL_bool PT_GraphicsCreate( );
 */
 void PT_GraphicsDestroy( );
 
-int PT_GraphicsShowSimpleMessageBox(Uint32 flags, const char *utf8_title, const char *utf8_message);
+int PT_GraphicsShowSimpleMessageBox( Uint32 flags, const char *utf8_title, const char *utf8_message );
 
 /**
 * \brief Store one texture to the internal list of textures. 

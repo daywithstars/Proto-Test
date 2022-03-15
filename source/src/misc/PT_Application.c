@@ -50,8 +50,11 @@ SDL_bool PT_ApplicationParseSettings( ) {
 	
 	if ( !PT_ParseOpenFile(parse, "../games/global-settings.json", SDL_FALSE) )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_Application: Please use the global-settings-template.json and create a new global-settings.json into game directory\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationParseSettings: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Application", 
+		"Cannot find or successfully read settings on global-settings in folder: /games\n");
 		
 		PT_ParseDestroy(parse);
 		return SDL_FALSE;
@@ -60,8 +63,11 @@ SDL_bool PT_ApplicationParseSettings( ) {
 	json_object_entry entry = PT_ParseGetObjectEntry(parse, "games");
 	if ( !entry.name )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_Application: Cannot find games element into global-settings.json\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_Application: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Application",
+		"Cannot find \"games\" element into global-settings.json");
 		
 		PT_ParseDestroy(parse);
 		return SDL_FALSE;
@@ -117,7 +123,10 @@ void PT_ApplicationDraw( ) {
 void PT_ApplicationMainLoop( ) {
 	if ( !ptApplication )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationMainLoop: Invalid PT_Application\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationMainLoop: Invalid PT_Application\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationMainLoop: FILE %s, LINE %d\n", __FILE__, __LINE__);
 		return;
 	}
 	
@@ -153,73 +162,173 @@ SDL_bool PT_ApplicationCreate( ) {
 	ptApplication = (PT_Application*)malloc(sizeof(PT_Application));
 	if ( !ptApplication )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate: Not enough memory\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: Not enough memory\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
 		return SDL_FALSE;
 	}
 	
 	ptApplication->gameName = PT_StringCreate();
+	if ( !ptApplication->gameName )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: Cannot create gameName variable\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_ApplicationDestroy();
+		return SDL_FALSE;
+	}
+	
 	if ( !PT_ScreenManagerCreate() )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
 		"PT: PT_ApplicationCreate: Cannot create PT_ScreenManager\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
 		PT_ApplicationDestroy();
 		return SDL_FALSE;	
 	}
+	
 	gRootDir = PT_StringCreate();
+	if ( !gRootDir )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: Cannot create gRootDir variable\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_ApplicationDestroy();
+		return SDL_FALSE;	
+	}
 	
 	if ( !PT_ApplicationParseSettings() )
 	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: Cannot parse settings\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+	
 		PT_ApplicationDestroy();
 		return SDL_FALSE;
 	}
+	
 	if ( !PT_GraphicsCreate() )
 	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: Cannot create PT_Graphics\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Application",
+		"Graphics system couldn't be initialized.\n\
+		Check the console output"); 
+	
 		PT_ApplicationDestroy();
 		return SDL_FALSE;
 	}
+	
 	if ( !PT_CollisionManagerCreate() )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_ApplicationCreate: Cannot create collision manager!\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		"PT: PT_ApplicationCreate: Cannot create PT_CollisionManager\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Application",
+		"Collision detection system couldn't be initialized.\n\
+		Check the console output");
 	}
+	
 	if ( !PT_GraphicsLoadFonts() )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate: Cannot load fonts\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		"PT: PT_ApplicationCreate: Cannot load fonts\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Application",
+		"Cannot load font files.\n\
+		Check the console output");
 	}
+	
 	if ( !PT_InputManagerCreate() )
 	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: Cannot create PT_InputManager\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+	
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Application",
+		"Input Manager system couldn't be initialized.\n\
+		Check the console output");
+	
+		PT_ApplicationDestroy();
 		return SDL_FALSE;
 	}
+	
 	if ( !PT_LevelManagerCreate() )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate: Cannot create PT_LevelManager!\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		"PT: PT_ApplicationCreate: Cannot create PT_LevelManager\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Application",
+		"Level Manager system couldn't be initialize.\n\
+		Check the console output");
 	}
 	else {
 		if ( !PT_LevelManagerSetup() )
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-			"PT: PT_ApplicationCreate: Cannot create PT_LevelManager!\n");
+			SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+			"PT: PT_ApplicationCreate: Cannot setup PT_LevelManager\n");
+			SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+			"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+			
+			PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Application",
+			"Level Manager system couldn't be initialize.\n\
+			Check the console output");
+			
 			PT_LevelManagerDestroy();
 		}
 	}
 
 	if ( !PT_CameraCreate() )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate: Cannot initilize Camera\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		"PT: PT_ApplicationCreate: Cannot create PT_Camera\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Application",
+		"Camera system couldn't be initialize.\n\
+		Check the console output");
 	}
+	
 	PT_ScreenManagerSetup();
 	
 	PT_SoundManagerCreate();
+	
 	if ( !PT_SoundManagerLoadSamples() )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate!\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_ApplicationCreate: Cannot load samples\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
 	}
 	if ( !PT_SoundManagerLoadMusics() )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate!\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_ApplicationCreate: Cannot load musics\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
 	}
 	
-	SDL_Log("PT: PT_ApplicationCreate: Game: \"%s\", successful initialized\n", 
+	SDL_Log("PT: PT_ApplicationCreate: Game: \"%s\", successfully initialized\n", 
 	(char*)ptApplication->gameName->utf8_string);
 	
 	ptApplication->running = SDL_TRUE;

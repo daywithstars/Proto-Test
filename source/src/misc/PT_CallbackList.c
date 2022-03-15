@@ -23,7 +23,11 @@ PT_CallbackList* PT_CallbackListCreate( const char* utf8_index ) {
 	
 	if ( !_this )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CallbackListCreate: Not enough memory\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_CallbackListCreate: Not enough memory\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_CallbackListCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(PT_CallbackList));
@@ -31,7 +35,10 @@ PT_CallbackList* PT_CallbackListCreate( const char* utf8_index ) {
 	_this->index = PT_StringCreate();
 	if ( !PT_StringInsert(&(_this->index), utf8_index, 0) )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CallbackListCreate!\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_CallbackListCreate!\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_CallbackListCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
 	}
 	_this->next = NULL;
 	

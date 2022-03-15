@@ -55,7 +55,7 @@ void PT_AnimationDestroy( PT_Animation* _this ) {
 }//PT_AnimationDestroy
 
 void PT_AnimationUpdate( PT_Animation* _this, SDL_Rect* src, Sint32 elapsedTime ) {
-	if ( _this->stop || !src )
+	if ( !_this || _this->stop || !src )
 	{
 		return;
 	}

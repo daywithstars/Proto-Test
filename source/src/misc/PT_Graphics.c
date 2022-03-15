@@ -257,8 +257,17 @@ void PT_GraphicsDestroy() {
 	TTF_Quit();
 }//PT_GraphicsDestroy
 
-int PT_GraphicsShowSimpleMessageBox(Uint32 flags, const char *utf8_title, const char *utf8_message) {
-	return SDL_ShowSimpleMessageBox(flags, utf8_title, utf8_message, ptGraphics->window);
+int PT_GraphicsShowSimpleMessageBox( Uint32 flags, const char *utf8_title, const char *utf8_message ) {
+	int returnStatus = 0;
+	if ( ptGraphics )
+	{
+		returnStatus = SDL_ShowSimpleMessageBox(flags, utf8_title, utf8_message, ptGraphics->window);
+	}
+	else {
+		returnStatus = SDL_ShowSimpleMessageBox(flags, utf8_title, utf8_message, NULL);
+	}
+	
+	return returnStatus;
 }//PT_GraphicsShowSimpleMessageBox
 
 void PT_GraphicsLoadTexture( const char* utf8_filePath, const char* utf8_name ) {

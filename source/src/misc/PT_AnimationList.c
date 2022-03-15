@@ -23,7 +23,11 @@ PT_AnimationList* PT_AnimationListCreate( const char* utf8_index, PT_Animation v
 	
 	if ( !_this )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_AnimationListCreate: Not enough memory\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_AnimationListCreate: Not enough memory\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_AnimationListCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
 		return NULL;
 	}
 	
@@ -31,7 +35,10 @@ PT_AnimationList* PT_AnimationListCreate( const char* utf8_index, PT_Animation v
 	_this->index = PT_StringCreate();
 	if ( !PT_StringInsert(&(_this->index), utf8_index, 0) )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_AnimationListCreate!\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_AnimationListCreate!\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_AnimationListCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
 	}
 	_this->next = NULL;
 	

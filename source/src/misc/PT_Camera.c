@@ -52,13 +52,22 @@ SDL_bool PT_CameraCreate() {
 	ptCamera = (PT_Camera*)malloc(sizeof(PT_Camera));
 	if ( !ptCamera )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CameraCreate: Not enough memory\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT_CameraCreate: Not enough memory\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT_CameraCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
 		return SDL_FALSE;
 	}
 	SDL_memset(ptCamera, 0, sizeof(PT_Camera));
 	
 	if ( !PT_CameraParse() )
 	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		"PT_CameraCreate: Cannot parse\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		"PT_CameraCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);	
+	
 		PT_CameraDestroy();
 		return SDL_FALSE;
 	}
@@ -189,12 +198,20 @@ SDL_bool PT_CameraParse( ) {
 	PT_Parse* parse = PT_ParseCreate();
 	if ( !parse )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CameraParse!\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		"PT_CameraParse: Cannot create PT_Parse\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		"PT_CameraParse: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
 		return SDL_FALSE;
 	}
 	if ( !PT_ParseOpenFile(parse, "settings.json", SDL_TRUE) )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CameraParse!\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		"PT_CameraParse: Cannot open file to parse\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		"PT_CameraParse: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
 		PT_ParseDestroy(parse);
 		return SDL_FALSE;
 	}
@@ -202,20 +219,32 @@ SDL_bool PT_CameraParse( ) {
 	json_object_entry entry = PT_ParseGetObjectEntry(parse, "camera width");
 	if ( !entry.name )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CameraParse!\n");
-		PT_ParseDestroy(parse);
-		return SDL_FALSE;
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT_CameraParse: Cannot find \"camera\" \"width\" element\n\
+		default value will be 640\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT_CameraParse: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		ptCamera->width = 640;
 	}
-	ptCamera->width = entry.value->u.integer;
+	else {
+		ptCamera->width = entry.value->u.integer;
+	}
 	
 	entry = PT_ParseGetObjectEntry(parse, "camera height");
 	if ( !entry.name )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CameraParse!\n");
-		PT_ParseDestroy(parse);
-		return SDL_FALSE;
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT_CameraParse: Cannot find \"camera\" \"height\" element\n\
+		default value will be 480\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT_CameraParse: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		ptCamera->height = 480;
 	}
-	ptCamera->height = entry.value->u.integer;
+	else {
+		ptCamera->height = entry.value->u.integer;
+	}
 	
 	entry = PT_ParseGetObjectEntry(parse, "camera colliders");
 	if ( entry.name )
@@ -223,7 +252,11 @@ SDL_bool PT_CameraParse( ) {
 		ptCamera->colliders = (PT_Collider*)malloc(sizeof(PT_Collider) * entry.value->u.array.length);
 		if ( !ptCamera->colliders )
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CameraParse: Not enough memory\n");
+			SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+			"PT_CameraParse: Not enough memory\n");
+			SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+			"PT_CameraParse: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
 			PT_ParseDestroy(parse);
 			return SDL_FALSE;
 		}
@@ -235,7 +268,11 @@ SDL_bool PT_CameraParse( ) {
 			ptCamera->colliders[i] = PT_ColliderCreate(entry.value->u.array.values[i]);
 			if ( !ptCamera->colliders[i].name )
 			{
-				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CameraParse!\n");
+				SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+				"PT_CameraParse: Cannot create PT_Collider\n");
+				SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+				"PT_CameraParse: FILE %s, LINE %d\n", __FILE__, __LINE__);
+			
 				continue;
 			}
 		}

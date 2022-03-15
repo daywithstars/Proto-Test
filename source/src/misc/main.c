@@ -15,6 +15,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <SDL.h>
 #include <locale.h>
 #include <PT_Application.h>
+#include <SDL_log.h>
 
 SDL_bool SDL_InitializeSystems( );
 void SDL_FinalizeSystems( );
@@ -25,18 +26,25 @@ int main(int argc, char** argv) {
 	
 	printf("number arguments: %d first argument value: %s\n", argc, argv[0]);
 	
+	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
 	if ( !SDL_InitializeSystems() )
 	{
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "PT: main.c: %s\n", SDL_GetError());
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL, 
+		"PT: main: %s\n", SDL_GetError());
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "System", "Cannot initialize SDL system.\n\
+		You can try a different version of the SDL dynamic library", NULL);
 		return 1;
 	}
-	
 	
 	if ( PT_ApplicationCreate() )
 	{
 		PT_ApplicationRun();
 		
 		PT_ApplicationDestroy();
+	}
+	else {
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "System", "Cannot initialize PT Application.\n\
+		See the console log output", NULL);
 	}
 	
 	SDL_FinalizeSystems();
@@ -46,6 +54,8 @@ int main(int argc, char** argv) {
 SDL_bool SDL_InitializeSystems( ) {
 	if ( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0 )
 	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL, 
+		"PT: SDL_InitializeSystems: %s\n", SDL_GetError());
 		return SDL_FALSE;
 	}
 	
