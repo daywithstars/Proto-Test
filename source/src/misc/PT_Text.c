@@ -107,7 +107,7 @@ void PT_TextDraw( PT_Text* _this ) {
 SDL_bool PT_TextParse( PT_Text* _this, json_value* jsonValue ) {
 
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "font");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_TextParse: Cannot find element: \"font\"\n");
 		return SDL_FALSE;		
@@ -119,7 +119,7 @@ SDL_bool PT_TextParse( PT_Text* _this, json_value* jsonValue ) {
 	}
 	
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "texture-name");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
 		"PT: PT_TextParse: Cannot find element: \"texture-name\"\n");
@@ -132,14 +132,14 @@ SDL_bool PT_TextParse( PT_Text* _this, json_value* jsonValue ) {
 	}
 	
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "position");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		_this->x = entry.value->u.array.values[0]->u.integer;	
 		_this->y = entry.value->u.array.values[1]->u.integer;	
 	}
 	
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "text");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
 		"PT: PT_TextParse: Cannot find element: \"text\"\n");

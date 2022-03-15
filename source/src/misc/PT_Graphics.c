@@ -109,7 +109,7 @@ void PT_GraphicsParseImages() {
 	
 	//Search for folders
 	json_object_entry entry = PT_ParseGetObjectEntry(parseFolders, "folders");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		if ( entry.value->parent )
 		{
@@ -353,7 +353,7 @@ SDL_bool PT_GraphicsLoadFonts( ) {
 	}
 	
 	json_object_entry entry = PT_ParseGetObjectEntry(parse, "font-list");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		PT_ParseDestroy(parse);
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
@@ -420,7 +420,7 @@ SDL_bool PT_GraphicsLoadFonts( ) {
 		}
 		
 		json_object_entry fontEntry = PT_ParseGetObjectEntry(fontParse, "name");
-		if ( !fontEntry.name )
+		if ( !fontEntry.value )
 		{
 			PT_StringDestroy(fontPath);
 			PT_ParseDestroy(parse);

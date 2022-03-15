@@ -49,7 +49,7 @@ SDL_bool PT_ScreenParseSettings( PT_Screen* _this, json_value* jsonValue ) {
 		json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "settings name");
 		
 		//settings->name
-		if ( entry.name )
+		if ( entry.value )
 		{
 			if ( !PT_StringInsert(&_this->name, entry.value->u.string.ptr, 0) )
 			{
@@ -62,10 +62,9 @@ SDL_bool PT_ScreenParseSettings( PT_Screen* _this, json_value* jsonValue ) {
 		}
 		
 		//file
-		entry.name = NULL;
 		
 		entry = PT_ParseGetObjectEntry_json_value(jsonValue, "file");
-		if ( entry.name )
+		if ( entry.value )
 		{
 			if ( !PT_StringInsert(&_this->fileName, entry.value->u.string.ptr, 0) )
 			{
@@ -133,7 +132,7 @@ SDL_bool PT_ScreenLoadSprites( PT_Screen* _this, json_value* jsonValue ) {
 	}
 	
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "sprites");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		_this->sprites = (PT_Sprite**)malloc(sizeof(PT_Sprite*) * entry.value->u.array.length);
 		if ( !_this->sprites )
@@ -171,7 +170,7 @@ SDL_bool PT_ScreenLoadSprites( PT_Screen* _this, json_value* jsonValue ) {
 			}
 			else {
 				json_object_entry spriteTemplateEntry = PT_ParseGetObjectEntry(parse, "type");
-				if ( spriteTemplateEntry.name )
+				if ( spriteTemplateEntry.value )
 				{
 					_this->sprites[i] = PT_SpriteFactoryGet(
 						entry.value->u.array.values[i]->u.string.ptr,
@@ -197,7 +196,7 @@ SDL_bool PT_ScreenLoadLevels( PT_Screen* _this, json_value* jsonValue ) {
 	}
 	
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "levels");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
 		{

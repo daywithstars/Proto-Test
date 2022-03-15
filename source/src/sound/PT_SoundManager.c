@@ -176,7 +176,7 @@ SDL_bool PT_SoundManagerLoadMusics( ) {
 	json_object_entry entry = 
 		PT_ParseGetObjectEntry_json_value(ptSoundManager->musicListJsonValue, "musics");
 		
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
 		"PT: PT_SoundManagerLoadMusicFile: Cannot find music array from music-list.json!\n");
@@ -270,7 +270,7 @@ SDL_bool PT_SoundManagerLoadSamples( ) {
 	json_object_entry entry = 
 		PT_ParseGetObjectEntry_json_value(ptSoundManager->sampleListJsonValue, "samples");
 		
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
 		"PT: PT_SoundManagerLoadMusicFile: Cannot find sample array from sample-list.json!\n");

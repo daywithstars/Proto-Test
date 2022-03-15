@@ -174,7 +174,7 @@ void PT_InputManagerParse( ) {
 	}
 	
 	json_object_entry entry = PT_ParseGetObjectEntry(parse, "files");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputManagerParse!\n");
 		PT_ParseDestroy(parse);
@@ -222,7 +222,7 @@ void PT_InputManagerParse( ) {
 		}
 		
 		json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "settings name");
-		if ( !entry.name )
+		if ( !entry.value )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
 			"PT: PT_InputManagerParse: Cannot find inputHandler name setting\n");
@@ -266,7 +266,7 @@ void PT_InputManagerParse( ) {
 	
 	//input.mouse.rect
 	entry = PT_ParseGetObjectEntry(parse, "input mouse rect");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		const SDL_Rect rect = {
 			entry.value->u.array.values[0]->u.integer, 

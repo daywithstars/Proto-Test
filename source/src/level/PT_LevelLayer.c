@@ -104,7 +104,7 @@ SDL_bool PT_LevelLayerParse( PT_LevelLayer* _this, json_value* jsonValue ) {
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "id");
 	
 	//Property: map.layers[].id
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelLayerParse!\n");
 		return SDL_FALSE;
@@ -113,7 +113,7 @@ SDL_bool PT_LevelLayerParse( PT_LevelLayer* _this, json_value* jsonValue ) {
 	
 	//Property: map.layers[].visible
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "visible");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelLayerParse!\n");
 		return SDL_FALSE;
@@ -122,7 +122,7 @@ SDL_bool PT_LevelLayerParse( PT_LevelLayer* _this, json_value* jsonValue ) {
 	
 	//Property: map.layers[].type
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "type");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelLayerParse!\n");
 		return SDL_FALSE;
@@ -134,7 +134,7 @@ SDL_bool PT_LevelLayerParse( PT_LevelLayer* _this, json_value* jsonValue ) {
 	
 	//Property: map.layers[].name
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "name");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelLayerParse!\n");
 		return SDL_FALSE;

@@ -124,7 +124,7 @@ SDL_bool PT_BehaviorParse( PT_Behavior* _this, json_value* jsonValue ) {
 	*/
 	
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "settings input-template");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		if ( strcmp(entry.value->u.string.ptr, "none") )
 		{
@@ -138,7 +138,7 @@ SDL_bool PT_BehaviorParse( PT_Behavior* _this, json_value* jsonValue ) {
 	}
 	
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "states");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorParse: Can't find any state!\n");
 		return SDL_FALSE;

@@ -132,7 +132,7 @@ SDL_bool PT_LevelObjectLayerParse( void* layerData, json_value* jsonValue ) {
 	
 	//Default properties.id 
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "id");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		int id = entry.value->u.integer;
 		char idstr[6];
@@ -158,14 +158,14 @@ SDL_bool PT_LevelObjectLayerParse( void* layerData, json_value* jsonValue ) {
 	
 	//Custom properties.limit-collision
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "properties");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
 		{
 			json_value* arrayJsonValue = entry.value->u.array.values[i];
 			
 			json_object_entry entry2 = PT_ParseGetObjectEntry_json_value(arrayJsonValue, "name");
-			if ( entry2.name )
+			if ( entry2.value )
 			{
 				if ( !strcmp(entry2.value->u.string.ptr, "limit-collision") )
 				{
@@ -182,7 +182,7 @@ SDL_bool PT_LevelObjectLayerParse( void* layerData, json_value* jsonValue ) {
 	
 	//Default properties.objects
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "objects");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		if ( entry.value->u.array.length > 0 )
 		{
@@ -206,7 +206,7 @@ SDL_bool PT_LevelObjectLayerParse( void* layerData, json_value* jsonValue ) {
 				json_object_entry entry2 = 
 				PT_ParseGetObjectEntry_json_value(entry.value->u.array.values[i], "type");
 				
-				if ( entry2.name )
+				if ( entry2.value )
 				{
 					if ( entry2.value->u.string.length > 0 )
 					{
@@ -222,7 +222,7 @@ SDL_bool PT_LevelObjectLayerParse( void* layerData, json_value* jsonValue ) {
 				entry2 =
 				PT_ParseGetObjectEntry_json_value(entry.value->u.array.values[i], "properties");
 				
-				if ( entry2.name )
+				if ( entry2.value )
 				{
 					for ( unsigned int j = 0; j < entry2.value->u.array.length; j++ )
 					{
@@ -230,7 +230,7 @@ SDL_bool PT_LevelObjectLayerParse( void* layerData, json_value* jsonValue ) {
 						json_object_entry entry3 = 
 						PT_ParseGetObjectEntry_json_value(entry2.value->u.array.values[j], "name");
 						
-						if ( entry3.name )
+						if ( entry3.value )
 						{
 							if ( PT_StringMatchFast(entry3.value->u.string.ptr, "template") )
 							{
@@ -244,7 +244,7 @@ SDL_bool PT_LevelObjectLayerParse( void* layerData, json_value* jsonValue ) {
 									PT_ParseGetObjectEntry_json_value(entry2.value->u.array.values[j], 
 									"value");
 									
-									if ( entry3.name )
+									if ( entry3.value )
 									{
 										spriteTemplate = entry3.value->u.string.ptr;
 										continue;
@@ -270,7 +270,7 @@ SDL_bool PT_LevelObjectLayerParse( void* layerData, json_value* jsonValue ) {
 				entry2 =
 				PT_ParseGetObjectEntry_json_value(entry.value->u.array.values[i], "x");
 				
-				if ( entry2.name )
+				if ( entry2.value )
 				{
 					if ( entry2.value->type == json_double )
 					{
@@ -285,7 +285,7 @@ SDL_bool PT_LevelObjectLayerParse( void* layerData, json_value* jsonValue ) {
 				entry2 =
 				PT_ParseGetObjectEntry_json_value(entry.value->u.array.values[i], "y");
 				
-				if ( entry2.name )
+				if ( entry2.value )
 				{
 					if ( entry2.value->type == json_double )
 					{

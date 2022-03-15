@@ -58,7 +58,7 @@ SDL_bool PT_LevelTilesetParse( PT_LevelTileset* _this, json_value* jsonValue ) {
 		return SDL_FALSE;
 	}
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "name");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTilesetParse!\n");
 		return SDL_FALSE;
@@ -71,7 +71,7 @@ SDL_bool PT_LevelTilesetParse( PT_LevelTileset* _this, json_value* jsonValue ) {
 	
 	//Property: tilesets[].columns
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "columns");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTilesetParse!\n");
 		return SDL_FALSE;
@@ -80,7 +80,7 @@ SDL_bool PT_LevelTilesetParse( PT_LevelTileset* _this, json_value* jsonValue ) {
 	
 	//Property: tilesets[].firstgid
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "firstgid");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTilesetParse!\n");
 		return SDL_FALSE;
@@ -95,7 +95,7 @@ SDL_bool PT_LevelTilesetParse( PT_LevelTileset* _this, json_value* jsonValue ) {
 		return SDL_FALSE;
 	}
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "image");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTilesetParse!\n");
 		return SDL_FALSE;
@@ -111,7 +111,7 @@ SDL_bool PT_LevelTilesetParse( PT_LevelTileset* _this, json_value* jsonValue ) {
 	
 	//Property: tilesets[].imagewidth
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "imagewidth");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTilesetParse!\n");
 		return SDL_FALSE;
@@ -120,7 +120,7 @@ SDL_bool PT_LevelTilesetParse( PT_LevelTileset* _this, json_value* jsonValue ) {
 	
 	//Property: tilesets[].imageheight
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "imageheight");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTilesetParse!\n");
 		return SDL_FALSE;
@@ -130,7 +130,7 @@ SDL_bool PT_LevelTilesetParse( PT_LevelTileset* _this, json_value* jsonValue ) {
 	
 	//Property: tilesets[].tilecount
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "tilecount");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTilesetParse!\n");
 		return SDL_FALSE;
@@ -139,7 +139,7 @@ SDL_bool PT_LevelTilesetParse( PT_LevelTileset* _this, json_value* jsonValue ) {
 	
 	//Property: tilesets[].tilewidth
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "tilewidth");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTilesetParse!\n");
 		return SDL_FALSE;
@@ -148,7 +148,7 @@ SDL_bool PT_LevelTilesetParse( PT_LevelTileset* _this, json_value* jsonValue ) {
 	
 	//Property: tilesets[].tileheight
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "tileheight");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTilesetParse!\n");
 		return SDL_FALSE;

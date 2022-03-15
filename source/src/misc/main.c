@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
 	
 	printf("number arguments: %d first argument value: %s\n", argc, argv[0]);
 	
-	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
+	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
 	if ( !SDL_InitializeSystems() )
 	{
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL, 

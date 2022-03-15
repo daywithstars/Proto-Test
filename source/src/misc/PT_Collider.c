@@ -126,7 +126,7 @@ SDL_bool PT_ColliderParse( PT_Collider* _this, json_value* jsonValue ) {
 	 
 	//Collider.visible
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "visible");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		SDL_bool visible = SDL_FALSE;
 
@@ -144,7 +144,7 @@ SDL_bool PT_ColliderParse( PT_Collider* _this, json_value* jsonValue ) {
 	 
 	//Collider.type
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "type");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ColliderParse: Cannot find \"type\" element\n");
 	}
@@ -155,7 +155,7 @@ SDL_bool PT_ColliderParse( PT_Collider* _this, json_value* jsonValue ) {
 
 			//fields.x
 			entry = PT_ParseGetObjectEntry_json_value(jsonValue, "fields x");
-			if ( !entry.name )
+			if ( !entry.value )
 			{
 				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
 				"PT: PT_ColliderParse: PT_COLLIDER_TYPE_RECTANGLE require \"fields x\" element\n");
@@ -173,7 +173,7 @@ SDL_bool PT_ColliderParse( PT_Collider* _this, json_value* jsonValue ) {
 			
 			//fields.y
 			entry = PT_ParseGetObjectEntry_json_value(jsonValue, "fields y");
-			if ( !entry.name )
+			if ( !entry.value )
 			{
 				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
 				"PT: PT_ColliderParse: PT_COLLIDER_TYPE_RECTANGLE require \"fields y\" element\n");
@@ -191,7 +191,7 @@ SDL_bool PT_ColliderParse( PT_Collider* _this, json_value* jsonValue ) {
 			
 			//fields.w
 			entry = PT_ParseGetObjectEntry_json_value(jsonValue, "fields w");
-			if ( !entry.name )
+			if ( !entry.value )
 			{
 				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
 				"PT: PT_ColliderParse: PT_COLLIDER_TYPE_RECTANGLE require \"fields w\" element\n");
@@ -209,7 +209,7 @@ SDL_bool PT_ColliderParse( PT_Collider* _this, json_value* jsonValue ) {
 			
 			//fields.h
 			entry = PT_ParseGetObjectEntry_json_value(jsonValue, "fields h");
-			if ( !entry.name )
+			if ( !entry.value )
 			{
 				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
 				"PT: PT_ColliderParse: PT_COLLIDER_TYPE_RECTANGLE require \"fields h\" element\n");
@@ -236,7 +236,7 @@ SDL_bool PT_ColliderParse( PT_Collider* _this, json_value* jsonValue ) {
 	 
 	//Collider.name
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "name");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ColliderParse: Cannot find \"name\" element\n");
 		return SDL_FALSE;
@@ -251,7 +251,7 @@ SDL_bool PT_ColliderParse( PT_Collider* _this, json_value* jsonValue ) {
 	
 	//Collider.color
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "color");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		entry = PT_ParseGetObjectEntry_json_value(jsonValue, "color red");
 		Uint8 red = entry.value->type == json_integer ? entry.value->u.integer : 0;

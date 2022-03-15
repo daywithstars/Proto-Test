@@ -217,7 +217,7 @@ SDL_bool PT_CameraParse( ) {
 	}
 	
 	json_object_entry entry = PT_ParseGetObjectEntry(parse, "camera width");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
 		"PT_CameraParse: Cannot find \"camera\" \"width\" element\n\
@@ -232,7 +232,7 @@ SDL_bool PT_CameraParse( ) {
 	}
 	
 	entry = PT_ParseGetObjectEntry(parse, "camera height");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
 		"PT_CameraParse: Cannot find \"camera\" \"height\" element\n\
@@ -247,7 +247,7 @@ SDL_bool PT_CameraParse( ) {
 	}
 	
 	entry = PT_ParseGetObjectEntry(parse, "camera colliders");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		ptCamera->colliders = (PT_Collider*)malloc(sizeof(PT_Collider) * entry.value->u.array.length);
 		if ( !ptCamera->colliders )

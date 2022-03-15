@@ -155,7 +155,7 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 	
 	//Property: map.orientation 
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "orientation");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
 		return SDL_FALSE;
@@ -171,7 +171,7 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 	
 	//Property: map.width 
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "width");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
 		return SDL_FALSE;
@@ -180,7 +180,7 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 	
 	//Property: map.height
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "height");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
 		return SDL_FALSE;
@@ -189,7 +189,7 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 	
 	//Property: map.tilewidth
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "tilewidth");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
 		return SDL_FALSE;
@@ -198,7 +198,7 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 	
 	//Property: map.tileheight
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "tileheight");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
 		return SDL_FALSE;
@@ -207,7 +207,7 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 	
 	//Property: map.tilesets
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "tilesets");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
 	}
@@ -229,7 +229,7 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 	
 	//Property: map.layers
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "layers");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
 		return SDL_FALSE;
@@ -251,7 +251,7 @@ SDL_bool PT_LevelParse( PT_Level* _this, json_value* jsonValue ) {
 			entry.value->u.array.values[i], "type"
 		);
 		
-		if ( !entry2.name )
+		if ( !entry2.value )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelParse!\n");
 			return SDL_FALSE;

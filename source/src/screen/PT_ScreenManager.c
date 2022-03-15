@@ -130,7 +130,7 @@ void PT_ScreenManagerSetup( ) {
 	}
 	
 	json_object_entry entry = PT_ParseGetObjectEntry(parseList, "screens");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		if ( entry.value->type == json_array )
 		{
@@ -169,7 +169,7 @@ void PT_ScreenManagerSetup( ) {
 							
 						entry =
 						PT_ParseGetObjectEntry_json_value(jsonValue, "settings tag");
-						if ( entry.name )
+						if ( entry.value )
 						{
 							if ( PT_StringMatchFast((char*)entry.value->u.string.ptr, "first-screen") )
 							{

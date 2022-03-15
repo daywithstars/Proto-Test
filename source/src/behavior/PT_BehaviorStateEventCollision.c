@@ -41,11 +41,11 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Collision_ChangeDirection(
 	
 	json_object_entry fieldsEntry = 
 	PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields");
-	if ( fieldsEntry.name )
+	if ( fieldsEntry.value )
 	{
 		fieldsEntry = 
 		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields this-collider-name");
-		if ( fieldsEntry.name )
+		if ( fieldsEntry.value )
 		{
 			PT_String* collider_1_name = PT_StringCreate();
 			if ( !collider_1_name )
@@ -75,7 +75,7 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Collision_ChangeDirection(
 		
 		fieldsEntry = 
 		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields target-collider-name");
-		if ( fieldsEntry.name )
+		if ( fieldsEntry.value )
 		{
 			PT_String* collider_2_name = PT_StringCreate();
 			if ( !collider_2_name )
@@ -105,7 +105,7 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Collision_ChangeDirection(
 		
 		fieldsEntry = 
 		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields dir-x");
-		if ( fieldsEntry.name )
+		if ( fieldsEntry.value )
 		{
 			if ( fieldsEntry.value->type == json_string )
 			{
@@ -145,7 +145,7 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Collision_ChangeDirection(
 		
 		fieldsEntry = 
 		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields dir-y");
-		if ( fieldsEntry.name )
+		if ( fieldsEntry.value )
 		{
 			if ( fieldsEntry.value->type == json_string )
 			{

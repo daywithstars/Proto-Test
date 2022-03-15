@@ -39,11 +39,11 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Input_PlaySample(
 	
 	json_object_entry fieldsEntry = 
 	PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields");
-	if ( fieldsEntry.name )
+	if ( fieldsEntry.value )
 	{
 		fieldsEntry = 
 		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields key-map");
-		if ( fieldsEntry.name )
+		if ( fieldsEntry.value )
 		{
 			PT_String* keyMap = PT_StringCreate();
 			if ( !keyMap )
@@ -73,7 +73,7 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Input_PlaySample(
 		
 		fieldsEntry = 
 		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields sample-name");
-		if ( fieldsEntry.name )
+		if ( fieldsEntry.value )
 		{
 			PT_String* sampleName = PT_StringCreate();
 			if ( !sampleName )
@@ -103,7 +103,7 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Input_PlaySample(
 		
 		fieldsEntry = 
 		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields loop");
-		if ( fieldsEntry.name )
+		if ( fieldsEntry.value )
 		{
 			inputPlaySound->sound.loop = fieldsEntry.value->u.integer;
 		}
@@ -144,11 +144,11 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Input_PlayMusic(
 	
 	json_object_entry fieldsEntry = 
 	PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields");
-	if ( fieldsEntry.name )
+	if ( fieldsEntry.value )
 	{
 		fieldsEntry = 
 		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields key-map");
-		if ( fieldsEntry.name )
+		if ( fieldsEntry.value )
 		{
 			PT_String* keyMap = PT_StringCreate();
 			if ( !keyMap )
@@ -178,7 +178,7 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Input_PlayMusic(
 		
 		fieldsEntry = 
 		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields music-name");
-		if ( fieldsEntry.name )
+		if ( fieldsEntry.value )
 		{
 			PT_String* musicName = PT_StringCreate();
 			if ( !musicName )
@@ -208,7 +208,7 @@ SDL_bool PT_BehaviorStateEventParseTrigger_Input_PlayMusic(
 		
 		fieldsEntry = 
 		PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value fields loop");
-		if ( fieldsEntry.name )
+		if ( fieldsEntry.value )
 		{
 			inputPlaySound->sound.loop = fieldsEntry.value->u.integer;
 		}

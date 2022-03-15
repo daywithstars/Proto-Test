@@ -140,7 +140,7 @@ SDL_bool PT_LevelTileLayerParse( void* layerData, json_value* jsonValue ) {
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "width");
 	
 	//Property: map.layers[].width
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTileLayerParse!\n");
 		return SDL_FALSE;
@@ -150,7 +150,7 @@ SDL_bool PT_LevelTileLayerParse( void* layerData, json_value* jsonValue ) {
 	
 	//Property: map.layers[].height
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "height");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTileLayerParse!\n");
 		return SDL_FALSE;
@@ -161,7 +161,7 @@ SDL_bool PT_LevelTileLayerParse( void* layerData, json_value* jsonValue ) {
 
 	//Property: map.layers[].data
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "data");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelTileLayerParse!\n");
 		return SDL_FALSE;

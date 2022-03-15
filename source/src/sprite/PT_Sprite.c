@@ -290,7 +290,7 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 							jsonValue->u.object.values[i].value->u.object.values[j].value, "group"
 						);
 						
-						if ( entry.name )
+						if ( entry.value )
 						{
 							PT_CollisionHandler* handler = 
 							PT_CollisionManagerGetCurrentHandler();
@@ -386,52 +386,52 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {
 					Uint16 frameRowMax = 2;
 				
 					json_object_entry entry = PT_ParseGetObjectEntry_json_value(animObj, "name");
-					if ( entry.name )
+					if ( entry.value )
 					{
 						name = entry.value->u.string.ptr;
 					}
 					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-delay");
-					if ( entry.name )
+					if ( entry.value )
 					{
 						frameDelay = entry.value->u.integer;
 					}
 					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-width");
-					if ( entry.name )
+					if ( entry.value )
 					{
 						frameWidth = entry.value->u.integer;
 					}
 					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-height");
-					if ( entry.name )
+					if ( entry.value )
 					{
 						frameHeight = entry.value->u.integer;
 					}
 					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-column");
-					if ( entry.name )
+					if ( entry.value )
 					{
 						frameColumn = entry.value->u.integer;
 					}
 					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-column-dir");
-					if ( entry.name )
+					if ( entry.value )
 					{
 						frameColumnDir = entry.value->u.integer;
 					}
 					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-column-max");
-					if ( entry.name )
+					if ( entry.value )
 					{
 						frameColumnMax = entry.value->u.integer;
 					}
 					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-row");
-					if ( entry.name )
+					if ( entry.value )
 					{
 						frameRow = entry.value->u.integer;
 					}
 					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-row-dir");
-					if ( entry.name )
+					if ( entry.value )
 					{
 						frameRowDir = entry.value->u.integer;
 					}
 					entry = PT_ParseGetObjectEntry_json_value(animObj, "frame-row-max");
-					if ( entry.name )
+					if ( entry.value )
 					{
 						frameRowMax = entry.value->u.integer;
 					}

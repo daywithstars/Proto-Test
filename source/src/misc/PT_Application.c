@@ -61,7 +61,7 @@ SDL_bool PT_ApplicationParseSettings( ) {
 	}
 	
 	json_object_entry entry = PT_ParseGetObjectEntry(parse, "games");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
 		"PT: PT_Application: FILE %s, LINE %d\n", __FILE__, __LINE__);

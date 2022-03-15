@@ -157,7 +157,7 @@ SDL_bool PT_BehaviorStateEventParse( PT_BehaviorStateEvent* _this, json_value* j
 	//Find the event trigger type
 	json_object_entry triggerEntry = 
 	PT_ParseGetObjectEntry_json_value(jsonValue, "trigger type");
-	if ( triggerEntry.name )
+	if ( triggerEntry.value )
 	{	
 		if ( PT_StringMatchFast(triggerEntry.value->u.string.ptr, "none") )
 		{
@@ -201,7 +201,7 @@ SDL_bool PT_BehaviorStateEventParse( PT_BehaviorStateEvent* _this, json_value* j
 	//Find the event type
 	triggerEntry = 
 	PT_ParseGetObjectEntry_json_value(jsonValue, "trigger value type");
-	if ( triggerEntry.name )
+	if ( triggerEntry.value )
 	{
 		if ( PT_StringMatchFast(triggerEntry.value->u.string.ptr, "play-sample") )
 		{

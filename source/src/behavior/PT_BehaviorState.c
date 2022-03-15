@@ -103,7 +103,7 @@ void PT_BehaviorStateUpdate( PT_BehaviorState* _this, void* target, Sint32 elaps
 SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue ) {
 
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "input");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		for ( unsigned int i = 0; i < entry.value->u.object.length; i++ )
 		{
@@ -217,7 +217,7 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 	}
 	
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "events");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		if ( !(entry.value->type == json_array) )
 		{
@@ -257,7 +257,7 @@ SDL_bool PT_BehaviorStateParse( PT_BehaviorState* _this, json_value* jsonValue )
 	}
 	
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "always");
-	if ( entry.name )
+	if ( entry.value )
 	{	
 		for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
 		{	

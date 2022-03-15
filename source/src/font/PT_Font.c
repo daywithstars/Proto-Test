@@ -63,7 +63,7 @@ void PT_FontDestroy( PT_Font* _this ) {
 
 SDL_bool PT_FontParse( PT_Font* _this, json_value* jsonValue ) {
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "font-data");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
 		"PT: PT_FontParse: Cannot find \"font-data\" on template.\n");
@@ -92,7 +92,7 @@ SDL_bool PT_FontParse( PT_Font* _this, json_value* jsonValue ) {
 	int fontSize = 10;
 	
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "size-px");
-	if ( !entry.name )
+	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
 		"PT: PT_FontParse: Cannot find \"size-px\" on template.\n");
@@ -115,7 +115,7 @@ SDL_bool PT_FontParse( PT_Font* _this, json_value* jsonValue ) {
 	
 	
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "color");
-	if ( entry.name )
+	if ( entry.value )
 	{
 		_this->color.r = entry.value->u.array.values[0]->u.integer;
 		_this->color.g = entry.value->u.array.values[1]->u.integer;
