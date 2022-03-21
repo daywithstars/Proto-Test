@@ -9,45 +9,28 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-/** 
-* \file 
-*
-* The Proto Test the structure that holds everything together. 
-*/ 
-
-
-#ifndef _APPLICATION_H_
-#define _APPLICATION_H_
-
-#include <SDL_stdinc.h>
+#ifndef _PT_GAMELIST_H_
+#define _PT_GAMELIST_H_
 
 #include <PT_String.h>
+#include <PT_Game.h>
 
 
-/**
-* \brief Allocate all basic objects that will be used from the application.
-*
-* \returns SDL_TRUE on success, or SDL_FALSE on error.
-*
-* \sa PT_ApplicationDestroy
-*/
-SDL_bool PT_ApplicationCreate( );
+typedef struct pt_game_list {
+	PT_String* index;
+	PT_Game value;
+	
+	struct pt_game_list* next;
+}PT_GameList;
 
-/** 
-* \brief After the PT_ApplicationRun and quit, this function will clear all remains objects.
-*
-* \sa PT_ApplicationCreate
-*/
-void PT_ApplicationDestroy( ); 
 
-SDL_bool PT_ApplicationLoadGame( const char* utf8_gameName );
+void PT_GameListDestroy( PT_GameList* _this );
 
-/**
-* \brief Run the application, this will remains until the application is running.
-*/
-void PT_ApplicationRun( ); 
+PT_GameList* PT_GameListAdd( PT_GameList* _this, const char* utf8_index, PT_Game value );
 
-#endif /* _APPLICATION_H_ */
+PT_GameList* PT_GameListGet( PT_GameList* _this, const char* utf8_index );
+
+#endif /* _PT_GAMELIST_H_ */
 
 
 

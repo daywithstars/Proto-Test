@@ -17,6 +17,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Application.h>
 #include <SDL_log.h>
 
+
 SDL_bool SDL_InitializeSystems( );
 void SDL_FinalizeSystems( );
 

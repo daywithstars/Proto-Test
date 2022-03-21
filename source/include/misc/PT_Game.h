@@ -9,45 +9,28 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-/** 
-* \file 
-*
-* The Proto Test the structure that holds everything together. 
-*/ 
 
-
-#ifndef _APPLICATION_H_
-#define _APPLICATION_H_
+#ifndef _PT_GAME_H_
+#define _PT_GAME_H_
 
 #include <SDL_stdinc.h>
 
 #include <PT_String.h>
 
+typedef struct {
+	SDL_bool loaded;
+	PT_String* folder;
+}PT_Game;
 
-/**
-* \brief Allocate all basic objects that will be used from the application.
-*
-* \returns SDL_TRUE on success, or SDL_FALSE on error.
-*
-* \sa PT_ApplicationDestroy
-*/
-SDL_bool PT_ApplicationCreate( );
+PT_Game PT_GameCreate( const char* utf8_gameFolder );
+SDL_bool PT_GameLoad( PT_Game* _this );
+void PT_GameUnload( PT_Game *_this );
+void PT_GameDestroy( PT_Game* _this );
 
-/** 
-* \brief After the PT_ApplicationRun and quit, this function will clear all remains objects.
-*
-* \sa PT_ApplicationCreate
-*/
-void PT_ApplicationDestroy( ); 
+void PT_GameUpdate( Sint32 elapsedTime );
+void PT_GameDraw( );
 
-SDL_bool PT_ApplicationLoadGame( const char* utf8_gameName );
-
-/**
-* \brief Run the application, this will remains until the application is running.
-*/
-void PT_ApplicationRun( ); 
-
-#endif /* _APPLICATION_H_ */
+#endif /* _PT_GAME_H_ */
 
 
 

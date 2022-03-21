@@ -15,51 +15,30 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <SDL_log.h>
 
-#include <PT_AnimationList.h>
+#include <PT_GameList.h>
 
 
-PT_AnimationList* PT_AnimationListCreate( const char* utf8_index, PT_Animation value ) {
-	PT_AnimationList* _this = (PT_AnimationList*)malloc(sizeof(PT_AnimationList));
+PT_GameList* PT_GameListCreate( const char* utf8_index, PT_Game value ) {
+	PT_GameList* _this = (PT_GameList*)malloc(sizeof(PT_GameList));
 	
 	if ( !_this )
 	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_AnimationListCreate: Not enough memory\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_AnimationListCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-		
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GameListCreate: Not enough memory\n");
 		return NULL;
 	}
 	
 	_this->value = value;
 	_this->index = PT_StringCreate();
-	if ( !_this->index )
-	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_AnimationListCreate: Cannot create index\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_AnimationListCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-
-		free(_this);
-		return NULL;
-	}
 	if ( !PT_StringInsert(&(_this->index), utf8_index, 0) )
 	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_AnimationListCreate: Cannot insert index string\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_AnimationListCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-		
-		PT_StringDestroy(_this->index);
-		free(_this);
-		return NULL;
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GameListCreate!\n");
 	}
 	_this->next = NULL;
 	
 	return _this;
-}//PT_AnimationListCreate
+}//PT_GameListCreate
 
-void PT_AnimationListDestroy( PT_AnimationList* _this ) {
+void PT_GameListDestroy( PT_GameList* _this ) {
 	if ( !_this )
 	{
 		return;
@@ -68,42 +47,45 @@ void PT_AnimationListDestroy( PT_AnimationList* _this ) {
 
 	while ( _this )
 	{
-		PT_AnimationList* tmp = _this->next;
+		PT_GameList* tmp = _this->next;
 		
-		PT_AnimationDestroy(&_this->value);
 		
+		PT_GameDestroy(&_this->value);
 		PT_StringDestroy(_this->index);
 		
 		free(_this);
 		_this = tmp;
 	}
-}//PT_AnimationListDestroy
+}//PT_GameListDestroy
 
-PT_AnimationList* PT_AnimationListAdd( PT_AnimationList* _this, const char* utf8_index, 
-	PT_Animation value ) {
+PT_GameList* PT_GameListAdd( PT_GameList* _this, const char* utf8_index, PT_Game value ) {
 	
 	if ( !_this )
 	{
-		return PT_AnimationListCreate(utf8_index, value);
+		return PT_GameListCreate(utf8_index, value);
 	}
+
+
+	PT_GameList* pList = _this;
 	
-	PT_AnimationList* pList = _this;
 	while ( pList )
 	{
 		if ( PT_StringMatch(pList->index, utf8_index) )
 		{
+
+			PT_GameDestroy(&value);
 			return _this;
 		}
 		pList = pList->next;
 	}
 
-	PT_AnimationList* newNode = PT_AnimationListCreate(utf8_index, value);
+	PT_GameList* newNode = PT_GameListCreate(utf8_index, value);
 	newNode->next = _this;
 	
 	return newNode;
-}//PT_AnimationListAdd
+}//PT_GameListAdd
 
-PT_AnimationList* PT_AnimationListGet( PT_AnimationList* _this, const char* utf8_index ) {
+PT_GameList* PT_GameListGet( PT_GameList* _this, const char* utf8_index ) {
 	while ( _this )
 	{
 		if ( PT_StringMatch(_this->index, utf8_index) )
@@ -115,7 +97,7 @@ PT_AnimationList* PT_AnimationListGet( PT_AnimationList* _this, const char* utf8
 	}
 	
 	return NULL;
-}//PT_AnimationListGet
+}//PT_GameListGet
 
 
 

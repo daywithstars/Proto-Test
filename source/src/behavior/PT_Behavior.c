@@ -35,40 +35,70 @@ SDL_bool PT_BehaviorParse( PT_Behavior* _this, json_value* jsonValue );
 //===================================== PUBLIC Functions
 
 PT_Behavior* PT_BehaviorCreate( void* pSprite, const char* utf8_behaviorTemplate ) {
+
+	/* Creation task */
 	PT_Behavior* _this = (PT_Behavior*)malloc(sizeof(PT_Behavior));
 	if ( !_this )
 	{	
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorCreate: Not enough memory\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_BehaviorCreate: Not enough memory\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_BehaviorCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
 		return NULL;
 	}
 	SDL_memset(_this, 0, sizeof(PT_Behavior));
 	
+	/* Template loading task */
+	SDL_bool templateLoaded = SDL_TRUE;
 	PT_String* path = PT_StringCreate();
-	PT_StringInsert(&path, ".json", 0);
-	PT_StringInsert(&path, utf8_behaviorTemplate, 0);
-	PT_StringInsert(&path, "assets/behavior/", 0);
+	if ( !path )
+	{
+		templateLoaded = SDL_FALSE;
+	}
+	
+	templateLoaded = PT_StringInsert(&path, ".json", 0);
+	templateLoaded = PT_StringInsert(&path, utf8_behaviorTemplate, 0);
+	templateLoaded = PT_StringInsert(&path, "assets/behavior/", 0);
 	json_value* jsonValue = PT_ParseGetJsonValueFromFile((char*)path->utf8_string, SDL_TRUE);
 	
 	if ( !jsonValue )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorCreate!\n");
+		templateLoaded = SDL_FALSE;
+		json_value_free(jsonValue);
+	}
+	
+	if ( !templateLoaded )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_BehaviorCreate: Cannot load template\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_BehaviorCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_StringDestroy(path);
 		PT_BehaviorDestroy(_this);
 		return NULL;
 	}
 	
+	/* Parse task */
 	_this->pSprite = pSprite;
 	if ( !PT_BehaviorParse(_this, jsonValue) )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorCreate: Cannot parse\n");
-		PT_BehaviorDestroy(_this);
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_BehaviorCreate: Cannot parse\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_BehaviorCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
 		json_value_free(jsonValue);
 		PT_StringDestroy(path);
+		PT_BehaviorDestroy(_this);
 		return NULL;
 	}
 	
 	
 	json_value_free(jsonValue);
 	PT_StringDestroy(path);
+	
 	return _this;
 }
 void PT_BehaviorDestroy( PT_Behavior* _this ) {
@@ -119,9 +149,6 @@ void PT_BehaviorChangeState( PT_Behavior* _this, const char* utf8_stateName ) {
 //================= PT_Behavior
 
 SDL_bool PT_BehaviorParse( PT_Behavior* _this, json_value* jsonValue ) {
-	/*
-		see the template: games/default-templates/behavior-folder/behavior-template.json
-	*/
 	
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "settings input-template");
 	if ( entry.value )
@@ -129,43 +156,41 @@ SDL_bool PT_BehaviorParse( PT_Behavior* _this, json_value* jsonValue ) {
 		if ( strcmp(entry.value->u.string.ptr, "none") )
 		{
 			_this->inputHandler = PT_InputManagerGetInputHandler(entry.value->u.string.ptr);
-			if ( !_this->inputHandler )
-			{
-				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorParse: Invalid inputHandler\n");
-				return SDL_FALSE;
-			}
 		}
 	}
 	
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "states");
-	if ( !entry.value )
+	if ( entry.value )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_BehaviorParse: Can't find any state!\n");
-		return SDL_FALSE;
-	}
-	
-	for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
-	{
-		json_object_entry entry2 = 
-		PT_ParseGetObjectEntry_json_value(entry.value->u.array.values[i], "name");
-		
-		PT_BehaviorState* newState = PT_BehaviorStateCreate(
-				entry.value->u.array.values[i],	
-				(void*)_this		
-			);
-		if ( !newState )
+		if ( entry.value->type == json_array )
 		{
-			SDL_Log("(*)PT: PT_BehaviorStateParse!\n");
-			return SDL_FALSE;
-		}
-		
-		_this->behaviorStateList = 
-		PT_BehaviorStateListAdd(_this->behaviorStateList, entry2.value->u.string.ptr, newState);
-		
-		if ( i == 0 )
-		{
-			//add the first state
-			_this->currentState = newState;
+			for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
+			{
+				json_object_entry entry2 = 
+				PT_ParseGetObjectEntry_json_value(entry.value->u.array.values[i], "name");
+				if ( !entry2.value )
+				{
+					continue;
+				}
+				
+				PT_BehaviorState* newState = PT_BehaviorStateCreate(
+						entry.value->u.array.values[i],	
+						(void*)_this		
+					);
+				if ( !newState )
+				{
+					continue;
+				}
+				
+				_this->behaviorStateList = 
+				PT_BehaviorStateListAdd(_this->behaviorStateList, entry2.value->u.string.ptr, newState);
+				
+				if ( i == 0 )
+				{
+					//add the first state
+					_this->currentState = newState;
+				}
+			}
 		}
 	}
 

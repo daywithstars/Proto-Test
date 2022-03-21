@@ -13,10 +13,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stdlib.h>
 #include <malloc.h>
 #include <time.h>
+#include <sys/stat.h>
 
 #include <SDL_log.h>
 #include <SDL_stdinc.h>
 #include <SDL_events.h>
+
 #include <PT_InputManager.h>
 #include <PT_Application.h>
 #include <PT_Graphics.h>
@@ -26,48 +28,85 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_CollisionManager.h>
 #include <PT_Parse.h>
 #include <PT_Camera.h>
+#include <PT_GameList.h>
 
 
 
 typedef struct {
 	SDL_bool running;
 	
-	PT_String* gameName;
+	PT_Game currentGame;
+	PT_GameList* gameList;
 	Uint32 srandCallCount;
 }PT_Application;
 
 extern PT_String* gRootDir;
+extern PT_String* gDefaultRootDir;
 
 static PT_Application* ptApplication = NULL;
 
 
 
 SDL_bool PT_ApplicationParseSettings( ) {
-	/*
-		see the template: games/default-templates/global-settings-template.json
-	*/
 	PT_Parse* parse = PT_ParseCreate();
 	
-	if ( !PT_ParseOpenFile(parse, "../games/global-settings.json", SDL_FALSE) )
+	if ( !PT_ParseOpenFile(parse, "global-settings.json", SDL_FALSE) )
 	{
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
 		"PT: PT_ApplicationParseSettings: FILE %s, LINE %d\n", __FILE__, __LINE__);
 		
 		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Application", 
-		"Cannot find or successfully read settings on global-settings in folder: /games\n");
+		"Cannot find or successfully read settings on global-settings in the executable folder\n");
 		
 		PT_ParseDestroy(parse);
 		return SDL_FALSE;
 	}
 	
-	json_object_entry entry = PT_ParseGetObjectEntry(parse, "games");
+	json_object_entry entry = PT_ParseGetObjectEntry(parse, "root-folder");
 	if ( !entry.value )
 	{
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_Application: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		"PT: PT_ApplicationParseSettings: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Application", 
+		"Cannot find \"root-folder\" element in global-settings.json");
+		
+		PT_ParseDestroy(parse);
+		return SDL_FALSE;
+	}
+	
+	if ( !PT_ParseLegalDirectory(entry.value->u.string.ptr, SDL_FALSE) )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationParseSettings: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Application", 
+		"Unable to find the directory from \"root-folder\" element in global-settings.json.\n\
+		* It cannot be a file, but an directory.\n\
+		* It need to be a relative path starting from the executable location.");
+		
+		PT_ParseDestroy(parse);
+		return SDL_FALSE;
+	}
+	
+	if ( !PT_StringInsert(&gDefaultRootDir, entry.value->u.string.ptr, 0) )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationParseSettings: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_ParseDestroy(parse);
+		return SDL_FALSE;
+	}
+	
+	entry = PT_ParseGetObjectEntry(parse, "games");
+	if ( !entry.value || entry.value->type != json_array )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationParseSettings: FILE %s, LINE %d\n", __FILE__, __LINE__);
 		
 		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Application",
-		"Cannot find \"games\" element into global-settings.json");
+		"Cannot find \"games\" element into global-settings.json or\
+		the \"games\" element is not of type json_array");
 		
 		PT_ParseDestroy(parse);
 		return SDL_FALSE;
@@ -75,27 +114,50 @@ SDL_bool PT_ApplicationParseSettings( ) {
 	
 	for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
 	{
-		if ( i != 0 )//cap to read only the first array.
+		json_object_entry entry2 = 
+		PT_ParseGetObjectEntry_json_value(entry.value->u.array.values[i], "name");
+		if ( !entry2.value )
 		{
-			break;
+			SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+			"PT: PT_ApplicationParseSettings: FILE %s, LINE %d\n", __FILE__, __LINE__);
+			
+			PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Application",
+			"Cannot find \"games\" \"name\" element into global-settings.json\n\
+			trying next game...");
+			
+			continue;
 		}
 		
-		for ( unsigned int j = 0; j < entry.value->u.array.values[i]->u.object.length; j++ )
+		json_char* gameName = entry2.value->u.string.ptr;
+		
+		entry2 = 
+		PT_ParseGetObjectEntry_json_value(entry.value->u.array.values[i], "folder-name");
+		if ( !entry2.value )
 		{
+			SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+			"PT: PT_ApplicationParseSettings: FILE %s, LINE %d\n", __FILE__, __LINE__);
 			
-			if ( PT_StringMatchFast(entry.value->u.array.values[i]->u.object.values[j].name, "name") )
-			{				
-				PT_StringInsert(&ptApplication->gameName, 
-				entry.value->u.array.values[i]->u.object.values[j].value->u.string.ptr, 0);
-			}
-			else if ( PT_StringMatchFast(entry.value->u.array.values[i]->u.object.values[j].name, "folder-name") )
-			{
-				PT_StringInsert(&gRootDir, "/", 0);
-				PT_StringInsert(&gRootDir, 
-				entry.value->u.array.values[i]->u.object.values[j].value->u.string.ptr, 0);
-				PT_StringInsert(&gRootDir, "../games/", 0);
-			}
+			PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Application",
+			"Cannot find \"games\" \"folder-name\" element into global-settings.json\n\
+			trying next game...");
+			
+			continue;
 		}
+		
+		json_char* gameFolder = entry2.value->u.string.ptr;
+		
+		PT_Game game = PT_GameCreate(gameFolder);
+		if ( !game.folder )
+		{
+			SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+			"PT: PT_ApplicationParseSettings: FILE %s, LINE %d\n", __FILE__, __LINE__);
+			
+			PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Application",
+			"Cannot setup game, trying next game...");
+			
+			continue;
+		}	
+		ptApplication->gameList = PT_GameListAdd(ptApplication->gameList, gameName, game);
 	}
 	
 	PT_ParseDestroy(parse);
@@ -103,21 +165,28 @@ SDL_bool PT_ApplicationParseSettings( ) {
 }//PT_ApplicationParseSettings
 
 void PT_ApplicationUpdate( Sint32 elapsedTime ) {
-	if ( (ptApplication->srandCallCount += elapsedTime) >= 5000 )
+	if ( ptApplication->currentGame.loaded )
 	{
-		ptApplication->srandCallCount = 0;
-		time_t t;
-		srand((unsigned) time(&t));
+		if ( (ptApplication->srandCallCount += elapsedTime) >= 5000 )
+		{
+			ptApplication->srandCallCount = 0;
+			time_t t;
+			srand((unsigned) time(&t));
+		}
+		PT_ScreenManagerUpdate(elapsedTime);	
 	}
-
-	PT_ScreenManagerUpdate(elapsedTime);
 }//PT_ApplicationUpdate
 
 void PT_ApplicationDraw( ) {
-	PT_GraphicsRenderClear();
-	PT_ScreenManagerDraw();
-	PT_CameraDraw();
-	PT_GraphicsRenderPresent();
+	if ( ptApplication->currentGame.loaded )
+	{
+		
+		PT_GraphicsRenderClear();
+		PT_ScreenManagerDraw();
+		PT_CameraDraw();
+		PT_GraphicsRenderPresent();
+		
+	}
 }//PT_ApplicationDraw
 
 void PT_ApplicationMainLoop( ) {
@@ -169,40 +238,20 @@ SDL_bool PT_ApplicationCreate( ) {
 		
 		return SDL_FALSE;
 	}
+	SDL_memset(ptApplication, 0, sizeof(PT_Application));
 	
-	ptApplication->gameName = PT_StringCreate();
-	if ( !ptApplication->gameName )
+	gRootDir = PT_StringCreate();
+	gDefaultRootDir = PT_StringCreate();
+	
+	if ( !gRootDir || !gDefaultRootDir )
 	{
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_ApplicationCreate: Cannot create gameName variable\n");
+		"PT: PT_ApplicationCreate: Cannot create application basic variables\n");
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
 		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
 		
 		PT_ApplicationDestroy();
 		return SDL_FALSE;
-	}
-	
-	if ( !PT_ScreenManagerCreate() )
-	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_ApplicationCreate: Cannot create PT_ScreenManager\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-		
-		PT_ApplicationDestroy();
-		return SDL_FALSE;	
-	}
-	
-	gRootDir = PT_StringCreate();
-	if ( !gRootDir )
-	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_ApplicationCreate: Cannot create gRootDir variable\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-		
-		PT_ApplicationDestroy();
-		return SDL_FALSE;	
 	}
 	
 	if ( !PT_ApplicationParseSettings() )
@@ -222,36 +271,31 @@ SDL_bool PT_ApplicationCreate( ) {
 		"PT: PT_ApplicationCreate: Cannot create PT_Graphics\n");
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
 		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-		
-		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Application",
-		"Graphics system couldn't be initialized.\n\
-		Check the console output"); 
 	
 		PT_ApplicationDestroy();
 		return SDL_FALSE;
 	}
 	
+	if ( !PT_ScreenManagerCreate() )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: Cannot create PT_ScreenManager\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_ApplicationDestroy();
+		return SDL_FALSE;	
+	}
+	
 	if ( !PT_CollisionManagerCreate() )
 	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
 		"PT: PT_ApplicationCreate: Cannot create PT_CollisionManager\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
 		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
 		
 		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Application",
 		"Collision detection system couldn't be initialized.\n\
-		Check the console output");
-	}
-	
-	if ( !PT_GraphicsLoadFonts() )
-	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
-		"PT: PT_ApplicationCreate: Cannot load fonts\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
-		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-		
-		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Application",
-		"Cannot load font files.\n\
 		Check the console output");
 	}
 	
@@ -270,69 +314,38 @@ SDL_bool PT_ApplicationCreate( ) {
 		return SDL_FALSE;
 	}
 	
-	if ( !PT_LevelManagerCreate() )
+	if ( !PT_ApplicationLoadGame("Shooter") )
 	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
-		"PT: PT_ApplicationCreate: Cannot create PT_LevelManager\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationCreate: Cannot load game\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
 		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-		
-		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Application",
-		"Level Manager system couldn't be initialize.\n\
-		Check the console output");
+	
+		PT_ApplicationDestroy();
+		return SDL_FALSE;
 	}
-	else {
+	
+	if ( PT_LevelManagerCreate() )
+	{
 		if ( !PT_LevelManagerSetup() )
-		{
-			SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
-			"PT: PT_ApplicationCreate: Cannot setup PT_LevelManager\n");
-			SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
-			"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-			
-			PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Application",
-			"Level Manager system couldn't be initialize.\n\
-			Check the console output");
-			
+		{	
 			PT_LevelManagerDestroy();
 		}
 	}
 
-	if ( !PT_CameraCreate() )
-	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
-		"PT: PT_ApplicationCreate: Cannot create PT_Camera\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
-		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-		
-		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Application",
-		"Camera system couldn't be initialize.\n\
-		Check the console output");
-	}
+	PT_CameraCreate();
 	
 	PT_ScreenManagerSetup();
 	
 	PT_SoundManagerCreate();
 	
-	if ( !PT_SoundManagerLoadSamples() )
-	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
-		"PT: PT_ApplicationCreate: Cannot load samples\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
-		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-	}
-	if ( !PT_SoundManagerLoadMusics() )
-	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
-		"PT: PT_ApplicationCreate: Cannot load musics\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
-		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-	}
+	PT_SoundManagerLoadSamples();
 	
-	SDL_Log("PT: PT_ApplicationCreate: Game: \"%s\", successfully initialized\n", 
-	(char*)ptApplication->gameName->utf8_string);
+	PT_SoundManagerLoadMusics();
 	
 	ptApplication->running = SDL_TRUE;
 	ptApplication->srandCallCount = 0;
+	
 	return SDL_TRUE;
 }//PT_ApplicationCreate
 
@@ -340,6 +353,8 @@ void PT_ApplicationDestroy( ) {
 	
 	if ( ptApplication )
 	{
+		PT_GameUnload(&ptApplication->currentGame);
+		
 		PT_CollisionManagerDestroy();
 		PT_LevelManagerDestroy();
 		PT_ScreenManagerDestroy();
@@ -350,7 +365,11 @@ void PT_ApplicationDestroy( ) {
 		PT_InputManagerDestroy();
 		PT_CameraDestroy();
 		
-		PT_StringDestroy(ptApplication->gameName);
+		PT_GameListDestroy(ptApplication->gameList);
+		ptApplication->gameList = NULL;
+		
+		PT_StringDestroy(gDefaultRootDir);
+		gDefaultRootDir = NULL;
 		PT_StringDestroy(gRootDir);
 		gRootDir = NULL;
 		
@@ -361,9 +380,93 @@ void PT_ApplicationDestroy( ) {
 	SDL_Log("Last SDL_Error|json: %s\n", SDL_GetError());
 }//PT_ApplicationDestroy
 
-const PT_String* PT_ApplicationGetGameName( ) {
-	return ptApplication->gameName;
-}//PT_ApplicationGetGameName
+SDL_bool PT_ApplicationLoadGame( const char* utf8_gameName ) {
+	if ( !ptApplication )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationLoadGame: Invalid ptApplication\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationLoadGame: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		return SDL_FALSE;
+	}
+	
+	PT_GameList* node = 
+	PT_GameListGet(ptApplication->gameList, utf8_gameName);
+	
+	if ( !node )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationLoadGame: Cannot load game: %s\n", utf8_gameName);
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationLoadGame: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		return SDL_FALSE;
+	}
+	if ( ptApplication->currentGame.loaded  )
+	{
+		if ( PT_StringMatchFast((char*)ptApplication->currentGame.folder->utf8_string, 
+			(char*)node->value.folder->utf8_string) )
+		{
+			SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+			"PT: PT_ApplicationLoadGame: The game: %s is already loaded\n", utf8_gameName);
+			SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+			"PT: PT_ApplicationLoadGame: FILE %s, LINE %d\n", __FILE__, __LINE__);
+			
+			return SDL_TRUE;
+		}
+		else {
+			/* free previous game resources */
+			PT_GameUnload(&ptApplication->currentGame);
+		}
+	}
+
+	SDL_bool gamePathSuccess = SDL_TRUE;	
+	PT_StringClear(&gRootDir);
+	
+	gamePathSuccess = PT_StringInsert(&gRootDir, "/", 0);
+	gamePathSuccess = PT_StringInsert(&gRootDir, (char*)node->value.folder->utf8_string, 0);
+	gamePathSuccess = PT_StringInsert(&gRootDir, (char*)gDefaultRootDir->utf8_string, 0);
+	
+	if ( !gamePathSuccess )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationLoadGame: Cannot successfully apply the game folder path to gRootDir\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationLoadGame: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		return SDL_FALSE;
+	}
+	
+	if ( !PT_ParseLegalDirectory((char*)gRootDir->utf8_string, SDL_FALSE) )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationLoadGame: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Application",
+		"Cannot find game folder or the current user cannot write and read in the directory.\n\
+		Trying next game...");
+		
+		return SDL_FALSE;
+	} 
+	
+	PT_GameLoad(&node->value);
+	
+	if ( node->value.loaded )
+	{
+		ptApplication->currentGame = node->value;
+	}
+	else {
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationLoadGame: Unable to load game: %s\n", utf8_gameName);
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_ApplicationLoadGame: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		return SDL_FALSE;
+	}
+	
+	return SDL_TRUE;
+}//PT_ApplicationLoadGame
 
 void PT_ApplicationRun( ) {
 	PT_ApplicationMainLoop();

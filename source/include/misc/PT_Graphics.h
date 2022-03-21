@@ -43,6 +43,8 @@ SDL_bool PT_GraphicsCreate( );
 */
 void PT_GraphicsDestroy( );
 
+SDL_bool PT_GraphicsParseSettings( );
+
 int PT_GraphicsShowSimpleMessageBox( Uint32 flags, const char *utf8_title, const char *utf8_message );
 
 /**
@@ -59,7 +61,11 @@ void PT_GraphicsLoadTexture( const char* utf8_filePath, const char* utf8_name );
 
 TTF_Font* PT_GraphicsLoadFont( const char* utf8_filePath, int fontSize, SDL_bool defaultPath );
 
+SDL_bool PT_GraphicsLoadImages( );
+void PT_GraphicsUnloadImages( );
+
 SDL_bool PT_GraphicsLoadFonts( );
+void PT_GraphicsUnloadFonts( );
 
 void PT_GraphicsSetViewport( const SDL_Rect* rect );
 

@@ -21,6 +21,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_FontList.h>
 #include <PT_Parse.h>
 
+
+#define PT_GRAPHICS_DEFAULT_WINDOW_WIDTH 640
+#define PT_GRAPHICS_DEFAULT_WINDOW_HEIGHT 480
+
 extern PT_String* gRootDir;
 
 struct pt_graphics {
@@ -38,29 +42,129 @@ struct pt_graphics {
 
 static PT_Graphics* ptGraphics = NULL;
 
+//===================================== PRIVATE Functions
 
+SDL_bool PT_GraphicsUpdateSettings( ) {
+	if ( !ptGraphics )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_GraphicsUpdateSettings: Invalid ptGraphics\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_GraphicsUpdateSettings: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		return SDL_FALSE;
+	}
+	
+	SDL_SetWindowSize(ptGraphics->window, ptGraphics->windowWidth, ptGraphics->windowHeight);
+	
+	return SDL_TRUE;
+}//PT_GraphicsUpdateSettings
 
+//===================================== PUBLIC Functions
+
+SDL_bool PT_GraphicsCreate( ) {
+	if ( ptGraphics ) 
+	{
+		return SDL_TRUE;
+	}
+	
+	if ( !IMG_Init(IMG_INIT_PNG) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_GraphicsCreate: Cannot load support to PNG image, use the default .bmp\n");
+	}
+	if ( TTF_Init() < 0 )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+		"PT: PT_GraphicsCreate: Cannot load the ttf engine.\n");
+	}
+	
+	ptGraphics = (PT_Graphics*)malloc(sizeof(struct pt_graphics));
+	if ( !ptGraphics )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsCreate: Not enough memory\n");
+		return SDL_FALSE;
+	}
+	SDL_memset(ptGraphics, 0, sizeof(struct pt_graphics));
+	
+	ptGraphics->windowWidth = PT_GRAPHICS_DEFAULT_WINDOW_WIDTH;
+	ptGraphics->windowHeight = PT_GRAPHICS_DEFAULT_WINDOW_HEIGHT;
+	
+	ptGraphics->window = SDL_CreateWindow(
+		"Proto-Test", 
+		100, 100, 
+		ptGraphics->windowWidth, ptGraphics->windowHeight, 
+		SDL_WINDOW_SHOWN
+	);
+	if ( !ptGraphics->window )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphcisCreate: %s\n", SDL_GetError());
+		PT_GraphicsDestroy();
+		return SDL_FALSE;
+	}
+	
+	SDL_Surface* logo = IMG_Load("logo.png");
+	if ( logo )
+	{
+		SDL_SetWindowIcon(ptGraphics->window, logo);
+		SDL_FreeSurface(logo);
+	}
+	
+	ptGraphics->renderer = SDL_CreateRenderer(ptGraphics->window, -1, SDL_RENDERER_SOFTWARE);
+	if ( !ptGraphics->renderer )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphcisCreate: %s\n", SDL_GetError());
+		PT_GraphicsDestroy();
+		return SDL_FALSE;
+	}
+	if ( SDL_SetRenderDrawBlendMode(ptGraphics->renderer, SDL_BLENDMODE_BLEND) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphcisCreate: %s\n", SDL_GetError());
+	}
+
+	return SDL_TRUE;
+}//PT_GraphicsCreate
+
+void PT_GraphicsDestroy() {
+	if ( !ptGraphics )
+	{
+		return;
+	}
+	
+	PT_GraphicsUnloadImages();
+	PT_GraphicsUnloadFonts();
+
+	if ( ptGraphics->renderer )
+	{
+		SDL_DestroyRenderer(ptGraphics->renderer);
+	}
+	if ( ptGraphics->window )
+	{
+		SDL_DestroyWindow(ptGraphics->window);
+	}
+
+	free(ptGraphics);
+	
+	ptGraphics = NULL;
+	
+	IMG_Quit();
+	TTF_Quit();
+}//PT_GraphicsDestroy
 
 SDL_bool PT_GraphicsParseSettings( ) {
-	/*
-		see the template: games/default-templates/game-folder-settings-template.json
-	*/
+
 	PT_Parse* parse = PT_ParseCreate();
 	
 	if ( !PT_ParseOpenFile(parse, "settings.json", SDL_TRUE) )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsParseSettings!\n");
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "* Make sure your game folder is the same as the global-settings.json and try again\n");
-		SDL_Log("(*)PT: PT_GraphicsParseSettings: Trying to create settings.json on your game folder\n");
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Proto-Test",
+		"* Make sure your game folder is the same as the global-settings.json\n\
+		A default settings.json will be created in the current game folder");
 		
-		if ( !PT_ParseLoadTemplate(parse, 
-"{\n \
-	\"graphics\": {\n \
-		\"screenWidth\": 640,\n\
-		\"screenHeight\": 480,\n \
-		\"renderDrawColor\": [0, 255, 0, 255]\n \
-	}\n\
-}") )
+		
+		#include <PT_Graphics_default_settings.c>
+		if ( !PT_ParseLoadTemplate(parse, defaultSettingsTemplate) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsParseSettings!\n");
 			return SDL_FALSE;
@@ -90,172 +194,16 @@ SDL_bool PT_GraphicsParseSettings( ) {
 	PT_GraphicsSetRenderClearColor(color);
 	
 	PT_ParseDestroy(parse);
+	if ( !PT_GraphicsUpdateSettings() )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GraphicsParseSettings: Cannot update settings\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GraphicsParseSettings: FILE %s, LINE %d\n", __FILE__, __LINE__);		
+	}
 	
 	return SDL_TRUE;
 }//PT_GraphicsParseSettings
-
-void PT_GraphicsParseImages() {
-	/*
-		see the templates:
-		games/default-templates/img-folder/
-	*/
-	PT_Parse* parseFolders = PT_ParseCreate();
-	
-	if ( !PT_ParseOpenFile(parseFolders, "assets/img/folders.json", SDL_TRUE) )
-	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsParseImages!\n");
-		return;
-	}
-	
-	//Search for folders
-	json_object_entry entry = PT_ParseGetObjectEntry(parseFolders, "folders");
-	if ( entry.value )
-	{
-		if ( entry.value->parent )
-		{
-			if ( entry.value->type == json_array )
-			{
-				for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
-				{
-					//Search for lists.json
-					PT_Parse* parseList = PT_ParseCreate();
-					
-					PT_String* parseListPath = PT_StringCreate();
-					PT_StringInsert(&parseListPath, "/img-list.json", 0);
-					PT_StringInsert(&parseListPath, 
-						entry.value->u.array.values[i]->u.string.ptr, 0);
-					PT_StringInsert(&parseListPath, "assets/img/", 0);
-					
-					PT_ParseOpenFile(parseList, (char*)parseListPath->utf8_string, SDL_TRUE);
-					
-					const json_value* jsonValue = PT_ParseGetJsonValuePointer(parseList);
-					if ( jsonValue )
-					{
-						for ( unsigned int j = 0; j < jsonValue->u.object.length; j++ )
-						{
-							//Loading the images with the name and path from list.json
-							PT_String* imagePath = PT_StringCreate();
-							
-							PT_StringInsert(&imagePath, 
-								jsonValue->u.object.values[j].value->u.string.ptr, 0);
-							PT_StringInsert(&imagePath, "/", 0);
-							PT_StringInsert(&imagePath, 
-								entry.value->u.array.values[i]->u.string.ptr, 0);
-							PT_StringInsert(&imagePath, "assets/img/", 0);
-							
-							PT_GraphicsLoadTexture((char*)imagePath->utf8_string, 
-								jsonValue->u.object.values[j].name);
-							
-							PT_StringDestroy(imagePath);
-							imagePath = NULL;
-						}
-					}
-					
-					PT_ParseDestroy(parseList);
-					parseList = NULL;
-					
-					PT_StringDestroy(parseListPath);
-					parseListPath = NULL;
-				}
-			}
-		}
-	}
-	
-	
-	PT_ParseDestroy(parseFolders);
-}//PT_GraphicsParseImages
-
-
-SDL_bool PT_GraphicsCreate( ) {
-	if ( ptGraphics ) 
-	{
-		return SDL_TRUE;
-	}
-	
-	if ( !IMG_Init(IMG_INIT_PNG) )
-	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_GraphicsCreate: Cannot load support to PNG image, use the default .bmp\n");
-	}
-	if ( TTF_Init() < 0 )
-	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-		"PT: PT_GraphicsCreate: Cannot load the ttf engine.\n");
-	}
-	
-	ptGraphics = (PT_Graphics*)malloc(sizeof(struct pt_graphics));
-	if ( !ptGraphics )
-	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsCreate: Not enough memory\n");
-		return SDL_FALSE;
-	}
-	SDL_memset(ptGraphics, 0, sizeof(PT_Graphics));
-	
-	if ( !PT_GraphicsParseSettings() )
-	{
-		PT_GraphicsDestroy();
-		return SDL_FALSE;
-	}
-	
-	ptGraphics->window = SDL_CreateWindow("Proto-Test", 100, 100, ptGraphics->windowWidth,
-		ptGraphics->windowHeight, SDL_WINDOW_SHOWN);
-	if ( !ptGraphics->window )
-	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphcisCreate: %s\n", SDL_GetError());
-		PT_GraphicsDestroy();
-		return SDL_FALSE;
-	}
-	
-	SDL_Surface* logo = IMG_Load("logo.png");
-	if ( logo )
-	{
-		SDL_SetWindowIcon(ptGraphics->window, logo);
-		SDL_FreeSurface(logo);
-	}
-	
-	ptGraphics->renderer = SDL_CreateRenderer(ptGraphics->window, -1, SDL_RENDERER_SOFTWARE);
-	if ( !ptGraphics->renderer )
-	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphcisCreate: %s\n", SDL_GetError());
-		PT_GraphicsDestroy();
-		return SDL_FALSE;
-	}
-	if ( SDL_SetRenderDrawBlendMode(ptGraphics->renderer, SDL_BLENDMODE_BLEND) )
-	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphcisCreate: %s\n", SDL_GetError());
-	}
-
-	
-	PT_GraphicsParseImages();
-	return SDL_TRUE;
-}//PT_GraphicsCreate
-
-void PT_GraphicsDestroy() {
-	if ( !ptGraphics )
-	{
-		return;
-	}
-	
-	PT_TextureListDestroy(ptGraphics->textureList);
-	PT_TextureListDestroy(ptGraphics->fontTextureList);
-	PT_FontListDestroy(ptGraphics->fontList);
-
-	if ( ptGraphics->renderer )
-	{
-		SDL_DestroyRenderer(ptGraphics->renderer);
-	}
-	if ( ptGraphics->window )
-	{
-		SDL_DestroyWindow(ptGraphics->window);
-	}
-
-	free(ptGraphics);
-	
-	ptGraphics = NULL;
-	
-	IMG_Quit();
-	TTF_Quit();
-}//PT_GraphicsDestroy
 
 int PT_GraphicsShowSimpleMessageBox( Uint32 flags, const char *utf8_title, const char *utf8_message ) {
 	int returnStatus = 0;
@@ -338,7 +286,178 @@ TTF_Font* PT_GraphicsLoadFont( const char* utf8_filePath, int fontSize, SDL_bool
 	return font;
 }//PT_GraphicsLoadFont
 
+SDL_bool PT_GraphicsLoadImages() {
+
+	if ( !PT_ParseLegalDirectory("assets/img/", SDL_TRUE) )
+	{
+		return SDL_TRUE;
+	}
+
+	PT_Parse* parseFolders = PT_ParseCreate();
+	if ( !parseFolders )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
+		return SDL_FALSE;
+	}
+	if ( !PT_ParseOpenFile(parseFolders, "assets/img/folders.json", SDL_TRUE) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Proto-Test",
+		"* Cannot find folders.json in assets/img/ directory\n\
+		* A default folders.json will be created in that directory");
+		
+		#include <PT_Graphics_default_imgFolders.c>
+		if ( !PT_ParseLoadTemplate(parseFolders, defaultImgFoldersTemplate) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
+			PT_ParseDestroy(parseFolders);
+			return SDL_FALSE;
+		}
+		
+		if ( !PT_ParseSaveFile(parseFolders, "assets/img/folders.json", SDL_TRUE) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
+		}
+	}
+	
+	//Search for folders
+	json_object_entry entry = PT_ParseGetObjectEntry(parseFolders, "folders");
+	if ( entry.value )
+	{
+		if ( entry.value->parent )
+		{
+			if ( entry.value->type == json_array )
+			{
+				for ( unsigned int i = 0; i < entry.value->u.array.length; i++ )
+				{
+					//Search for the folders
+					PT_String* imgFolderPath = PT_StringCreate();
+					if ( !imgFolderPath )
+					{
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
+						continue;
+					}
+					if ( !PT_StringInsert(
+						&imgFolderPath, 
+						entry.value->u.array.values[i]->u.string.ptr,
+						0) )
+					{	
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
+						PT_StringDestroy(imgFolderPath);
+						continue;
+					}
+					if ( !PT_StringInsert(
+						&imgFolderPath, 
+						"assets/img/",
+						0) )
+					{	
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
+						PT_StringDestroy(imgFolderPath);
+						continue;
+					}
+					
+					if ( !PT_ParseLegalDirectory((char*)imgFolderPath->utf8_string, SDL_TRUE) )
+					{
+						PT_StringDestroy(imgFolderPath);
+						continue;
+					}
+					
+					PT_StringDestroy(imgFolderPath);
+				
+					//Search for lists.json
+					PT_Parse* parseList = PT_ParseCreate();
+					if ( !parseList )
+					{
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
+						continue;
+					}
+					
+					PT_String* parseListPath = PT_StringCreate();
+					PT_StringInsert(&parseListPath, "/img-list.json", 0);
+					PT_StringInsert(&parseListPath, 
+						entry.value->u.array.values[i]->u.string.ptr, 0);
+					PT_StringInsert(&parseListPath, "assets/img/", 0);
+					
+					if ( !PT_ParseOpenFile(parseList, (char*)parseListPath->utf8_string, SDL_TRUE) )
+					{
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
+						PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Proto-Test",
+						"* Cannot find img-list.json in a image directory\n* A default img-list.json will be created on directory");
+						
+						#include <PT_Graphics_default_imgList.c>
+						if ( !PT_ParseLoadTemplate(parseList, defaultImgListTemplate) )
+						{
+							SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
+							PT_StringDestroy(parseListPath);
+							PT_ParseDestroy(parseList);
+							continue;
+						}
+						
+						if ( !PT_ParseSaveFile(parseList, (char*)parseListPath->utf8_string, SDL_TRUE) )
+						{
+							SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
+						}
+					}
+					
+					const json_value* jsonValue = PT_ParseGetJsonValuePointer(parseList);
+					if ( jsonValue )
+					{
+						for ( unsigned int j = 0; j < jsonValue->u.object.length; j++ )
+						{
+							if ( PT_StringMatchFast(jsonValue->u.object.values[j].name, "none") )
+							{
+								//ignore images named "none".
+								continue;
+							}
+							
+							//Loading the images with the name and path from list.json
+							PT_String* imagePath = PT_StringCreate();
+							
+							PT_StringInsert(&imagePath, 
+								jsonValue->u.object.values[j].value->u.string.ptr, 0);
+							PT_StringInsert(&imagePath, "/", 0);
+							PT_StringInsert(&imagePath, 
+								entry.value->u.array.values[i]->u.string.ptr, 0);
+							PT_StringInsert(&imagePath, "assets/img/", 0);
+							
+							PT_GraphicsLoadTexture((char*)imagePath->utf8_string, 
+								jsonValue->u.object.values[j].name);
+							
+							PT_StringDestroy(imagePath);
+							imagePath = NULL;
+						}
+					}
+					
+					PT_ParseDestroy(parseList);
+					parseList = NULL;
+					
+					PT_StringDestroy(parseListPath);
+					parseListPath = NULL;
+				}
+			}
+		}
+	}
+	
+	
+	PT_ParseDestroy(parseFolders);
+	return SDL_TRUE;
+}//PT_GraphicsLoadImages
+
+void PT_GraphicsUnloadImages( ) {
+	if ( !ptGraphics )
+	{
+		return;
+	}
+	
+	PT_TextureListDestroy(ptGraphics->textureList);
+}//PT_GraphicsUnloadImages
+
 SDL_bool PT_GraphicsLoadFonts( ) {
+	if ( !PT_ParseLegalDirectory("assets/font/", SDL_TRUE) )
+	{
+		return SDL_TRUE;
+	}
+	
 	PT_Parse* parse = PT_ParseCreate();
 	if ( !parse )
 	{
@@ -347,9 +466,23 @@ SDL_bool PT_GraphicsLoadFonts( ) {
 	}
 	if ( !PT_ParseOpenFile(parse, "assets/font/font-list.json", SDL_TRUE) )
 	{
-		PT_ParseDestroy(parse);
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
-		return SDL_FALSE;
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Proto-Test",
+		"* Cannot find font-list.json in assets/font/ directory\n\
+		* A default font-list.json will be created in that directory");
+		
+		#include <PT_Graphics_default_fontList.c>
+		if ( !PT_ParseLoadTemplate(parse, defaultFontListTemplate) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
+			PT_ParseDestroy(parse);
+			return SDL_FALSE;
+		}
+		
+		if ( !PT_ParseSaveFile(parse, "assets/font/font-list.json", SDL_TRUE) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
+		}	
 	}
 	
 	json_object_entry entry = PT_ParseGetObjectEntry(parse, "font-list");
@@ -441,6 +574,16 @@ SDL_bool PT_GraphicsLoadFonts( ) {
 	
 	return SDL_TRUE;
 }//PT_GraphicsLoadFonts
+
+void PT_GraphicsUnloadFonts( ) {
+	if ( !ptGraphics )
+	{
+		return;
+	}
+	
+	PT_TextureListDestroy(ptGraphics->fontTextureList);
+	PT_FontListDestroy(ptGraphics->fontList);
+}//PT_GraphicsUnloadFonts
 
 void PT_GraphicsSetViewport( const SDL_Rect* rect ) {
 	SDL_RenderSetViewport(ptGraphics->renderer, rect);

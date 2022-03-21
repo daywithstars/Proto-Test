@@ -33,12 +33,26 @@ PT_CallbackList* PT_CallbackListCreate( const char* utf8_index ) {
 	SDL_memset(_this, 0, sizeof(PT_CallbackList));
 
 	_this->index = PT_StringCreate();
+	if ( !_this->index )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_CallbackListCreate: Cannot create index\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_CallbackListCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+
+		free(_this);
+		return NULL;
+	}
 	if ( !PT_StringInsert(&(_this->index), utf8_index, 0) )
 	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
-		"PT: PT_CallbackListCreate!\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_CallbackListCreate: Cannot insert index string\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
 		"PT: PT_CallbackListCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
+
+		PT_StringDestroy(_this->index);
+		free(_this);
+		return NULL;
 	}
 	_this->next = NULL;
 	

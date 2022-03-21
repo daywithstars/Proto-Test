@@ -19,11 +19,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 /** \var gRootDir
-* \brief The variable that represents the path to the game folder.
+* \brief The variable that represents the path to the current game folder.
 *
 * This variable is feed internally into PT_Application.  
 */
 PT_String* gRootDir = NULL;
+
+/** \var gDefaultRootDir
+* \brief The variable that represents the path to the games folder.
+*
+* This variable is feed internally into PT_Application.  
+*/
+PT_String* gDefaultRootDir = NULL;
+
+
 
 
 

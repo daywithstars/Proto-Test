@@ -1,6 +1,4 @@
 {
-	"sprite-ball": "sprite-ball.bmp",
-	"background-proto-test": "background-proto-test.bmp",
-	"misc-78-37": "misc-78-37.png",
-	"button": "button.png",
+	"none": "this-will-be-ignored.png",
+	"none": "this-also-will-be-ignored.bmp",
 }

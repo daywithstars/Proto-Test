@@ -1,4 +1,6 @@
 {
+	"root-folder": "../games/",
+	
 	"games": [
 		{ 
 			"name": "<nameOfYourGame>", 

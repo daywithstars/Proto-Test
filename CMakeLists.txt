@@ -28,6 +28,7 @@ file(GLOB project_src
 include_directories(
 	"/usr/include/SDL2" # Here you put the path to SDL2/image/mixer include files.  
 	"source/include/behavior"
+	"source/include/default"
 	"source/include/font"
 	"source/include/input"
 	"source/include/level"

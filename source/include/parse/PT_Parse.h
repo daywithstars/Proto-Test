@@ -49,6 +49,7 @@ PT_Parse* PT_ParseCreate( );
 */
 void PT_ParseDestroy( PT_Parse* _this );  
 
+SDL_bool PT_ParseLegalDirectory( const char* path, SDL_bool defaultPath );
 
 /**
 * \brief Use this function to open a json file starting at gRootDir

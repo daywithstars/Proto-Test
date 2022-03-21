@@ -13,6 +13,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
+#include <sys/stat.h>
 
 #include <SDL_rwops.h>
 #include <SDL_log.h>
@@ -61,6 +62,54 @@ void PT_ParseDestroy( PT_Parse* _this ) {
 	PT_StringDestroy(_this->jsonString);
 	free(_this);
 }//PT_ParseDestroy
+
+SDL_bool PT_ParseLegalDirectory( const char* path, SDL_bool defaultPath ) {
+	struct stat sb = {0};
+	
+	//Successfully opened the file
+	if ( !defaultPath )
+	{
+		if ( stat(path, &sb) < 0 )
+		{
+			return SDL_FALSE;
+		}
+	}
+	else {
+		PT_String* strPath = PT_StringCreate();
+		if ( !strPath )
+		{
+			return SDL_FALSE;
+		}
+		if ( !PT_StringInsert(&strPath, path, 0) )
+		{
+			PT_StringDestroy(strPath);
+			return SDL_FALSE;
+		}
+		if ( !PT_StringInsert(&strPath, (char*)gRootDir->utf8_string, 0) )
+		{
+			PT_StringDestroy(strPath);
+			return SDL_FALSE;
+		}
+
+		if ( stat((char*)strPath->utf8_string, &sb) < 0 )
+		{
+			return SDL_FALSE;
+		}
+	}
+	//Check if it's not a directory
+	if ( (sb.st_mode & S_IFMT) != S_IFDIR )
+	{
+		return SDL_FALSE;
+	}
+	
+	SDL_bool stMode = (sb.st_mode & S_IRUSR) && ( sb.st_mode & S_IWUSR ) ? SDL_TRUE : SDL_FALSE;
+	if ( !stMode )
+	{
+		return SDL_FALSE;
+	}
+	
+	return SDL_TRUE;
+}//PT_ParseLegalDirectory
 
 SDL_bool PT_ParseOpenFile( PT_Parse* _this, const char* utf8_filePath, SDL_bool defaultPath ) {
 	if ( !_this )
