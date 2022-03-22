@@ -24,7 +24,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Graphics.h>
 #include <PT_ScreenManager.h>
 #include <PT_LevelManager.h>
-#include <PT_SoundManager.h>
 #include <PT_CollisionManager.h>
 #include <PT_Parse.h>
 #include <PT_Camera.h>
@@ -180,12 +179,10 @@ void PT_ApplicationUpdate( Sint32 elapsedTime ) {
 void PT_ApplicationDraw( ) {
 	if ( ptApplication->currentGame.loaded )
 	{
-		
 		PT_GraphicsRenderClear();
 		PT_ScreenManagerDraw();
 		PT_CameraDraw();
 		PT_GraphicsRenderPresent();
-		
 	}
 }//PT_ApplicationDraw
 
@@ -287,12 +284,6 @@ SDL_bool PT_ApplicationCreate( ) {
 		return SDL_FALSE;
 	}
 	
-	PT_SoundManagerCreate();
-	
-	PT_SoundManagerLoadSamples();
-	
-	PT_SoundManagerLoadMusics();
-	
 	ptApplication->running = SDL_TRUE;
 	ptApplication->srandCallCount = 0;
 	
@@ -304,8 +295,6 @@ void PT_ApplicationDestroy( ) {
 	if ( ptApplication )
 	{
 		PT_GameUnload(&ptApplication->currentGame);
-		
-		PT_SoundManagerDestroy();
 	
 		PT_GraphicsDestroy();
 		

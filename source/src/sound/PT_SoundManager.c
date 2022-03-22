@@ -168,9 +168,7 @@ SDL_bool PT_SoundManagerLoadMusics( ) {
 	}
 	if ( !ptSoundManager->musicListJsonValue )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_SoundManagerLoadMusicFile: Invalid musicListJsonValue!\n");
-		return SDL_FALSE;	
+		return SDL_TRUE;	
 	}
 	
 	json_object_entry entry = 
@@ -262,9 +260,7 @@ SDL_bool PT_SoundManagerLoadSamples( ) {
 	}
 	if ( !ptSoundManager->sampleListJsonValue )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_SoundManagerLoadMusicFile: Invalid sampleListJsonValue!\n");
-		return SDL_FALSE;	
+		return SDL_TRUE;	
 	}
 	
 	json_object_entry entry = 
@@ -450,23 +446,81 @@ SDL_bool PT_SoundManagerParse( ) {
 		return SDL_FALSE;
 	}
 	
-	
+	if ( !PT_ParseLegalDirectory("assets/sound/", SDL_TRUE) )
+	{
+		return SDL_TRUE;
+	}
+	if ( !PT_ParseLegalDirectory("assets/sound/sample", SDL_TRUE) )
+	{
+		return SDL_TRUE;
+	}
 	
 	ptSoundManager->sampleListJsonValue = 
 	PT_ParseGetJsonValueFromFile("assets/sound/sample/sample-list.json", SDL_TRUE);
 	if ( !ptSoundManager->sampleListJsonValue )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SoundManagerParse!\n");
-		return SDL_FALSE;
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Proto-Test",
+		"* Cannot find sample-list.json in assets/sound/sample directory\n\
+		A default sample-list.json will be created in the current game folder");
+		
+		PT_Parse* parse = PT_ParseCreate();
+		if ( !parse )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SoundManagerParse!\n");
+			return SDL_FALSE;
+		} 
+		
+		#include <PT_SoundManager_default_sampleList.c>
+		if ( !PT_ParseLoadTemplate(parse, defaultSampleListTemplate) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SoundManagerParse!\n");
+			PT_ParseDestroy(parse);
+			return SDL_FALSE;
+		}
+		
+		if ( !PT_ParseSaveFile(parse, "assets/sound/sample/sample-list.json", SDL_TRUE) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SoundManagerParse!\n");
+		}
+		PT_ParseDestroy(parse);
 	}
 
+
+	if ( !PT_ParseLegalDirectory("assets/sound/music", SDL_TRUE) )
+	{
+		return SDL_TRUE;
+	}
 
 	ptSoundManager->musicListJsonValue = 
 	PT_ParseGetJsonValueFromFile("assets/sound/music/music-list.json", SDL_TRUE);
 	if ( !ptSoundManager->musicListJsonValue )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SoundManagerParse!\n");
-		return SDL_FALSE;
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Proto-Test",
+		"* Cannot find music-list.json in assets/sound/music directory\n\
+		A default music-list.json will be created in the current game folder");
+		
+		PT_Parse* parse = PT_ParseCreate();
+		if ( !parse )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SoundManagerParse!\n");
+			return SDL_FALSE;
+		} 
+		
+		#include <PT_SoundManager_default_musicList.c>
+		if ( !PT_ParseLoadTemplate(parse, defaultMusicListTemplate) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SoundManagerParse!\n");
+			PT_ParseDestroy(parse);
+			return SDL_FALSE;
+		}
+		
+		if ( !PT_ParseSaveFile(parse, "assets/sound/music/music-list.json", SDL_TRUE) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SoundManagerParse!\n");
+		}
+		PT_ParseDestroy(parse);
 	}
 
 	return SDL_TRUE;

@@ -44,6 +44,54 @@ static PT_Graphics* ptGraphics = NULL;
 
 //===================================== PRIVATE Functions
 
+SDL_bool PT_GraphicsParseDefaults( ) {
+	if ( !ptGraphics )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GraphicsParseDefaults: Invalid Graphics\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GraphicsParseDefaults: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		return SDL_FALSE;
+	}
+	
+	PT_Parse* parse = PT_ParseCreate();
+	if ( !parse )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GraphicsParseDefaults!\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GraphicsParseDefaults: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		return SDL_FALSE;
+	}
+	
+	if ( !PT_ParseOpenFile(parse, "global-settings.json", SDL_FALSE) )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GraphicsParseDefaults!\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GraphicsParseDefaults: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_ParseDestroy(parse);
+		return SDL_FALSE;
+	}
+
+	json_object_entry entry = PT_ParseGetObjectEntry(parse, "default-graphics window-width");
+	if ( entry.value )
+	{
+		ptGraphics->windowWidth = entry.value->u.integer;
+	}
+	entry = PT_ParseGetObjectEntry(parse, "default-graphics window-height");
+	if ( entry.value )
+	{
+		ptGraphics->windowHeight = entry.value->u.integer;
+	}
+	
+	PT_ParseDestroy(parse);
+	return SDL_TRUE;
+}//PT_GraphicsLoadDefaults
+
 SDL_bool PT_GraphicsUpdateSettings( ) {
 	if ( !ptGraphics )
 	{
@@ -87,8 +135,11 @@ SDL_bool PT_GraphicsCreate( ) {
 	}
 	SDL_memset(ptGraphics, 0, sizeof(struct pt_graphics));
 	
-	ptGraphics->windowWidth = PT_GRAPHICS_DEFAULT_WINDOW_WIDTH;
-	ptGraphics->windowHeight = PT_GRAPHICS_DEFAULT_WINDOW_HEIGHT;
+	if ( !PT_GraphicsParseDefaults() )
+	{
+		ptGraphics->windowWidth = PT_GRAPHICS_DEFAULT_WINDOW_WIDTH;
+		ptGraphics->windowHeight = PT_GRAPHICS_DEFAULT_WINDOW_HEIGHT;
+	}
 	
 	ptGraphics->window = SDL_CreateWindow(
 		"Proto-Test", 

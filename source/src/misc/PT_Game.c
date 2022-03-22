@@ -22,6 +22,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_LevelManager.h>
 #include <PT_ScreenManager.h>
 #include <PT_CollisionManager.h>
+#include <PT_SoundManager.h>
 #include <PT_Camera.h>
 
 
@@ -140,6 +141,31 @@ SDL_bool PT_GameLoad( PT_Game* _this ) {
 		return SDL_FALSE;
 	}
 	/*
+		Sound
+	*/
+	PT_SoundManagerCreate();
+	
+	if ( !PT_SoundManagerLoadSamples() )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GameLoad: Cannot load sound/sample(s)\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GameLoad: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Proto-Test",
+		"Failed on loading sample(s)");
+	}
+	if ( !PT_SoundManagerLoadMusics() )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GameLoad: Cannot load sound/music(s)\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GameLoad: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Proto-Test",
+		"Failed on loading music(s)");
+	}
+	/*
 		Screen
 	*/
 	if ( !PT_ScreenManagerCreate() )
@@ -201,6 +227,8 @@ void PT_GameUnload( PT_Game *_this ) {
 	
 	PT_ScreenManagerDestroy();
 	
+	PT_SoundManagerDestroy();
+	
 	_this->loaded = SDL_FALSE;
 }//PT_GameUnload
 
@@ -212,14 +240,6 @@ void PT_GameDestroy( PT_Game* _this ) {
 
 	PT_StringDestroy(_this->folder);
 }//PT_GameDestroy
-
-void PT_GameUpdate( Sint32 elapsedTime ) {
-	
-}//PT_GameUpdate
-
-void PT_GameDraw( ) {
-
-}//PT_GameDraw
 
 
 
