@@ -444,16 +444,13 @@ int PT_SoundManagerGetMusicTagGroup( ) {
 //===================================== PRIVATE PT_SoundManager Functions
 
 SDL_bool PT_SoundManagerParse( ) {
-	/*
-		see the templates:
-		games/default-templates/sound-folder/
-	*/
-
 	if ( !ptSoundManager )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SoundManagerParse: Invalid PT_SoundManager\n");
 		return SDL_FALSE;
 	}
+	
+	
 	
 	ptSoundManager->sampleListJsonValue = 
 	PT_ParseGetJsonValueFromFile("assets/sound/sample/sample-list.json", SDL_TRUE);

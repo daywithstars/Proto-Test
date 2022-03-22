@@ -19,6 +19,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_LevelList.h>
 #include <PT_Parse.h>
 #include <PT_JsonList.h>
+#include <PT_Graphics.h>
 
 
 typedef struct {
@@ -69,7 +70,14 @@ SDL_bool PT_LevelManagerSetup() {
 		return SDL_FALSE;
 	}
 	
+	if ( !PT_ParseLegalDirectory("assets/level/", SDL_TRUE) )
+	{
+		return SDL_TRUE;
+	}
+	
+	//To refresh the level list.
 	PT_JsonListDestroy(ptLevelManager->jsonList);
+	
 	
 	PT_Parse* parse = PT_ParseCreate();
 	if ( !parse )
@@ -80,15 +88,38 @@ SDL_bool PT_LevelManagerSetup() {
 	
 	if ( !PT_ParseOpenFile(parse, "assets/level/level-list.json", SDL_TRUE) )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup!\n");
-		PT_ParseDestroy(parse);
-		return SDL_FALSE;
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_LevelManagerSetup: Cannot find list-list.json, creating a default level-list.json\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_LevelManagerSetup: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Proto-Test",
+		"* Cannot find level-list.json in assets/level/ directory\n\
+		* A default level-list.json will be created in that directory");
+		
+		#include <PT_LevelManager_default_levelList.c>
+		if ( !PT_ParseLoadTemplate(parse, defaultLevelListTemplate) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup!\n");
+			PT_ParseDestroy(parse);
+			return SDL_FALSE;
+		}
+		
+		if ( !PT_ParseSaveFile(parse, "assets/level/level-list.json", SDL_TRUE) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup!\n");
+		}
 	}
 	
 	const json_value* jsonValue = PT_ParseGetJsonValuePointer(parse);
 	
 	for ( unsigned int i = 0; i < jsonValue->u.object.length; i++ )
 	{
+		if ( PT_StringMatchFast(jsonValue->u.object.values[i].name, "none") )
+		{
+			continue;
+		}
+		
 		json_char* levelName = jsonValue->u.object.values[i].name;
 		json_char* levelFileName = jsonValue->u.object.values[i].value->u.string.ptr;
 		

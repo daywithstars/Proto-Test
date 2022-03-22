@@ -19,6 +19,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_StringList.h>
 #include <PT_JsonList.h>
 #include <PT_Parse.h>
+#include <PT_Graphics.h>
 
 
 
@@ -105,28 +106,57 @@ void PT_ScreenManagerDestroy( ) {
 }//PT_ScreenManagerDestroy
 
 void PT_ScreenManagerSetup( ) {
-	/*
-		see the template: games/default-templates/screen-folder/screen-list.json
-	*/
 	if ( !ptScreenManager )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenManagerSetup: Invalid ScreenManager!\n");
+		return;
+	}
+	
+	if ( !PT_ParseLegalDirectory("assets/screen/", SDL_TRUE) )
+	{
 		return;
 	}
 
 	PT_JsonListDestroy(ptScreenManager->jsonList);
 	
 	PT_Parse* parseList = PT_ParseCreate();
+	if ( !parseList )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenManagerSetup!\n");
+		return;
+	}
 	PT_String* screenListPath = PT_StringCreate();
+	if ( !screenListPath )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenManagerSetup!\n");
+		PT_ParseDestroy(parseList);
+		return;
+	}
 	
 	if ( !PT_StringInsert(&screenListPath, "assets/screen/screen-list.json", 0) )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenManagerSetup!\n");
 	}
-	
 	if ( !PT_ParseOpenFile(parseList, (json_char*)screenListPath->utf8_string, SDL_TRUE) )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenManagerSetup!\n");
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Proto-Test",
+		"* Cannot find screen-list.json in folder assets/screen/\n\
+		A default screen-list.json will be created.");
+		
+		
+		#include <PT_ScreenManager_default_screenList.c>
+		if ( !PT_ParseLoadTemplate(parseList, defaultScreenListTemplate) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenManagerSetup!\n");
+			PT_ParseDestroy(parseList);
+			return;
+		}
+		
+		if ( !PT_ParseSaveFile(parseList, "assets/screen/screen-list.json", SDL_TRUE) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenManagerSetup!\n");
+		}
 	}
 	
 	json_object_entry entry = PT_ParseGetObjectEntry(parseList, "screens");

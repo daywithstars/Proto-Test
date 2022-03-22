@@ -276,44 +276,6 @@ SDL_bool PT_ApplicationCreate( ) {
 		return SDL_FALSE;
 	}
 	
-	if ( !PT_ScreenManagerCreate() )
-	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_ApplicationCreate: Cannot create PT_ScreenManager\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-		
-		PT_ApplicationDestroy();
-		return SDL_FALSE;	
-	}
-	
-	if ( !PT_CollisionManagerCreate() )
-	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
-		"PT: PT_ApplicationCreate: Cannot create PT_CollisionManager\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
-		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-		
-		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Application",
-		"Collision detection system couldn't be initialized.\n\
-		Check the console output");
-	}
-	
-	if ( !PT_InputManagerCreate() )
-	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_ApplicationCreate: Cannot create PT_InputManager\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_ApplicationCreate: FILE %s, LINE %d\n", __FILE__, __LINE__);
-	
-		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Application",
-		"Input Manager system couldn't be initialized.\n\
-		Check the console output");
-	
-		PT_ApplicationDestroy();
-		return SDL_FALSE;
-	}
-	
 	if ( !PT_ApplicationLoadGame("Shooter") )
 	{
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
@@ -324,18 +286,6 @@ SDL_bool PT_ApplicationCreate( ) {
 		PT_ApplicationDestroy();
 		return SDL_FALSE;
 	}
-	
-	if ( PT_LevelManagerCreate() )
-	{
-		if ( !PT_LevelManagerSetup() )
-		{	
-			PT_LevelManagerDestroy();
-		}
-	}
-
-	PT_CameraCreate();
-	
-	PT_ScreenManagerSetup();
 	
 	PT_SoundManagerCreate();
 	
@@ -355,15 +305,9 @@ void PT_ApplicationDestroy( ) {
 	{
 		PT_GameUnload(&ptApplication->currentGame);
 		
-		PT_CollisionManagerDestroy();
-		PT_LevelManagerDestroy();
-		PT_ScreenManagerDestroy();
 		PT_SoundManagerDestroy();
 	
-		
 		PT_GraphicsDestroy();
-		PT_InputManagerDestroy();
-		PT_CameraDestroy();
 		
 		PT_GameListDestroy(ptApplication->gameList);
 		ptApplication->gameList = NULL;

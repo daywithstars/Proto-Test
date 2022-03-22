@@ -20,6 +20,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Mouse.h>
 #include <PT_InputHandlerList.h>
 #include <PT_Parse.h>
+#include <PT_Graphics.h>
 
 
 typedef struct {
@@ -160,15 +161,42 @@ SDL_Rect PT_InputManagerMouseGetRect( ) {
 //===================================== PRIVATE Functions
 
 void PT_InputManagerParse( ) {
-	/*
-		see the template: games/default-templates/input-folder/input-list.json
-	*/
+	
+	//Search for the input folder
+	if ( !PT_ParseLegalDirectory("assets/input/", SDL_TRUE) )
+	{
+		return;
+	}
 	
 	PT_Parse* parse = PT_ParseCreate();
-	
-	if ( !PT_ParseOpenFile(parse, "assets/input/input-list.json", SDL_TRUE) )
+	if ( !parse )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputManagerParse!\n");
+		return;
+	}
+	if ( !PT_ParseOpenFile(parse, "assets/input/input-list.json", SDL_TRUE) )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_InputManagerParse!\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_InputManagerParse: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Proto-Test",
+		"Cannot find input-list.json in input folder, a default input-list.json will be created\n");
+		
+		#include <PT_InputManager_default_inputList.c>
+		if ( !PT_ParseLoadTemplate(parse, defaultInputListTemplate) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputManagerParse!\n");
+			PT_ParseDestroy(parse);
+			return;
+		}
+		
+		if ( !PT_ParseSaveFile(parse, "assets/input/input-list.json", SDL_TRUE) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputManagerParse!\n");
+		}	
+		
 		PT_ParseDestroy(parse);
 		return;
 	}
@@ -256,10 +284,12 @@ void PT_InputManagerParse( ) {
 	
 	// game/settings.json
 	parse = PT_ParseCreate();
-	
+	if ( !parse )
+	{
+		return;
+	}
 	if ( !PT_ParseOpenFile(parse, "settings.json", SDL_TRUE) )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputManagerParse!\n");
 		PT_ParseDestroy(parse);
 		return;
 	}

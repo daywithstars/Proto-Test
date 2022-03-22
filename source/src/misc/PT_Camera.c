@@ -37,6 +37,8 @@ typedef struct pt_camera {
 static PT_Camera* ptCamera = NULL;
 
 
+extern PT_String* gRootDir;
+
 //===================================== PRIVATE Functions
 
 SDL_bool PT_CameraParse( );
@@ -195,6 +197,11 @@ void PT_CameraDraw( ) {
 //===================================== PRIVATE Functions
 
 SDL_bool PT_CameraParse( ) {
+	if ( !PT_ParseLegalDirectory((char*)gRootDir->utf8_string, SDL_FALSE) )
+	{
+		return SDL_TRUE;
+	}
+
 	PT_Parse* parse = PT_ParseCreate();
 	if ( !parse )
 	{
@@ -208,12 +215,27 @@ SDL_bool PT_CameraParse( ) {
 	if ( !PT_ParseOpenFile(parse, "settings.json", SDL_TRUE) )
 	{
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
-		"PT_CameraParse: Cannot open file to parse\n");
+		"PT_CameraParse: Cannot open settings.json from the game folder\n");
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_ERROR,
 		"PT_CameraParse: FILE %s, LINE %d\n", __FILE__, __LINE__);
 		
-		PT_ParseDestroy(parse);
-		return SDL_FALSE;
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Proto-Test",
+		"* Make sure your game folder is the same as the global-settings.json\n\
+		A default settings.json will be created in the current game folder");
+		
+		
+		#include <PT_Graphics_default_settings.c>
+		if ( !PT_ParseLoadTemplate(parse, defaultSettingsTemplate) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CameraParse!\n");
+			PT_ParseDestroy(parse);
+			return SDL_FALSE;
+		}
+		
+		if ( !PT_ParseSaveFile(parse, "settings.json", SDL_TRUE) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CameraParse!\n");
+		}
 	}
 	
 	json_object_entry entry = PT_ParseGetObjectEntry(parse, "camera width");

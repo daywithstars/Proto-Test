@@ -18,6 +18,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <PT_Game.h>
 #include <PT_Graphics.h>
+#include <PT_InputManager.h>
+#include <PT_LevelManager.h>
+#include <PT_ScreenManager.h>
+#include <PT_CollisionManager.h>
+#include <PT_Camera.h>
 
 
 PT_Game PT_GameCreate( const char* utf8_gameFolder ) {
@@ -90,6 +95,82 @@ SDL_bool PT_GameLoad( PT_Game* _this ) {
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
 		"PT: PT_GameLoad: FILE %s, LINE %d\n", __FILE__, __LINE__);
 	}
+	/*
+		Input
+	*/
+	if ( !PT_InputManagerCreate() )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_GameLoad: Cannot create PT_InputManager\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_GameLoad: FILE %s, LINE %d\n", __FILE__, __LINE__);
+	
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Proto-Test",
+		"Input Manager system couldn't be initialized.\n Check the console output");
+	
+		return SDL_FALSE;
+	}
+	/*	
+		Collision System
+	*/
+	if ( !PT_CollisionManagerCreate() )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GameLoad: Cannot create PT_CollisionManager\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GameLoad: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Proto-Test",
+		"Collision detection system couldn't be initialized.\n\
+		Check the console output");
+	}
+	/*
+		Camera
+	*/
+	if ( !PT_CameraCreate() )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GameLoad: Cannot create the camera\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GameLoad: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Proto-Test",
+		"Camera couldn't be initialized.\n Check the console output");
+		
+		return SDL_FALSE;
+	}
+	/*
+		Screen
+	*/
+	if ( !PT_ScreenManagerCreate() )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GameLoad: Cannot create PT_ScreenManager\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GameLoad: FILE %s, LINE %d\n", __FILE__, __LINE__);
+	}
+	PT_ScreenManagerSetup();
+	/*
+		Level
+	*/
+	if ( !PT_LevelManagerCreate() )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GameLoad: Cannot create the level manager\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+		"PT: PT_GameLoad: FILE %s, LINE %d\n", __FILE__, __LINE__);
+	}
+	else {
+		if ( !PT_LevelManagerSetup() )
+		{	
+			SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+			"PT: PT_GameLoad: Cannot setup level manager\n");
+			SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
+			"PT: PT_GameLoad: FILE %s, LINE %d\n", __FILE__, __LINE__);
+			
+			PT_LevelManagerDestroy();
+		}
+	}
 	
 	
 	_this->loaded = SDL_TRUE;
@@ -109,6 +190,16 @@ void PT_GameUnload( PT_Game *_this ) {
 	
 	PT_GraphicsUnloadImages();
 	PT_GraphicsUnloadFonts();
+	
+	PT_InputManagerDestroy();
+	
+	PT_LevelManagerDestroy();
+	
+	PT_CollisionManagerDestroy();
+	
+	PT_CameraDestroy();
+	
+	PT_ScreenManagerDestroy();
 	
 	_this->loaded = SDL_FALSE;
 }//PT_GameUnload

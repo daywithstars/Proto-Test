@@ -167,6 +167,7 @@ SDL_bool PT_GraphicsParseSettings( ) {
 		if ( !PT_ParseLoadTemplate(parse, defaultSettingsTemplate) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsParseSettings!\n");
+			PT_ParseDestroy(parse);
 			return SDL_FALSE;
 		}
 		
