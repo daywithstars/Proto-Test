@@ -90,6 +90,7 @@ int main(int argc, char** argv) {
 				2 Byte = version minor
 				2 Byte = version patch
 			*/
+			
 			uint16_t vMajor = V_MAJOR;
 			uint16_t vMinor = V_MINOR;
 			uint16_t vPatch = V_PATCH;
@@ -132,10 +133,10 @@ int main(int argc, char** argv) {
 					break;
 				}
 			}
+			
+			
 			fclose(outputFile);
-			
 
-			
 			for ( int i = 0; i < gNumFilesDatas; i++ )
 			{
 				destroyFileData(&gFilesDatas[i]);
