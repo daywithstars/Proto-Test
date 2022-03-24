@@ -205,6 +205,11 @@ void PT_GraphicsDestroy() {
 SDL_bool PT_GraphicsParseSettings( ) {
 
 	PT_Parse* parse = PT_ParseCreate();
+	if ( !parse )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsParseSettings!\n");
+		return SDL_FALSE;
+	}
 	
 	if ( !PT_ParseOpenFile(parse, "settings.json", SDL_TRUE) )
 	{

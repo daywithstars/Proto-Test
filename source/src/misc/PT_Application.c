@@ -376,9 +376,8 @@ SDL_bool PT_ApplicationLoadGame( const char* utf8_gameName ) {
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
 		"PT: PT_ApplicationLoadGame: FILE %s, LINE %d\n", __FILE__, __LINE__);
 		
-		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Application",
-		"Cannot find game folder or the current user cannot write and read in the directory.\n\
-		Trying next game...");
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Proto-Test",
+		"Cannot find game folder or the current user cannot write and read in the directory.\n");
 		
 		return SDL_FALSE;
 	} 
