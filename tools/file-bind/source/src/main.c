@@ -83,6 +83,35 @@ int main(int argc, char** argv) {
 			}
 			free(outputFilePath);
 			
+			/*
+				The top head of output file.
+				
+				2 Byte = version major
+				2 Byte = version minor
+				2 Byte = version patch
+			*/
+			uint16_t vMajor = V_MAJOR;
+			uint16_t vMinor = V_MINOR;
+			uint16_t vPatch = V_PATCH;
+			if ( fwrite(&vMajor, sizeof(uint16_t), 1, outputFile) != 1 )
+			{
+				printf("Number of items does not match: FILE %s, LINE %d\n", 
+				__FILE__, __LINE__);
+				return -1;
+			}
+			if ( fwrite(&vMinor, sizeof(uint16_t), 1, outputFile) != 1 )
+			{
+				printf("Number of items does not match: FILE %s, LINE %d\n", 
+				__FILE__, __LINE__);
+				return -1;
+			}
+			if ( fwrite(&vPatch, sizeof(uint16_t), 1, outputFile) != 1 )
+			{
+				printf("Number of items does not match: FILE %s, LINE %d\n", 
+				__FILE__, __LINE__);
+				return -1;
+			}
+			
 			gFilesDatas = (FileData*)malloc(sizeof(FileData) * gNumFilesDatas);
 			if ( !gFilesDatas )
 			{
@@ -91,7 +120,7 @@ int main(int argc, char** argv) {
 			}
 			for ( int i = 3, j = 0; i < 3 + gNumFilesDatas; i++, j++ )
 			{
-				gFilesDatas[j] = createFileData(argv[i]);
+				gFilesDatas[j] = createFileData(argv[i], 1);
 				if ( !gFilesDatas[j].name || !gFilesDatas[j].data )
 				{
 					printf("Error on creating FileData\n");

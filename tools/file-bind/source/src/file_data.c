@@ -100,7 +100,7 @@ FileLabel getFileLabel( const char* filename ) {
 	return label;
 }//getFileLabel
 
-FileData createFileData( const char* filename ) {
+FileData createFileData( const char* filename, int defaultPath ) {
 	FileData fileData;
 	memset(&fileData, 0, sizeof(FileData));
 	
@@ -133,7 +133,11 @@ FileData createFileData( const char* filename ) {
 	
 	/* .name */
 	uint32_t filenameSize = strlen(filename) + 1;
-	uint32_t pathLength = filenameSize + strlen("../input/");
+	uint32_t pathLength = filenameSize;
+	if ( defaultPath )
+	{
+		pathLength += strlen("../input/");
+	}
 	
 	fileData.name = (char*)malloc(filenameSize);
 	if ( !fileData.name )
@@ -159,7 +163,10 @@ FileData createFileData( const char* filename ) {
 		return fileData;
 	}
 	path[0] = '\0';
-	strcat(path, "../input/");
+	if ( defaultPath )
+	{
+		strcat(path, "../input/");
+	}
 	strcat(path, filename);
 	
 	FILE* file = fopen(path, "rb");
@@ -233,6 +240,24 @@ FileData createFileData( const char* filename ) {
 	return fileData;
 }
 
+FileData loadFileData( FILE* file ) {
+	FileData fileData = {0};
+	
+	if ( !file )
+	{	
+		printf("Invalid file: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		return fileData;
+	}
+	
+	
+	
+	return fileData;
+}//loadFileData
+
+int saveFileData( FileData fileData, const char* path ) {
+	return 1;
+}//saveFileData
+
 void destroyFileData( FileData* fileData ) {
 	if ( !fileData )
 	{
@@ -249,7 +274,7 @@ void destroyFileData( FileData* fileData ) {
 	}
 }
 
-int8_t bindFileData( FileData* fileData, FILE* file ) {
+int bindFileData( FileData* fileData, FILE* file ) {
 	/*
 		File header
 		

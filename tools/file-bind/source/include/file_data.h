@@ -16,6 +16,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stdint.h>
 
 
+#define V_MAJOR 0
+#define V_MINOR 1
+#define V_PATCH 0
+
 typedef enum {
 	FILE_LABEL_UNKNOWN=0,
 	FILE_LABEL_TEXT,
@@ -33,10 +37,14 @@ typedef struct {
 }FileData;
 
 
-FileData createFileData( const char* filename );
+FileData createFileData( const char* filename, int defaultPath );
+
+FileData loadFileData( FILE* file );
+int saveFileData( FileData fileData, const char* path );
+
 void destroyFileData( FileData* fileData );
 
-int8_t bindFileData( FileData* fileData, FILE* file );
+int bindFileData( FileData* fileData, FILE* file );
 
 #endif /* _FILE_DATA_H_ */
 

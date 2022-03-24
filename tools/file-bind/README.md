@@ -3,7 +3,7 @@
 This is a simple tool that can be useful when comes to bind files for the Proto-Test project. 
 This tool bind files with the information about each file in a single file. 
 
-version: 1.0.0 [SemVer](https://semver.org/)
+version: 0.1.0 [SemVer](https://semver.org/)
 
 ## Usage
 
