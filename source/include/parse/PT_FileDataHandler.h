@@ -19,11 +19,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_String.h>
 
 
-#define PT_FILEDATA_VERSION_MAJOR 0
-#define PT_FILEDATA_VERSION_MINOR 1
-#define PT_FILEDATA_VERSION_PATCH 0 
-
-
 
 typedef enum {
 	PT_FILEDATA_LABEL_UNKNOWN=0,
@@ -35,6 +30,7 @@ typedef enum {
 
 typedef struct {
 	PT_FileDataLabel label;
+	
 	char* extension;
 	uint8_t* data;
 	uint32_t _size;
@@ -55,9 +51,11 @@ typedef struct pt_file_data_handler PT_FileDataHandler;
 PT_FileDataHandler* PT_FileDataHandler_Create( );
 void PT_FileDataHandler_Destroy( PT_FileDataHandler* _this );
 
-SDL_bool PT_FileDataHandler_LoadBlock( const char* path );
+SDL_bool PT_FileDataHandler_LoadBlock( PT_FileDataHandler* _this, const char* path );
 
-PT_FileDataList* PT_FileDataHandler_GetFilDataListByExtension( PT_FileDataHandler* _this, const char* ext );
+PT_FileDataList* PT_FileDataHandler_GetFileDataList( PT_FileDataHandler* _this );
+PT_FileDataList* PT_FileDataHandler_GetFileDataListByExtension( PT_FileDataHandler* _this, 
+	const char* ext );
 
 #endif /* _PT_FILEDATAHANDLER_H_ */
 

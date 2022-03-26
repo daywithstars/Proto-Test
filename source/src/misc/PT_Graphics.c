@@ -20,6 +20,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_TextureList.h>
 #include <PT_FontList.h>
 #include <PT_Parse.h>
+#include <PT_FileDataHandler.h>
 
 
 #define PT_GRAPHICS_DEFAULT_WINDOW_WIDTH 640
@@ -88,6 +89,36 @@ SDL_bool PT_GraphicsParseDefaults( ) {
 		ptGraphics->windowHeight = entry.value->u.integer;
 	}
 	
+	/* Load default assets */
+	PT_FileDataHandler* handler = PT_FileDataHandler_Create();
+	if ( !handler )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadDefaults: Not enough memory\n");
+		return SDL_FALSE;
+	}
+	if ( !PT_FileDataHandler_LoadBlock(handler, "default-assets.bin") )
+	{		
+		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Proto-Test: Graphics", 
+		"PT: PT_GraphicsLoadDefaults: Cannot load default-assets.bin\nCopy an default-assets into the executable folder and try again.");
+	}
+	else {
+		PT_FileDataList* pList = PT_FileDataHandler_GetFileDataList(handler);
+		while ( pList )
+		{
+			for ( unsigned int i = 0; i < pList->numValues; i++ )
+			{
+				/* Images */
+				if ( pList->values[i].label == PT_FILEDATA_LABEL_IMAGE )
+				{
+					printf("image\n");
+				}
+			}
+			pList = pList->next;
+		}
+	}
+
+
+	PT_FileDataHandler_Destroy(handler);	
 	PT_ParseDestroy(parse);
 	return SDL_TRUE;
 }//PT_GraphicsLoadDefaults
