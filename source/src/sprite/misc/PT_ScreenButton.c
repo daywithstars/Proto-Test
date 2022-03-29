@@ -51,7 +51,7 @@ struct pt_screen_button {
 	PT_Sprite* pSprite;
 };
 
-// Listen 
+
 
 //===================================== PRIVATE Functions
 

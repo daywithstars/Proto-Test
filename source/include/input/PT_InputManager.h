@@ -25,6 +25,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <PT_InputHandler.h>
 
+
+SDL_bool PT_InputManagerCreateBasic( );
+
 /**
 * \brief Create all the types that @PT_InputManager handle with. 
 *

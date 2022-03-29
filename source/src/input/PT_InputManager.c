@@ -39,7 +39,8 @@ void PT_InputManagerParse( );
 
 //===================================== PUBLIC Functions
 
-SDL_bool PT_InputManagerCreate( ) {
+SDL_bool PT_InputManagerCreateBasic( ) {
+
 	if ( ptInputManager )
 	{
 		return SDL_TRUE;
@@ -49,7 +50,7 @@ SDL_bool PT_InputManagerCreate( ) {
 	if ( !ptInputManager )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_InputManagerCreate: Not enough memory!\n");
+		"PT: PT_InputManagerCreateBasic: Not enough memory!\n");
 		return SDL_FALSE;
 	}
 	SDL_memset(ptInputManager, 0, sizeof(PT_InputManager));
@@ -58,7 +59,7 @@ SDL_bool PT_InputManagerCreate( ) {
 	if ( !ptInputManager->keyboard ) 
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_InputManagerCreate!\n");
+		"PT: PT_InputManagerCreateBasic!\n");
 		PT_InputManagerDestroy();
 		return SDL_FALSE;
 	}
@@ -67,11 +68,22 @@ SDL_bool PT_InputManagerCreate( ) {
 	if ( !ptInputManager->mouse )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_InputManagerCreate!\n");
+		"PT: PT_InputManagerCreateBasic!\n");
 		PT_InputManagerDestroy();
 		return SDL_FALSE;
 	}
 	
+	return SDL_TRUE;
+}//PT_InputManagerCreateBasic
+
+SDL_bool PT_InputManagerCreate( ) {
+	if ( !PT_InputManagerCreateBasic() )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+		"PT: PT_InputManagerCreate!\n");
+		
+		return SDL_FALSE;
+	}	
 	PT_InputManagerParse();
 	
 	return SDL_TRUE;
