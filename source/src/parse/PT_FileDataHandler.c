@@ -177,10 +177,10 @@ SDL_bool PT_FileDataHandler_LoadBlock( PT_FileDataHandler* _this, const char* pa
 		}
 		totalBytes += extensionLength;
 		
-		/* Segment jump */
-		uint32_t segmentJumpLength = 0;
+		/* .name */
+		uint32_t nameLength = 0;
 		freadReturn =
-		fread(&segmentJumpLength, sizeof(uint32_t), 1, file);
+		fread(&nameLength, sizeof(uint32_t), 1, file);
 		if ( freadReturn != 1 )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
@@ -190,16 +190,30 @@ SDL_bool PT_FileDataHandler_LoadBlock( PT_FileDataHandler* _this, const char* pa
 			break;
 		}
 		totalBytes += 4;
-		if ( fseek(file, segmentJumpLength, SEEK_CUR) < 0 )
+		
+		fileData.name = (char*)malloc(nameLength);
+		if ( !fileData.name )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-			"PT: PT_FileDataHandler_LoadBlock: Cannot jump with fseek\n");
+			"PT: PT_FileDataHandler_LoadBlock: Not enough memory\n");
 			
 			fclose(file);
 			free(fileData.extension);
 			return SDL_FALSE;
 		}
-		totalBytes += segmentJumpLength;
+		freadReturn =
+		fread(fileData.name, sizeof(char), nameLength, file);
+		if ( freadReturn != nameLength )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+			"PT: PT_FileDataHandler_LoadBlock: Wrong number of read items\n");
+			
+
+			free(fileData.extension);
+			free(fileData.name);
+			break;
+		}
+		totalBytes += nameLength;
 		
 		/* .data */
 		uint32_t dataLength = 0;
@@ -380,6 +394,10 @@ void PT_FileDataListDestroy( PT_FileDataList* _this ) {
 				if ( _this->values[i].extension )
 				{
 					free(_this->values[i].extension);
+				}
+				if ( _this->values[i].name )
+				{
+					free(_this->values[i].name);
 				}
 				if ( _this->values[i].data )
 				{

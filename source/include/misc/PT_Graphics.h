@@ -58,8 +58,12 @@ int PT_GraphicsShowSimpleMessageBox( Uint32 flags, const char *utf8_title, const
 * \sa PT_GraphicsRenderClear
 */
 void PT_GraphicsLoadTexture( const char* utf8_filePath, const char* utf8_name );
+void PT_GraphicsLoadTextureFromBuffer( void* buffer, int bufferSize, const char* type,
+	const char* utf8_textureName );
 
 TTF_Font* PT_GraphicsLoadFont( const char* utf8_filePath, int fontSize, SDL_bool defaultPath );
+void PT_GraphicsLoadFontFromBuffer( void* buffer, int bufferSize, const char* utf8_fontName, int ptsize );
+
 
 SDL_bool PT_GraphicsLoadImages( );
 void PT_GraphicsUnloadImages( );

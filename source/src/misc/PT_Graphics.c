@@ -12,6 +12,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <string.h>
 
 #include <SDL_image.h>
 #include <SDL_log.h>
@@ -44,6 +45,22 @@ struct pt_graphics {
 static PT_Graphics* ptGraphics = NULL;
 
 //===================================== PRIVATE Functions
+
+SDL_bool PT_GraphicsUpdateSettings( ) {
+	if ( !ptGraphics )
+	{
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_GraphicsUpdateSettings: Invalid ptGraphics\n");
+		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
+		"PT: PT_GraphicsUpdateSettings: FILE %s, LINE %d\n", __FILE__, __LINE__);
+		
+		return SDL_FALSE;
+	}
+	
+	SDL_SetWindowSize(ptGraphics->window, ptGraphics->windowWidth, ptGraphics->windowHeight);
+	
+	return SDL_TRUE;
+}//PT_GraphicsUpdateSettings
 
 SDL_bool PT_GraphicsParseDefaults( ) {
 	if ( !ptGraphics )
@@ -94,12 +111,14 @@ SDL_bool PT_GraphicsParseDefaults( ) {
 	if ( !handler )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadDefaults: Not enough memory\n");
+		
+		PT_ParseDestroy(parse);
 		return SDL_FALSE;
 	}
 	if ( !PT_FileDataHandler_LoadBlock(handler, "default-assets.bin") )
 	{		
 		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Proto-Test: Graphics", 
-		"PT: PT_GraphicsLoadDefaults: Cannot load default-assets.bin\nCopy an default-assets into the executable folder and try again.");
+		"PT: PT_GraphicsLoadDefaults: Cannot load default-assets.bin\nCopy an default-assets.bin into the executable folder and try again.");
 	}
 	else {
 		PT_FileDataList* pList = PT_FileDataHandler_GetFileDataList(handler);
@@ -110,7 +129,38 @@ SDL_bool PT_GraphicsParseDefaults( ) {
 				/* Images */
 				if ( pList->values[i].label == PT_FILEDATA_LABEL_IMAGE )
 				{
-					printf("image\n");
+					void* buffer = (void*)pList->values[i].data;
+					int bufferSize = pList->values[i]._size;
+
+					char type[6];
+					type[5] = '\0';
+					
+					if ( PT_StringMatchFast(pList->values[i].extension, ".png") )
+					{
+						strcpy(type, "PNG");
+					}
+					else if ( PT_StringMatchFast(pList->values[i].extension, ".bmp") )
+					{
+						strcpy(type, "BMP");
+					}
+					else {
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+						"PT: PT_GraphicsParseDefaults: Image format is not supported by Proto-Test: %s\n",
+						pList->values[i].extension);
+						
+						continue;
+					}
+					
+					PT_GraphicsLoadTextureFromBuffer(buffer, bufferSize, type, pList->values[i].name);
+				}
+				/* Fonts */
+				else if ( pList->values[i].label == PT_FILEDATA_LABEL_TRUETYPE_FONT )
+				{
+					void* buffer = (void*)pList->values[i].data;
+					int bufferSize = pList->values[i]._size;
+					
+					
+					PT_GraphicsLoadFontFromBuffer(buffer, bufferSize, pList->values[i].name, 16); 
 				}
 			}
 			pList = pList->next;
@@ -120,24 +170,14 @@ SDL_bool PT_GraphicsParseDefaults( ) {
 
 	PT_FileDataHandler_Destroy(handler);	
 	PT_ParseDestroy(parse);
-	return SDL_TRUE;
-}//PT_GraphicsLoadDefaults
-
-SDL_bool PT_GraphicsUpdateSettings( ) {
-	if ( !ptGraphics )
+	
+	if ( !PT_GraphicsUpdateSettings() )
 	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_GraphicsUpdateSettings: Invalid ptGraphics\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
-		"PT: PT_GraphicsUpdateSettings: FILE %s, LINE %d\n", __FILE__, __LINE__);
-		
-		return SDL_FALSE;
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_GraphicsLoadDefaults: Cannot update settings\n");
 	}
-	
-	SDL_SetWindowSize(ptGraphics->window, ptGraphics->windowWidth, ptGraphics->windowHeight);
-	
 	return SDL_TRUE;
-}//PT_GraphicsUpdateSettings
+}//PT_GraphicsParseDefaults
 
 //===================================== PUBLIC Functions
 
@@ -165,12 +205,9 @@ SDL_bool PT_GraphicsCreate( ) {
 		return SDL_FALSE;
 	}
 	SDL_memset(ptGraphics, 0, sizeof(struct pt_graphics));
-	
-	if ( !PT_GraphicsParseDefaults() )
-	{
-		ptGraphics->windowWidth = PT_GRAPHICS_DEFAULT_WINDOW_WIDTH;
-		ptGraphics->windowHeight = PT_GRAPHICS_DEFAULT_WINDOW_HEIGHT;
-	}
+
+	ptGraphics->windowWidth = PT_GRAPHICS_DEFAULT_WINDOW_WIDTH;
+	ptGraphics->windowHeight = PT_GRAPHICS_DEFAULT_WINDOW_HEIGHT;
 	
 	ptGraphics->window = SDL_CreateWindow(
 		"Proto-Test", 
@@ -202,6 +239,11 @@ SDL_bool PT_GraphicsCreate( ) {
 	if ( SDL_SetRenderDrawBlendMode(ptGraphics->renderer, SDL_BLENDMODE_BLEND) )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphcisCreate: %s\n", SDL_GetError());
+	}
+	
+	if ( !PT_GraphicsParseDefaults() )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphcisCreate: Cannot parse defaults\n");
 	}
 
 	return SDL_TRUE;
@@ -344,6 +386,56 @@ void PT_GraphicsLoadTexture( const char* utf8_filePath, const char* utf8_name ) 
 	PT_StringDestroy(path);
 }//PT_GraphicsLoadTexture
 
+void PT_GraphicsLoadTextureFromBuffer( void* buffer, int bufferSize, const char* type,
+	const char* utf8_textureName ) {
+	
+	if ( !buffer || !type || !utf8_textureName )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_GraphicsLoadTextureFromBuffer: Invalid buffer or type or utf8_textureName\n");
+		return;
+	}
+	
+	SDL_RWops* rwops = SDL_RWFromConstMem(buffer, bufferSize);
+	if ( !rwops )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_GraphicsLoadTextureFromBuffer: %s\n", SDL_GetError());
+		return;
+	}
+	
+	SDL_Surface* loadedSurface = IMG_LoadTyped_RW(rwops, SDL_FALSE, type);
+	if ( !loadedSurface )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_GraphicsLoadTextureFromBuffer: %s\n", SDL_GetError());
+		return;
+	}
+	
+	SDL_RWclose(rwops);
+	
+	if ( SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 255, 0, 255)) < 0 )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_GraphicsLoadTextureFromBuffer: %s\n", SDL_GetError());
+	}
+	
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(ptGraphics->renderer, loadedSurface);
+	if ( !texture )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_GraphicsLoadTextureFromBuffer: %s\n", SDL_GetError());
+		
+		SDL_FreeSurface(loadedSurface);
+		return;
+	}
+	
+	
+	SDL_FreeSurface(loadedSurface);
+	
+	ptGraphics->textureList = PT_TextureListAdd(ptGraphics->textureList, utf8_textureName, texture);
+}//PT_GraphicsLoadTextureFromBuffer
+
 TTF_Font* PT_GraphicsLoadFont( const char* utf8_filePath, int fontSize, SDL_bool defaultPath ) {
 	PT_String* path = PT_StringCreate();
 	
@@ -373,6 +465,52 @@ TTF_Font* PT_GraphicsLoadFont( const char* utf8_filePath, int fontSize, SDL_bool
 	
 	return font;
 }//PT_GraphicsLoadFont
+
+void PT_GraphicsLoadFontFromBuffer( void* buffer, int bufferSize, const char* utf8_fontName, int ptsize ) {
+	if ( !buffer || !utf8_fontName )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_GraphicsLoadFontFromBuffer: Invalid buffer or utf8_fontName\n");
+		return;
+	}
+
+	SDL_RWops* rwops = SDL_RWFromConstMem(buffer, bufferSize);
+	if ( !rwops )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_GraphicsLoadFontFromBuffer: %s\n", SDL_GetError());
+		return;
+	}
+	
+	TTF_Font* font = TTF_OpenFontRW(rwops, SDL_FALSE, ptsize);
+	if ( !font )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_GraphicsLoadFontFromBuffer: %s\n", TTF_GetError());
+		
+		SDL_RWclose(rwops);
+		return;
+	}
+	
+	SDL_RWclose(rwops);
+	
+	PT_Font *pt_font = (PT_Font*)malloc(sizeof(PT_Font));
+	if ( !pt_font )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_GraphicsLoadFontFromBuffer: Not enough memory\n");
+		
+		TTF_CloseFont(font);
+		return;	
+	}
+	SDL_memset(pt_font, 0, sizeof(PT_Font));
+	
+	pt_font->color = (SDL_Color){ 255, 255, 255, 0xFF };
+	pt_font->font = font;
+	
+	ptGraphics->fontList = PT_FontListAdd(ptGraphics->fontList, utf8_fontName, pt_font);
+	
+}//PT_GraphicsLoadFontFromBuffer
 
 SDL_bool PT_GraphicsLoadImages() {
 
@@ -538,6 +676,7 @@ void PT_GraphicsUnloadImages( ) {
 	}
 	
 	PT_TextureListDestroy(ptGraphics->textureList);
+	ptGraphics->textureList = NULL;
 }//PT_GraphicsUnloadImages
 
 SDL_bool PT_GraphicsLoadFonts( ) {
@@ -670,7 +809,9 @@ void PT_GraphicsUnloadFonts( ) {
 	}
 	
 	PT_TextureListDestroy(ptGraphics->fontTextureList);
+	ptGraphics->fontTextureList = NULL;
 	PT_FontListDestroy(ptGraphics->fontList);
+	ptGraphics->fontList = NULL;
 }//PT_GraphicsUnloadFonts
 
 void PT_GraphicsSetViewport( const SDL_Rect* rect ) {

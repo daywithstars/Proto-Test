@@ -24,7 +24,7 @@ typedef enum {
 	PT_FILEDATA_LABEL_UNKNOWN=0,
 	PT_FILEDATA_LABEL_TEXT,
 	PT_FILEDATA_LABEL_IMAGE,
-	PT_FILEDATA_LABEL_TRUE_TYPE_FONT,
+	PT_FILEDATA_LABEL_TRUETYPE_FONT,
 	PT_FILEDATA_LABEL_SOUND
 }PT_FileDataLabel;
 
@@ -32,6 +32,7 @@ typedef struct {
 	PT_FileDataLabel label;
 	
 	char* extension;
+	char* name;
 	uint8_t* data;
 	uint32_t _size;
 }PT_FileData;

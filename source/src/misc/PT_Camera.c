@@ -94,6 +94,7 @@ void PT_CameraDestroy() {
 	}
 	
 	free(ptCamera);
+	ptCamera = NULL;
 }//PT_CameraDestroy
 
 Uint16 PT_CameraGetWidth() {
