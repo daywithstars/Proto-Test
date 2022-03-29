@@ -90,6 +90,36 @@ PT_Sprite* PT_ScreenButtonCreate( const char* utf8_spriteTemplate ) {
 	return sprite;
 }//PT_ScreenButtonCreate
 
+PT_Sprite* PT_ScreeenButtonCreateFromStringTemplate( const char* utf8_stringTemplate ) {
+	
+	PT_ScreenButton* _this = (PT_ScreenButton*)malloc(sizeof(struct pt_screen_button));
+	if ( !_this )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_ScreeenButtonCreateFromStringTemplate: Not enough memory\n");
+		return NULL;
+	}
+	SDL_memset(_this, 0, sizeof(struct pt_screen_button));
+	
+	PT_Sprite* sprite = PT_SpriteCreateFromStringTemplate(utf8_stringTemplate, 
+		(void*)_this, PT_ScreenButtonParse);
+	if ( !sprite )
+	{
+		PT_ScreenButtonDestroy(_this);
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_ScreeenButtonCreateFromStringTemplate: Cannot create PT_ScreenButton\n");
+		return NULL;
+	}
+	
+	
+	//add callbacks to sprite
+	PT_SpriteAddUpdateCallback(sprite, PT_ScreenButtonUpdate);
+	PT_SpriteAddDrawCallback(sprite, PT_ScreenButtonDraw);
+	PT_SpriteAddDestroyCallback(sprite, PT_ScreenButtonDestroy);
+	
+	return sprite;
+}//PT_ScreeenButtonCreateFromStringTemplate
+
 void PT_ScreenButtonDestroy( void* _data ) {
 	if ( !_data )
 	{

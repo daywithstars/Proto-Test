@@ -22,6 +22,7 @@ typedef struct pt_screen_button PT_ScreenButton;
 
 
 PT_Sprite* PT_ScreenButtonCreate( const char* utf8_spriteTemplate );
+PT_Sprite* PT_ScreeenButtonCreateFromStringTemplate( const char* utf8_stringTemplate );
 
 void PT_ScreenButtonDestroy( void* _data ); 
 

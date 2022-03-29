@@ -28,7 +28,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 //===================================== PRIVATE Functions
 
+PT_Sprite* PT_SpriteAlloc( );
+	
 SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue );
+
+
 
 
 //===================================== PUBLIC Functions
@@ -36,13 +40,11 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue );
 PT_Sprite* PT_SpriteCreate( const char* utf8_spriteTemplate, void* _data, 
 	SDL_bool (*dataParse)(PT_Sprite* sprite, void* _data, json_value* jsonValue) ) {
 	
-	PT_Sprite* _this = (PT_Sprite*)malloc(sizeof(PT_Sprite));
+	PT_Sprite* _this = PT_SpriteAlloc();
 	if ( !_this )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreate: Not enough memory\n");
 		return NULL;
 	}
-	SDL_memset(_this, 0, sizeof(PT_Sprite));
 	
 	PT_String* path = PT_StringCreate();
 	PT_StringInsert(&path, ".json", 0);
@@ -78,12 +80,73 @@ PT_Sprite* PT_SpriteCreate( const char* utf8_spriteTemplate, void* _data,
 		}
 	}
 	
-	_this->_data = _data;
-	
 	json_value_free(_jsonValue);
 	PT_StringDestroy(path);
 	return _this;
 }//PT_SpriteCreate
+
+PT_Sprite* PT_SpriteCreateFromStringTemplate( const char* utf8_stringTemplate, void* _data, 
+	SDL_bool (*dataParse)(PT_Sprite* sprite, void* _data, json_value* jsonValue) ) {
+
+	PT_Sprite* _this = PT_SpriteAlloc();
+	if ( !_this )
+	{
+		return NULL;
+	}
+	
+	PT_Parse* parse = PT_ParseCreate();
+	if ( !parse )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreateFromStringTemplate!\n");
+		free(_this);
+		
+		return NULL;
+	}
+	
+	if ( !PT_ParseLoadTemplate(parse, utf8_stringTemplate) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreateFromStringTemplate!\n");
+		free(_this);
+		PT_ParseDestroy(parse);
+		
+		return NULL;
+	}
+	
+	json_value* _jsonValue = PT_ParseGetJsonValuePointer(parse);
+	
+	if ( !_jsonValue )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreateFromStringTemplate!\n");
+		PT_SpriteDestroy(_this);
+		PT_ParseDestroy(parse);
+		
+		return NULL;
+	}
+	
+	if ( !PT_SpriteParse(_this, _jsonValue) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreateFromStringTemplate!\n");
+		PT_SpriteDestroy(_this);
+		PT_ParseDestroy(parse);
+
+		return NULL;
+	}
+	
+	if ( dataParse )
+	{
+		if ( !dataParse(_this, _data, _jsonValue) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreateFromStringTemplate!\n");
+			PT_SpriteDestroy(_this);
+			PT_ParseDestroy(parse);
+
+			return NULL;
+		}
+	}
+	
+	PT_ParseDestroy(parse);
+	return _this;
+}//PT_SpriteCreateFromStringTemplate
 
 void PT_SpriteDestroy( PT_Sprite* _this ) {
 	if ( !_this )
@@ -269,6 +332,18 @@ void PT_SpriteDraw( PT_Sprite* _this ) {
 
 
 //===================================== PRIVATE Functions
+
+PT_Sprite* PT_SpriteAlloc( ) {
+	PT_Sprite* _this = (PT_Sprite*)malloc(sizeof(PT_Sprite));
+	if ( !_this )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteAlloc: Not enough memory\n");
+		return NULL;
+	}
+	SDL_memset(_this, 0, sizeof(PT_Sprite));
+	
+	return _this;
+}//PT_SpriteAlloc
 
 SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue ) {	
 	/*
