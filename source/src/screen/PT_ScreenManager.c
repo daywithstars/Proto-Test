@@ -153,7 +153,7 @@ void PT_ScreenManagerSetup( ) {
 			return;
 		}
 		
-		if ( !PT_ParseSaveFile(parseList, "assets/screen/screen-list.json", SDL_TRUE) )
+		if ( !PT_ParseSaveOriginal(parseList, "assets/screen/screen-list.json", SDL_TRUE) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenManagerSetup!\n");
 		}

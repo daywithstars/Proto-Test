@@ -233,7 +233,7 @@ SDL_bool PT_CameraParse( ) {
 			return SDL_FALSE;
 		}
 		
-		if ( !PT_ParseSaveFile(parse, "settings.json", SDL_TRUE) )
+		if ( !PT_ParseSaveOriginal(parse, "settings.json", SDL_TRUE) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CameraParse!\n");
 		}

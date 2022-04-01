@@ -300,7 +300,7 @@ SDL_bool PT_GraphicsParseSettings( ) {
 			return SDL_FALSE;
 		}
 		
-		if ( !PT_ParseSaveFile(parse, "settings.json", SDL_TRUE) )
+		if ( !PT_ParseSaveOriginal(parse, "settings.json", SDL_TRUE) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsParseSettings!\n");
 		}
@@ -540,7 +540,7 @@ SDL_bool PT_GraphicsLoadImages() {
 			return SDL_FALSE;
 		}
 		
-		if ( !PT_ParseSaveFile(parseFolders, "assets/img/folders.json", SDL_TRUE) )
+		if ( !PT_ParseSaveOriginal(parseFolders, "assets/img/folders.json", SDL_TRUE) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
 		}
@@ -619,7 +619,8 @@ SDL_bool PT_GraphicsLoadImages() {
 							continue;
 						}
 						
-						if ( !PT_ParseSaveFile(parseList, (char*)parseListPath->utf8_string, SDL_TRUE) )
+						if ( !PT_ParseSaveOriginal(parseList, 
+							(char*)parseListPath->utf8_string, SDL_TRUE) )
 						{
 							SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
 						}
@@ -706,7 +707,7 @@ SDL_bool PT_GraphicsLoadFonts( ) {
 			return SDL_FALSE;
 		}
 		
-		if ( !PT_ParseSaveFile(parse, "assets/font/font-list.json", SDL_TRUE) )
+		if ( !PT_ParseSaveOriginal(parse, "assets/font/font-list.json", SDL_TRUE) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");
 		}	

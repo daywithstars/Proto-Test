@@ -32,7 +32,12 @@ struct pt_parse {
 	PT_String* jsonString;
 };
 
+//===================================== PRIVATE Functions
 
+SDL_bool PT_ParseWriteJsonValue( PT_String** str, json_value* jsonValue, const char* elementName, 
+	int shift );
+
+//===================================== PUBLIC Functions
 
 PT_Parse* PT_ParseCreate( ) {
 
@@ -185,6 +190,7 @@ SDL_bool PT_ParseLoadTemplate( PT_Parse* _this, const json_char* jsonString ) {
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseLoadTemplate: Unable to parse!");
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "* from: %s\n", jsonString);
+		
 		return SDL_FALSE;
 	}
 	
@@ -197,30 +203,49 @@ SDL_bool PT_ParseLoadTemplate( PT_Parse* _this, const json_char* jsonString ) {
 	return SDL_TRUE;
 }//PT_ParseLoadTemplate
 
-SDL_bool PT_ParseSaveFile( PT_Parse* _this, const char* utf8_filePath, SDL_bool defaultPath ) {
+SDL_bool PT_ParseChangeValue_Integer( PT_Parse* _this, const char* nameSequence, json_int_t value ) {
+
+	json_object_entry entry = PT_ParseGetObjectEntry(_this, nameSequence);
+	if ( !entry.value )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseChangeValue_Integer!\n");
+		return SDL_FALSE;
+	}
+	
+	if ( entry.value->type == json_integer )
+	{
+		entry.value->u.integer = value;
+		
+		return SDL_TRUE;
+	}
+	
+	return SDL_TRUE;
+}//PT_ParseChangeValue_Integer
+
+SDL_bool PT_ParseSaveOriginal( PT_Parse* _this, const char* utf8_filePath, SDL_bool defaultPath ) {
 	if ( !_this )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveFile: Invalid PT_Parse\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveOriginal: Invalid PT_Parse\n");
 		return SDL_FALSE;
 	}
 	
 	PT_String* strPath = PT_StringCreate();
 	if ( !PT_StringInsert(&strPath, utf8_filePath, 0) )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveFile!\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveOriginal!\n");
 	}
 	if ( defaultPath )
 	{	
 		if ( !PT_StringInsert(&strPath, (char*)gRootDir->utf8_string, 0) )
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveFile!\n");
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveOriginal!\n");
 		}
 	}
 	
 	SDL_RWops* file = SDL_RWFromFile((char*)strPath->utf8_string, "w");
 	if ( !file )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveFile: Cannot create file: %s\n",
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveOriginal: Cannot create file: %s\n",
 		(char*)strPath->utf8_string);
 		PT_StringDestroy(strPath);
 		return SDL_FALSE;
@@ -231,7 +256,64 @@ SDL_bool PT_ParseSaveFile( PT_Parse* _this, const char* utf8_filePath, SDL_bool 
 	PT_StringDestroy(strPath);
 	SDL_RWclose(file);
 	return SDL_TRUE;
-}//PT_ParseSaveFile
+}//PT_ParseSaveOriginal
+
+SDL_bool PT_ParseSaveJsonValue( json_value* jsonValue, const char* utf8_filePath, SDL_bool defaultPath ) {
+	
+	if ( !jsonValue )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveJsonValue: Invalid json_value\n");
+		return SDL_FALSE;
+	}
+	
+	PT_String* strPath = PT_StringCreate();
+	if ( !PT_StringInsert(&strPath, utf8_filePath, 0) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveJsonValue!\n");
+	}
+	if ( defaultPath )
+	{	
+		if ( !PT_StringInsert(&strPath, (char*)gRootDir->utf8_string, 0) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveJsonValue!\n");
+		}
+	}
+	
+	SDL_RWops* file = SDL_RWFromFile((char*)strPath->utf8_string, "w");
+	if ( !file )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveJsonValue: Cannot create file: %s\n",
+		(char*)strPath->utf8_string);
+		PT_StringDestroy(strPath);
+		return SDL_FALSE;
+	}
+	PT_StringDestroy(strPath);
+
+
+	PT_String* str = PT_StringCreate();
+	if ( !str )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveJsonValue: Not enough memory\n");
+		
+		SDL_RWclose(file);
+		return SDL_FALSE;
+	}
+	if ( !PT_ParseWriteJsonValue(&str, jsonValue, NULL, 0) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveJsonValue!\n");
+		
+		SDL_RWclose(file);
+		PT_StringDestroy(str);
+		return SDL_FALSE;
+	}
+	else {
+		SDL_RWwrite(file, str->utf8_string, sizeof(char), str->length);
+		PT_StringDestroy(str);
+	}
+
+	SDL_RWclose(file);
+	return SDL_TRUE;
+}//PT_ParseSaveJsonValue
 
 json_value* PT_ParseGetJsonValueFromFile( const char* utf8_filePath, SDL_bool defaultPath  ) {
 	
@@ -404,6 +486,269 @@ json_object_entry PT_ParseGetObjectEntry_json_value( json_value* _json_value, co
 	PT_StringDestroy(sequenceFound);
 	return entry;
 }//PT_ParseGetObjectEntry_json_value
+
+
+//===================================== PRIVATE Functions
+
+SDL_bool PT_ParseWriteJsonValue( PT_String** str, json_value* jsonValue, 
+	const char* elementName, int shift ) {
+	
+	if ( !str || !jsonValue || jsonValue->type == json_none )
+	{
+		return SDL_FALSE;
+	}
+	
+	const char tab[] = { 0x09, 0x0 };
+	
+	if ( jsonValue->type == json_object )
+	{
+		if ( jsonValue->parent != NULL )
+		{
+			if ( elementName )
+			{
+				/*
+					\t"elementName": {\n
+				*/
+				for ( int i = 0; i < shift; i++ )
+				{
+					PT_StringInsert(str, tab, (*str)->length);
+				}
+				PT_StringInsert(str, "\"", (*str)->length);
+				PT_StringInsert(str, elementName, (*str)->length);
+				PT_StringInsert(str, "\"", (*str)->length);
+				PT_StringInsert(str, ": {\n", (*str)->length);
+				
+				for ( unsigned int i = 0; i < jsonValue->u.object.length; i++ )
+				{	
+					if ( !PT_ParseWriteJsonValue(str, jsonValue->u.object.values[i].value, 
+						jsonValue->u.object.values[i].name, shift + 1))
+					{
+						return SDL_FALSE;
+					}
+				}
+			
+				/*
+					\t},\n
+				*/
+				for ( int i = 0; i < shift; i++ )
+				{
+					PT_StringInsert(str, tab, (*str)->length);
+				}
+				PT_StringInsert(str, "},\n", (*str)->length);
+			}
+			else {
+				/*
+					\t+1{\n
+				*/
+				for ( int i = 0; i < shift + 1; i++ )
+				{
+					PT_StringInsert(str, tab, (*str)->length);
+				}
+				PT_StringInsert(str, "{\n", (*str)->length);
+
+				for ( unsigned int i = 0; i < jsonValue->u.object.length; i++ )
+				{	
+					if ( !PT_ParseWriteJsonValue(str, jsonValue->u.object.values[i].value, 
+						jsonValue->u.object.values[i].name, shift + 2))
+					{
+						return SDL_FALSE;
+					}
+				}
+				
+				/*
+					\t+1},\n
+				*/
+				for ( int i = 0; i < shift + 1; i++ )
+				{
+					PT_StringInsert(str, tab, (*str)->length);
+				}
+				PT_StringInsert(str, "},\n", (*str)->length);
+			}
+		}
+		else {
+			/*
+				{\n
+			*/
+			PT_StringInsert(str, "{\n", (*str)->length);
+			
+			for ( unsigned int i = 0; i < jsonValue->u.object.length; i++ )
+			{	
+				if ( !PT_ParseWriteJsonValue(str, jsonValue->u.object.values[i].value, 
+					jsonValue->u.object.values[i].name, shift + 1))
+				{
+					return SDL_FALSE;
+				}
+			}
+			
+			/*
+				}
+			*/
+			PT_StringInsert(str, "}", (*str)->length);
+		}
+	}
+	else if ( jsonValue->type == json_array )
+	{
+		if ( elementName )
+		{
+			/*
+				\t"elementName": [\n
+			*/
+			for ( int i = 0; i < shift; i++ )
+			{
+				PT_StringInsert(str, tab, (*str)->length);
+			}
+			PT_StringInsert(str, "\"", (*str)->length);
+			PT_StringInsert(str, elementName, (*str)->length);
+			PT_StringInsert(str, "\"", (*str)->length);
+			PT_StringInsert(str, ": [\n", (*str)->length);
+			
+	
+			for ( unsigned int i = 0; i < jsonValue->u.array.length; i++ )
+			{	
+				if ( jsonValue->u.array.values[i]->type == json_object || 
+					jsonValue->u.array.values[i]->type == json_array )
+				{
+					if ( !PT_ParseWriteJsonValue(str, jsonValue->u.array.values[i], 
+						NULL, shift))
+					{
+						return SDL_FALSE;
+					}
+				}
+				else {
+					if ( !PT_ParseWriteJsonValue(str, jsonValue->u.array.values[i], 
+						NULL, shift + 1))
+					{
+						return SDL_FALSE;
+					}
+				}
+			}
+			
+			/*
+				\t],\n
+			*/
+			for ( int i = 0; i < shift; i++ )
+			{
+				PT_StringInsert(str, tab, (*str)->length);
+			}
+			PT_StringInsert(str, "],\n", (*str)->length);
+		}
+		else {
+		
+			/*
+				\t+1[\n
+			*/
+			for ( int i = 0; i < shift + 1; i++ )
+			{
+				PT_StringInsert(str, tab, (*str)->length);
+			}
+			PT_StringInsert(str, "[\n", (*str)->length);
+			
+			for ( unsigned int i = 0; i < jsonValue->u.array.length; i++ )
+			{	
+				if ( jsonValue->u.array.values[i]->type == json_object || 
+					jsonValue->u.array.values[i]->type == json_array )
+				{
+					if ( !PT_ParseWriteJsonValue(str, jsonValue->u.array.values[i], 
+						NULL, shift))
+					{
+						return SDL_FALSE;
+					}
+				}
+				else {
+					if ( !PT_ParseWriteJsonValue(str, jsonValue->u.array.values[i], 
+						NULL, shift + 1))
+					{
+						return SDL_FALSE;
+					}
+				}
+			}
+			
+			/*
+				\t+1],\n
+			*/
+			for ( int i = 0; i < shift + 1; i++ )
+			{
+				PT_StringInsert(str, tab, (*str)->length);
+			}
+			PT_StringInsert(str, "],\n", (*str)->length);
+		}
+	}
+	else 
+	{	
+		if ( elementName )
+		{
+			/*
+				\t"elementName":<space>
+			*/
+			for ( int i = 0; i < shift; i++ )
+			{
+				PT_StringInsert(str, tab, (*str)->length);
+			}
+			PT_StringInsert(str, "\"", (*str)->length);
+			PT_StringInsert(str, elementName, (*str)->length);
+			PT_StringInsert(str, "\"", (*str)->length);
+			PT_StringInsert(str, ": ", (*str)->length);
+		}
+		else {
+			/*
+				\t
+			*/
+			for ( int i = 0; i < shift; i++ )
+			{
+				PT_StringInsert(str, tab, (*str)->length);
+			}
+		}
+		
+		
+		
+		if ( jsonValue->type == json_integer )
+		{	
+			char number[32];
+			sprintf(number, "%ld", jsonValue->u.integer);
+			PT_StringInsert(str, number, (*str)->length);
+			PT_StringInsert(str, ",\n", (*str)->length);
+		}
+		else if ( jsonValue->type == json_double )
+		{
+			char number[32];
+			sprintf(number, "%f", jsonValue->u.dbl);
+			char* comma = strchr(number, ',');
+			if ( comma )
+			{
+				comma[0] = '.';
+			}
+			PT_StringInsert(str, number, (*str)->length);
+			PT_StringInsert(str, ",\n", (*str)->length);
+		}
+		else if ( jsonValue->type == json_string )
+		{
+			PT_StringInsert(str, "\"", (*str)->length);
+			PT_StringInsert(str, jsonValue->u.string.ptr, (*str)->length);
+			PT_StringInsert(str, "\"", (*str)->length);
+			PT_StringInsert(str, ",\n", (*str)->length);
+		}
+		else if ( jsonValue->type == json_boolean )
+		{
+			if ( jsonValue->u.boolean )
+			{
+				PT_StringInsert(str, "true", (*str)->length);
+			}
+			else {
+				PT_StringInsert(str, "false", (*str)->length);
+			}
+
+			PT_StringInsert(str, ",\n", (*str)->length);
+		}
+		else if ( jsonValue->type == json_null )
+		{
+			PT_StringInsert(str, "null", (*str)->length);
+			PT_StringInsert(str, ",\n", (*str)->length);
+		}
+	}
+	
+	return SDL_TRUE;
+}//PT_ParseWriteJsonValue
+
 
 
 

@@ -83,8 +83,10 @@ SDL_bool PT_ParseOpenFile( PT_Parse* _this, const char* utf8_filePath, SDL_bool 
 */
 SDL_bool PT_ParseLoadTemplate( PT_Parse* _this, const json_char* jsonString );
 
+SDL_bool PT_ParseChangeValue_Integer( PT_Parse* _this, const char* nameSequence, json_int_t value );
+
 /**
-* \brief Use this function to save a json file starting at gRootDir.
+* \brief Use this function to save the original opened json file, starting at gRootDir.
 *
 * @param _this Is the pointer to previous created PT_Parse with PT_ParseCreate function.
 * @param utf8_filePath Is the path to the file to be saved, starts at the gRootDir.
@@ -98,7 +100,10 @@ SDL_bool PT_ParseLoadTemplate( PT_Parse* _this, const json_char* jsonString );
 * \sa PT_ParseOpenFile
 * \sa PT_ParseLoadTemplate
 */
-SDL_bool PT_ParseSaveFile( PT_Parse* _this, const char* utf8_filePath, SDL_bool defaultPath );
+SDL_bool PT_ParseSaveOriginal( PT_Parse* _this, const char* utf8_filePath, SDL_bool defaultPath );
+
+//The same as above, but it saves the tree of jsonValue pointer. 
+SDL_bool PT_ParseSaveJsonValue( json_value* jsonValue, const char* utf8_filePath, SDL_bool defaultPath );
 
 /**
 * \brief Use this function to load your own json_value.

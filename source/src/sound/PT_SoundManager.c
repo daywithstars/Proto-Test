@@ -479,7 +479,7 @@ SDL_bool PT_SoundManagerParse( ) {
 			return SDL_FALSE;
 		}
 		
-		if ( !PT_ParseSaveFile(parse, "assets/sound/sample/sample-list.json", SDL_TRUE) )
+		if ( !PT_ParseSaveOriginal(parse, "assets/sound/sample/sample-list.json", SDL_TRUE) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SoundManagerParse!\n");
 		}
@@ -516,7 +516,7 @@ SDL_bool PT_SoundManagerParse( ) {
 			return SDL_FALSE;
 		}
 		
-		if ( !PT_ParseSaveFile(parse, "assets/sound/music/music-list.json", SDL_TRUE) )
+		if ( !PT_ParseSaveOriginal(parse, "assets/sound/music/music-list.json", SDL_TRUE) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SoundManagerParse!\n");
 		}

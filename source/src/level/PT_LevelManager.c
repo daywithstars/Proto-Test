@@ -105,7 +105,7 @@ SDL_bool PT_LevelManagerSetup() {
 			return SDL_FALSE;
 		}
 		
-		if ( !PT_ParseSaveFile(parse, "assets/level/level-list.json", SDL_TRUE) )
+		if ( !PT_ParseSaveOriginal(parse, "assets/level/level-list.json", SDL_TRUE) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup!\n");
 		}

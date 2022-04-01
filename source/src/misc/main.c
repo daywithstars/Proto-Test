@@ -37,6 +37,7 @@ int main(int argc, char** argv) {
 		You can try a different version of the SDL dynamic library", NULL);
 		return 1;
 	}
+
 	
 	if ( PT_ApplicationCreate() )
 	{

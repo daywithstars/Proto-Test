@@ -204,7 +204,7 @@ void PT_InputManagerParse( ) {
 			return;
 		}
 		
-		if ( !PT_ParseSaveFile(parse, "assets/input/input-list.json", SDL_TRUE) )
+		if ( !PT_ParseSaveOriginal(parse, "assets/input/input-list.json", SDL_TRUE) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputManagerParse!\n");
 		}	
