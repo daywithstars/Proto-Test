@@ -30,15 +30,17 @@
 	"behavior": "none",
 	
 	"misc": {
-		"button-name": "play",
+		"button-name": "none",
 		
 		"actions": {
 			"mouse-over": {
-				"change-animation": "none",
+				"animation": "none",
+			},
+			"mouse-out": {
+				"animation": "none",
 			},
 			"mouse-click": {
 				"button": "left",
-				"change-screen": "Screen Play",
 			},
 		},
 	}

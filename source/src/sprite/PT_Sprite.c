@@ -80,6 +80,8 @@ PT_Sprite* PT_SpriteCreate( const char* utf8_spriteTemplate, void* _data,
 		}
 	}
 	
+	_this->_data = _data;
+	
 	json_value_free(_jsonValue);
 	PT_StringDestroy(path);
 	return _this;
@@ -143,6 +145,8 @@ PT_Sprite* PT_SpriteCreateFromStringTemplate( const char* utf8_stringTemplate, v
 			return NULL;
 		}
 	}
+	
+	_this->_data = _data;
 	
 	PT_ParseDestroy(parse);
 	return _this;

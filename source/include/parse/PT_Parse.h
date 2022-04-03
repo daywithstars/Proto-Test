@@ -83,7 +83,9 @@ SDL_bool PT_ParseOpenFile( PT_Parse* _this, const char* utf8_filePath, SDL_bool 
 */
 SDL_bool PT_ParseLoadTemplate( PT_Parse* _this, const json_char* jsonString );
 
-SDL_bool PT_ParseChangeValue_Integer( PT_Parse* _this, const char* nameSequence, json_int_t value );
+SDL_bool PT_ParseChangeValue_Integer( json_value* jsonValue, json_int_t value );
+SDL_bool PT_ParseChangeValue_String( json_value* jsonValue, json_char* value );
+SDL_bool PT_ParseChangeValue_Double( json_value* jsonValue, double value );
 
 /**
 * \brief Use this function to save the original opened json file, starting at gRootDir.

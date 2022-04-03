@@ -26,10 +26,12 @@
 		"actions": {
 			"mouse-click": {
 				"button": "$mouse-button-name$",
-				"change-screen": "<yourScreenName>",
 			},
 			"mouse-over": {
-				"change-animation": "<yourAnimationName>",
+				"animation": "<yourAnimationName>",
+			},
+			"mouse-out": {
+				"animation": "<yourAnimationName>",
 			}
 		},
 	}

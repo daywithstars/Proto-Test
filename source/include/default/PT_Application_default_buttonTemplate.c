@@ -1,70 +1,75 @@
 const char* defaultButtonTemplate = 
-"{
-	"type": "PT_ScreenButton",
-	"image": "none",
-	"speedX": 0.0,
-	"speedY": 0.0,
-	"srcRect": [0, 0, 96, 64],
-	"dstRect": [100.0, 20.0, 96.0, 64.0],
-	"animations": [
-		{
-			"name": "idle",
-			"frame-delay": 0,
-			"frame-width": 96,
-			"frame-height": 64,
-			"frame-column": 0,
-			"frame-column-dir": 1,
-			"frame-column-max": 2,
-			"frame-row": 0,
-			"frame-row-dir": 0,
-			"frame-row-max": 0,
-		},
-		{
-			"name": "active",
-			"frame-delay": 0,
-			"frame-width": 96,
-			"frame-height": 64,
-			"frame-column": 1,
-			"frame-column-dir": 0,
-			"frame-column-max": 2,
-			"frame-row": 0,
-			"frame-row-dir": 0,
-			"frame-row-max": 0,
-		},
-	],
-	"colliders": [
-		{
-			"visible": true,
-			"type": "PT_COLLIDER_TYPE_RECTANGLE",
-			"name": "collider",
-			
-			"color": {
-				"red": 120,
-				"green": 220,
-				"blue": 60,
-				"alpha": 100,
-			},
-			"fields": {
-				"x": 0,
-				"y": 0,
-				"w": 96,
-				"h": 64,
-			}
-		},
-	],
-	"behavior": "none",
-	
-	"misc": {
-		"button-name": "Load the game",
-		
-		"actions": {
-			"mouse-over": {
-				"change-animation": "active",
-			},
-			"mouse-click": {
-				"button": "left",
-			},
-		},
-	}
+"{\n\
+	\"type\": \"PT_ScreenButton\",\n\
+	\"image\": \"button-load.png\",\n\
+	\"speedX\": 0.0,\n\
+	\"speedY\": 0.0,\n\
+	\"srcRect\": [0, 0, 96, 64],\n\
+	\"dstRect\": [100.0, 20.0, 96.0, 64.0],\n\
+	\"animations\": [\n\
+		{\n\
+			\"name\": \"idle\",\n\
+			\"frame-delay\": 0,\n\
+			\"frame-width\": 96,\n\
+			\"frame-height\": 64,\n\
+			\"frame-column\": 0,\n\
+			\"frame-column-dir\": 1,\n\
+			\"frame-column-max\": 1,\n\
+			\"frame-row\": 0,\n\
+			\"frame-row-dir\": 0,\n\
+			\"frame-row-max\": 0,\n\
+		},\n\
+		{\n\
+			\"name\": \"active\",\n\
+			\"frame-delay\": 0,\n\
+			\"frame-width\": 96,\n\
+			\"frame-height\": 64,\n\
+			\"frame-column\": 1,\n\
+			\"frame-column-dir\": 0,\n\
+			\"frame-column-max\": 2,\n\
+			\"frame-row\": 0,\n\
+			\"frame-row-dir\": 0,\n\
+			\"frame-row-max\": 0,\n\
+		},\n\
+	],\n\
+	\"colliders\": [\n\
+		{\n\
+			\"visible\": true,\n\
+			\"type\": \"PT_COLLIDER_TYPE_RECTANGLE\",\n\
+			\"name\": \"collider\",\n\
+			\n\
+			\"color\": {\n\
+				\"red\": 120,\n\
+				\"green\": 220,\n\
+				\"blue\": 60,\n\
+				\"alpha\": 100,\n\
+			},\n\
+			\"fields\": {\n\
+				\"x\": 0,\n\
+				\"y\": 0,\n\
+				\"w\": 96,\n\
+				\"h\": 64,\n\
+			}\n\
+		},\n\
+	],\n\
+	\"behavior\": \"none\",\n\
+	\n\
+	\"misc\": {\n\
+		\"button-name\": \"Load the game\",\n\
+		\n\
+		\"actions\": {\n\
+			\"mouse-over\": {\n\
+				\"animation\": \"active\",\n\
+			},\n\
+			\"mouse-out\": {\n\
+				\"animation\": \"idle\",\n\
+			},\n\
+			\"mouse-click\": {\n\
+				\"button\": \"left\",\n\
+			},\n\
+		},\n\
+	}\n\
 }";
+
+
 

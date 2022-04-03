@@ -28,6 +28,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_Parse.h>
 #include <PT_Camera.h>
 #include <PT_GameList.h>
+#include <PT_SpriteList.h>
+#include <PT_ScreenButton.h>
 
 
 
@@ -36,6 +38,8 @@ typedef struct {
 	
 	PT_Game currentGame;
 	PT_GameList* gameList;
+	PT_SpriteList* spriteList;
+	
 	Uint32 srandCallCount;
 }PT_Application;
 
@@ -174,6 +178,19 @@ void PT_ApplicationUpdate( Sint32 elapsedTime ) {
 		}
 		PT_ScreenManagerUpdate(elapsedTime);	
 	}
+	else {
+		PT_SpriteList* pList = ptApplication->spriteList;
+		
+		while ( pList )
+		{
+			for ( unsigned int i = 0; i < pList->numValues; i++ )
+			{
+				PT_SpriteUpdate(pList->values[i], elapsedTime);
+			}
+			
+			pList = pList->next;
+		}
+	}
 }//PT_ApplicationUpdate
 
 void PT_ApplicationDraw( ) {
@@ -182,6 +199,19 @@ void PT_ApplicationDraw( ) {
 	{
 		PT_ScreenManagerDraw();
 		PT_CameraDraw();
+	}
+	else {
+		PT_SpriteList* pList = ptApplication->spriteList;
+	
+		while ( pList )
+		{
+			for ( unsigned int i = 0; i < pList->numValues; i++ )
+			{
+				PT_SpriteDraw(pList->values[i]);
+			}
+			
+			pList = pList->next;
+		}
 	}
 	PT_GraphicsRenderPresent();
 }//PT_ApplicationDraw
@@ -284,12 +314,47 @@ SDL_bool PT_ApplicationCreate( ) {
 		return SDL_FALSE;
 	}
 	
-	PT_GameList* pGameList = ptApplication->gameList;
-	while ( pGameList )
+	/*
+		Load game buttons
+	*/
+	#include <PT_Application_default_buttonTemplate.c>
+	PT_Parse* buttonsParse = PT_ParseCreate();
+	if ( !buttonsParse )
 	{
-		printf("game\n");
-		pGameList = pGameList->next;
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate!\n");
+		
+		PT_ApplicationDestroy();
+		return SDL_FALSE;
 	}
+	
+	if ( !PT_ParseLoadTemplate(buttonsParse, defaultButtonTemplate) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate!\n");
+		PT_ParseDestroy(buttonsParse);
+	}
+	else {
+	
+		PT_GameList* pGameList = ptApplication->gameList;
+		while ( pGameList )
+		{
+			
+			PT_Sprite* button = PT_ScreeenButtonCreateFromStringTemplate(defaultButtonTemplate);
+			if ( button )
+			{
+				ptApplication->spriteList = 
+				PT_SpriteListAdd(ptApplication->spriteList, (char*)pGameList->index->utf8_string,
+					button, SDL_TRUE);
+			}
+			else {
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ApplicationCreate!\n");
+				break;
+			}
+		
+			pGameList = pGameList->next;
+		}
+	}
+	PT_ParseDestroy(buttonsParse);
+	
 	/*if ( !PT_ApplicationLoadGame("Shooter") )
 	{
 		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_CRITICAL,
@@ -321,6 +386,8 @@ void PT_ApplicationDestroy( ) {
 		
 		PT_GameListDestroy(ptApplication->gameList);
 		ptApplication->gameList = NULL;
+		PT_SpriteListDestroy(ptApplication->spriteList, SDL_TRUE);
+		ptApplication->spriteList = NULL;
 		
 		PT_StringDestroy(gDefaultRootDir);
 		gDefaultRootDir = NULL;

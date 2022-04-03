@@ -25,22 +25,35 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <PT_ObjectEntryConverter.h>
 
 
+
+
 typedef enum {
-	PT_SCREENBUTTON_EVENT_NONE=1,
-	PT_SCREENBUTTON_EVENT_MOUSE_OVER=2,
-	PT_SCREENBUTTON_EVENT_MOUSE_CLICK=4
-}PT_ScreenButtonEventType;
+	PT_SCREENBUTTON_MOUSE_OUT,
+	PT_SCREENBUTTON_MOUSE_OVER,
+	PT_SCREENBUTTON_MOUSE_CLICK
+}PT_ScreenButtonMouseEventType;
 
 
 typedef struct {
+	PT_ScreenButtonMouseEventType type;
+	SDL_bool loaded;
+
 	PT_String* button;
 	PT_String* changeScreen;
-	PT_String* changeAnimation;
-}PT_ScreenButtonEventMouse;
+	PT_String* animationMouseOver;
+	PT_String* animationMouseOut;
+}PT_ScreenButtonEventDataBase_Mouse;
+
+typedef struct  {
+	PT_ScreenButtonEventDataBase_Mouse mouse;
+}PT_ScreenButtonEventDataBase;
+
+
+
+
 
 typedef struct {
-	PT_ScreenButtonEventType type;
-	PT_ScreenButtonEventMouse mouse;
+	PT_ScreenButtonEventDataBase db;
 }PT_ScreenButtonEvent;
 
 
@@ -129,9 +142,14 @@ void PT_ScreenButtonDestroy( void* _data ) {
 	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
 	
 	PT_StringDestroy(_this->name);
-	PT_StringDestroy(_this->event.mouse.changeScreen);
-	PT_StringDestroy(_this->event.mouse.changeAnimation);
-	PT_StringDestroy(_this->event.mouse.button);
+	
+	if ( _this->event.db.mouse.loaded )
+	{
+		PT_StringDestroy(_this->event.db.mouse.changeScreen);
+		PT_StringDestroy(_this->event.db.mouse.animationMouseOver);
+		PT_StringDestroy(_this->event.db.mouse.animationMouseOut);
+		PT_StringDestroy(_this->event.db.mouse.button);
+	}
 	
 	free(_this);
 }//PT_ScreenButtonDestroy
@@ -141,13 +159,29 @@ void PT_ScreenButtonUpdate( void* _data, Sint32 elapsedTime ) {
 	
 	PT_ScreenButtonListenEvent(_this);
 	
-	if ( _this->event.type & PT_SCREENBUTTON_EVENT_MOUSE_OVER )
+	if ( _this->event.db.mouse.loaded )
 	{
-		if ( _this->event.mouse.changeAnimation )
+		//change animation
+		if ( _this->event.db.mouse.type == PT_SCREENBUTTON_MOUSE_OVER )
 		{
-			//change animation
+			if ( _this->event.db.mouse.animationMouseOver )
+			{
+				
+				PT_SpriteChangeAnimation((void*)_this->pSprite, 
+				(char*) _this->event.db.mouse.animationMouseOver->utf8_string);
+			}
 		}
-	
+		else if ( _this->event.db.mouse.type == PT_SCREENBUTTON_MOUSE_OUT )
+		{
+			if ( _this->event.db.mouse.animationMouseOut )
+			{
+				PT_SpriteChangeAnimation((void*)_this->pSprite, 
+				(char*) _this->event.db.mouse.animationMouseOut->utf8_string);
+			}
+		}
+		
+		
+		/*
 		if ( _this->event.type & PT_SCREENBUTTON_EVENT_MOUSE_CLICK )
 		{
 			if ( _this->event.mouse.changeScreen )
@@ -158,7 +192,7 @@ void PT_ScreenButtonUpdate( void* _data, Sint32 elapsedTime ) {
 					PT_ScreenManagerSetFirstScreen((char*)_this->event.mouse.changeScreen->utf8_string);
 				}
 			}
-		}
+		}*/
 	}
 
 }//PT_ScreenButtonUpdate
@@ -178,8 +212,19 @@ SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonV
 	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
 	_this->pSprite = sprite;
 	
-	//misc.name
+	
+	/*
+		"misc": {
+			"button-name": "[name]",
+	*/
 	json_object_entry entry = PT_ParseGetObjectEntry_json_value(jsonValue, "misc button-name");
+	if ( !entry.value )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_ScreenButtonParse: Unable to find \"misc button-name\" element\n");
+		return SDL_FALSE;
+	}
+	
 	_this->name = PT_ObjectEntryConverter_PT_String(entry);
 	if ( !_this->name )
 	{
@@ -187,29 +232,76 @@ SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonV
 		return SDL_FALSE;
 	}
 	
-	//misc.actions
-	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "misc actions mouse-over change-animation");
-	_this->event.mouse.changeAnimation = PT_ObjectEntryConverter_PT_String(entry);
-	if ( !_this->event.mouse.changeAnimation )
+	/*
+		"actions": {
+			"mouse-over": {
+				"animation": "[anim-name]",
+			},
+	*/
+	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "misc actions mouse-over animation");
+	if ( entry.value )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
-		return SDL_FALSE;
+		_this->event.db.mouse.animationMouseOver = PT_ObjectEntryConverter_PT_String(entry);
+		if ( !_this->event.db.mouse.animationMouseOver )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
+			return SDL_FALSE;
+		}
+		_this->event.db.mouse.loaded = SDL_TRUE;
 	}
 	
+	/*
+		"actions": {
+			"mouse-out": {
+				"animation": "[anim-name]",
+			},
+	*/
+	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "misc actions mouse-out animation");
+	if ( entry.value )
+	{
+		_this->event.db.mouse.animationMouseOut = PT_ObjectEntryConverter_PT_String(entry);
+		if ( !_this->event.db.mouse.animationMouseOut )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
+			return SDL_FALSE;
+		}
+		_this->event.db.mouse.loaded = SDL_TRUE;
+	}
+	
+	/*
+		"actions": {
+			"mouse-click": {
+				"change-screen": "[screen-name]",
+			},
+	*/
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "misc actions mouse-click change-screen");
-	_this->event.mouse.changeScreen = PT_ObjectEntryConverter_PT_String(entry);
-	if ( !_this->event.mouse.changeScreen )
+	if ( entry.value )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
-		return SDL_FALSE;
+		_this->event.db.mouse.changeScreen = PT_ObjectEntryConverter_PT_String(entry);
+		if ( !_this->event.db.mouse.changeScreen )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
+			return SDL_FALSE;
+		}
+		_this->event.db.mouse.loaded = SDL_TRUE;
 	}
 	
+	/*
+		"actions": {
+			"mouse-click": {
+				"button": "[button-name]",
+			},
+	*/
 	entry = PT_ParseGetObjectEntry_json_value(jsonValue, "misc actions mouse-click button");
-	_this->event.mouse.button = PT_ObjectEntryConverter_PT_String(entry);
-	if ( !_this->event.mouse.button )
+	if ( entry.value )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
-		return SDL_FALSE;
+		_this->event.db.mouse.button = PT_ObjectEntryConverter_PT_String(entry);
+		if ( !_this->event.db.mouse.button )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
+			return SDL_FALSE;
+		}
+		_this->event.db.mouse.loaded = SDL_TRUE;
 	}
 
 
@@ -218,30 +310,31 @@ SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonV
 
 void PT_ScreenButtonListenEvent( PT_ScreenButton* _this ) {
 	
-	Sint32 mx, my;
-	PT_InputManagerMouseGetPosition(&mx, &my);
-	
-	SDL_Rect mouseRect = PT_InputManagerMouseGetRect();
-	mouseRect.x += mx;
-	mouseRect.y += my;
-	
-	_this->event.type = PT_SCREENBUTTON_EVENT_NONE;
-	
-	for ( unsigned int i = 0; i < _this->pSprite->numColliders; i++ )
-	{
-		if ( PT_ColliderTestCollisionAgainstRectangle(_this->pSprite->colliders[i],  
-			_this->pSprite->dstRect.x, _this->pSprite->dstRect.y, mouseRect) )
+	if ( _this->event.db.mouse.loaded )
+	{	
+		Sint32 mx, my;
+		PT_InputManagerMouseGetPosition(&mx, &my);
+		
+		SDL_Rect mouseRect = PT_InputManagerMouseGetRect();
+		mouseRect.x += mx;
+		mouseRect.y += my;
+		
+		_this->event.db.mouse.type = PT_SCREENBUTTON_MOUSE_OUT;
+		
+		for ( unsigned int i = 0; i < _this->pSprite->numColliders; i++ )
 		{
-			_this->event.type |= PT_SCREENBUTTON_EVENT_MOUSE_OVER;
-			
-			
-			if ( PT_InputManagerMouseGetButtonDown(
-				PT_MouseGetButtonByString((char*)_this->event.mouse.button->utf8_string)) )
+			if ( PT_ColliderTestCollisionAgainstRectangle(_this->pSprite->colliders[i],  
+				_this->pSprite->dstRect.x, _this->pSprite->dstRect.y, mouseRect) )
 			{
-				_this->event.type |= PT_SCREENBUTTON_EVENT_MOUSE_CLICK;
+				_this->event.db.mouse.type = PT_SCREENBUTTON_MOUSE_OVER;
+				
+				
+				if ( PT_InputManagerMouseGetButtonDown(
+					PT_MouseGetButtonByString((char*)_this->event.db.mouse.button->utf8_string)) )
+				{
+					_this->event.db.mouse.type = PT_SCREENBUTTON_MOUSE_CLICK;
+				}
 			}
-			
-			break;
 		}
 	}
 	

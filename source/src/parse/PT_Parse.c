@@ -203,24 +203,69 @@ SDL_bool PT_ParseLoadTemplate( PT_Parse* _this, const json_char* jsonString ) {
 	return SDL_TRUE;
 }//PT_ParseLoadTemplate
 
-SDL_bool PT_ParseChangeValue_Integer( PT_Parse* _this, const char* nameSequence, json_int_t value ) {
+SDL_bool PT_ParseChangeValue_Integer( json_value* jsonValue, json_int_t value ) {
 
-	json_object_entry entry = PT_ParseGetObjectEntry(_this, nameSequence);
-	if ( !entry.value )
+	if ( !jsonValue )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseChangeValue_Integer!\n");
 		return SDL_FALSE;
 	}
 	
-	if ( entry.value->type == json_integer )
+	if ( jsonValue->type == json_integer )
 	{
-		entry.value->u.integer = value;
+		jsonValue->u.integer = value;
 		
 		return SDL_TRUE;
+	}
+	else {
+		return SDL_FALSE;
 	}
 	
 	return SDL_TRUE;
 }//PT_ParseChangeValue_Integer
+
+SDL_bool PT_ParseChangeValue_String( json_value* jsonValue, json_char* value ) {
+
+	if ( !jsonValue || !value )
+	{
+		return SDL_FALSE;
+	}
+	
+	if ( jsonValue->type == json_string )
+	{
+		
+		free(jsonValue->u.string.ptr);
+		jsonValue->u.string.ptr = (json_char*)malloc(sizeof(json_char) * (strlen(value) + 1));
+		strcpy(jsonValue->u.string.ptr, value);
+		jsonValue->u.string.length = strlen(value);
+		
+		return SDL_TRUE;
+	}
+	else {
+		return SDL_FALSE;
+	}
+	
+	return SDL_TRUE;
+}//PT_ParseChangeValue_String
+
+SDL_bool PT_ParseChangeValue_Double( json_value* jsonValue, double value ) {
+
+	if ( !jsonValue )
+	{
+		return SDL_FALSE;
+	}
+	
+	if ( jsonValue->type == json_double )
+	{
+		jsonValue->u.dbl = value;
+		
+		return SDL_TRUE;
+	}
+	else {
+		return SDL_FALSE;
+	}
+	
+	return SDL_TRUE;
+}//PT_ParseChangeValue_Double
 
 SDL_bool PT_ParseSaveOriginal( PT_Parse* _this, const char* utf8_filePath, SDL_bool defaultPath ) {
 	if ( !_this )
