@@ -40,54 +40,31 @@ SDL_bool PT_SpriteParse( PT_Sprite* _this, json_value* jsonValue );
 PT_Sprite* PT_SpriteCreate( const char* utf8_spriteTemplate, void* _data, 
 	SDL_bool (*dataParse)(PT_Sprite* sprite, void* _data, json_value* jsonValue) ) {
 	
-	PT_Sprite* _this = PT_SpriteAlloc();
-	if ( !_this )
-	{
-		return NULL;
-	}
-	
 	PT_String* path = PT_StringCreate();
 	PT_StringInsert(&path, ".json", 0);
 	PT_StringInsert(&path, utf8_spriteTemplate, 0);
 	PT_StringInsert(&path, "assets/sprite/", 0);
-	json_value* _jsonValue = PT_ParseGetJsonValueFromFile((char*)path->utf8_string, SDL_TRUE);
+	json_value* jsonValue = PT_ParseGetJsonValueFromFile((char*)path->utf8_string, SDL_TRUE);
 	
-	if ( !_jsonValue )
+	if ( !jsonValue )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreate!\n");
-		PT_SpriteDestroy(_this);
 		return NULL;
 	}
 	
-	if ( !PT_SpriteParse(_this, _jsonValue) )
+	PT_Sprite* _this = PT_SpriteCreateFromJsonValue(jsonValue, _data, dataParse);
+	if ( !_this )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreate!\n");
-		PT_SpriteDestroy(_this);
-		json_value_free(_jsonValue);
-		PT_StringDestroy(path);
+		json_value_free(jsonValue);
 		return NULL;
 	}
 	
-	if ( dataParse )
-	{
-		if ( !dataParse(_this, _data, _jsonValue) )
-		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreate!\n");
-			PT_SpriteDestroy(_this);
-			json_value_free(_jsonValue);
-			PT_StringDestroy(path);
-			return NULL;
-		}
-	}
-	
-	_this->_data = _data;
-	
-	json_value_free(_jsonValue);
-	PT_StringDestroy(path);
+	json_value_free(jsonValue);
 	return _this;
 }//PT_SpriteCreate
 
-PT_Sprite* PT_SpriteCreateFromStringTemplate( const char* utf8_stringTemplate, void* _data, 
+PT_Sprite* PT_SpriteCreateFromJsonValue( json_value* jsonValue, void* _data, 
 	SDL_bool (*dataParse)(PT_Sprite* sprite, void* _data, json_value* jsonValue) ) {
 
 	PT_Sprite* _this = PT_SpriteAlloc();
@@ -96,11 +73,41 @@ PT_Sprite* PT_SpriteCreateFromStringTemplate( const char* utf8_stringTemplate, v
 		return NULL;
 	}
 	
+	if ( !jsonValue )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreate!\n");
+		PT_SpriteDestroy(_this);
+		return NULL;
+	}
+	
+	if ( !PT_SpriteParse(_this, jsonValue) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreate!\n");
+		PT_SpriteDestroy(_this);
+		return NULL;
+	}
+	
+	if ( dataParse )
+	{
+		if ( !dataParse(_this, _data, jsonValue) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreate!\n");
+			PT_SpriteDestroy(_this);
+			return NULL;
+		}
+	}
+	
+	_this->_data = _data;
+	return _this;
+}//PT_SpriteCreateFromJsonValue
+
+PT_Sprite* PT_SpriteCreateFromStringTemplate( const char* utf8_stringTemplate, void* _data, 
+	SDL_bool (*dataParse)(PT_Sprite* sprite, void* _data, json_value* jsonValue) ) {
+	
 	PT_Parse* parse = PT_ParseCreate();
 	if ( !parse )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreateFromStringTemplate!\n");
-		free(_this);
 		
 		return NULL;
 	}
@@ -108,46 +115,30 @@ PT_Sprite* PT_SpriteCreateFromStringTemplate( const char* utf8_stringTemplate, v
 	if ( !PT_ParseLoadTemplate(parse, utf8_stringTemplate) )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreateFromStringTemplate!\n");
-		free(_this);
 		PT_ParseDestroy(parse);
 		
 		return NULL;
 	}
 	
-	json_value* _jsonValue = PT_ParseGetJsonValuePointer(parse);
+	json_value* jsonValue = PT_ParseGetJsonValuePointer(parse);
 	
-	if ( !_jsonValue )
+	if ( !jsonValue )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreateFromStringTemplate!\n");
-		PT_SpriteDestroy(_this);
 		PT_ParseDestroy(parse);
 		
 		return NULL;
 	}
 	
-	if ( !PT_SpriteParse(_this, _jsonValue) )
+	PT_Sprite* _this = PT_SpriteCreateFromJsonValue(jsonValue, _data, dataParse);
+	if ( !_this )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreateFromStringTemplate!\n");
-		PT_SpriteDestroy(_this);
 		PT_ParseDestroy(parse);
-
+		
 		return NULL;
 	}
-	
-	if ( dataParse )
-	{
-		if ( !dataParse(_this, _data, _jsonValue) )
-		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SpriteCreateFromStringTemplate!\n");
-			PT_SpriteDestroy(_this);
-			PT_ParseDestroy(parse);
 
-			return NULL;
-		}
-	}
-	
-	_this->_data = _data;
-	
 	PT_ParseDestroy(parse);
 	return _this;
 }//PT_SpriteCreateFromStringTemplate

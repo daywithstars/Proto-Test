@@ -56,7 +56,10 @@ typedef struct {
 
 PT_Sprite* PT_SpriteCreate( const char* utf8_spriteTemplate, void* _data, 
 	SDL_bool (*dataParse)(PT_Sprite* sprite, void* _data, json_value* jsonValue) );
-	
+
+PT_Sprite* PT_SpriteCreateFromJsonValue( json_value* jsonValue, void* _data, 
+	SDL_bool (*dataParse)(PT_Sprite* sprite, void* _data, json_value* jsonValue) );
+
 PT_Sprite* PT_SpriteCreateFromStringTemplate( const char* utf8_stringTemplate, void* _data, 
 	SDL_bool (*dataParse)(PT_Sprite* sprite, void* _data, json_value* jsonValue) );
 

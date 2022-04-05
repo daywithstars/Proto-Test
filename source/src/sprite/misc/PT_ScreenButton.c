@@ -68,6 +68,9 @@ struct pt_screen_button {
 
 //===================================== PRIVATE Functions
 
+PT_ScreenButton* PT_ScreenButtonAlloc( );
+void PT_ScreenButtonAddSpriteCallbacks( PT_Sprite* pSprite );
+
 SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonValue );
 
 void PT_ScreenButtonListenEvent( PT_ScreenButton* _this );
@@ -77,13 +80,11 @@ void PT_ScreenButtonListenEvent( PT_ScreenButton* _this );
 
 PT_Sprite* PT_ScreenButtonCreate( const char* utf8_spriteTemplate ) {
 
-	PT_ScreenButton* _this = (PT_ScreenButton*)malloc(sizeof(struct pt_screen_button));
+	PT_ScreenButton* _this = PT_ScreenButtonAlloc();
 	if ( !_this )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonCreate: Not enough memory\n");
 		return NULL;
 	}
-	SDL_memset(_this, 0, sizeof(struct pt_screen_button));
 	
 	PT_Sprite* sprite = PT_SpriteCreate(utf8_spriteTemplate, (void*)_this, PT_ScreenButtonParse);
 	if ( !sprite )
@@ -95,27 +96,44 @@ PT_Sprite* PT_ScreenButtonCreate( const char* utf8_spriteTemplate ) {
 	}
 	
 	
-	//add callbacks to sprite
-	PT_SpriteAddUpdateCallback(sprite, PT_ScreenButtonUpdate);
-	PT_SpriteAddDrawCallback(sprite, PT_ScreenButtonDraw);
-	PT_SpriteAddDestroyCallback(sprite, PT_ScreenButtonDestroy);
-	
+	PT_ScreenButtonAddSpriteCallbacks(sprite);
 	return sprite;
 }//PT_ScreenButtonCreate
 
-PT_Sprite* PT_ScreeenButtonCreateFromStringTemplate( const char* utf8_stringTemplate ) {
-	
-	PT_ScreenButton* _this = (PT_ScreenButton*)malloc(sizeof(struct pt_screen_button));
+PT_Sprite* PT_ScreenButtonCreateFromJsonValue( json_value* jsonValue ) {
+
+	PT_ScreenButton* _this = PT_ScreenButtonAlloc();
 	if ( !_this )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_ScreeenButtonCreateFromStringTemplate: Not enough memory\n");
 		return NULL;
 	}
-	SDL_memset(_this, 0, sizeof(struct pt_screen_button));
+	
+	PT_Sprite* sprite = PT_SpriteCreateFromJsonValue(jsonValue, (void*)_this, PT_ScreenButtonParse);
+	if ( !sprite )
+	{
+		PT_ScreenButtonDestroy(_this);
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_ScreenButtonCreate: Cannot create PT_ScreenButton\n");
+		return NULL;
+	}
+	
+	
+	PT_ScreenButtonAddSpriteCallbacks(sprite);
+	return sprite;
+}//PT_ScreenButtonCreateFromJsonValue
+
+PT_Sprite* PT_ScreeenButtonCreateFromStringTemplate( const char* utf8_stringTemplate ) {
+	
+	PT_ScreenButton* _this = PT_ScreenButtonAlloc();
+	if ( !_this )
+	{
+		return NULL;
+	}
+	
 	
 	PT_Sprite* sprite = PT_SpriteCreateFromStringTemplate(utf8_stringTemplate, 
 		(void*)_this, PT_ScreenButtonParse);
+		
 	if ( !sprite )
 	{
 		PT_ScreenButtonDestroy(_this);
@@ -123,13 +141,8 @@ PT_Sprite* PT_ScreeenButtonCreateFromStringTemplate( const char* utf8_stringTemp
 		"PT: PT_ScreeenButtonCreateFromStringTemplate: Cannot create PT_ScreenButton\n");
 		return NULL;
 	}
-	
-	
-	//add callbacks to sprite
-	PT_SpriteAddUpdateCallback(sprite, PT_ScreenButtonUpdate);
-	PT_SpriteAddDrawCallback(sprite, PT_ScreenButtonDraw);
-	PT_SpriteAddDestroyCallback(sprite, PT_ScreenButtonDestroy);
-	
+
+	PT_ScreenButtonAddSpriteCallbacks(sprite);
 	return sprite;
 }//PT_ScreeenButtonCreateFromStringTemplate
 
@@ -154,6 +167,17 @@ void PT_ScreenButtonDestroy( void* _data ) {
 	free(_this);
 }//PT_ScreenButtonDestroy
 
+SDL_bool PT_ScreenButtonGetEventPress( void* _data ) {
+	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
+
+	if ( _this->event.db.mouse.type == PT_SCREENBUTTON_MOUSE_CLICK )
+	{
+		return SDL_TRUE;
+	}
+
+	return SDL_FALSE;
+}//PT_ScreenButtonGetEventPress
+
 void PT_ScreenButtonUpdate( void* _data, Sint32 elapsedTime ) {
 	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
 	
@@ -161,38 +185,24 @@ void PT_ScreenButtonUpdate( void* _data, Sint32 elapsedTime ) {
 	
 	if ( _this->event.db.mouse.loaded )
 	{
-		//change animation
 		if ( _this->event.db.mouse.type == PT_SCREENBUTTON_MOUSE_OVER )
 		{
+			//change animation
 			if ( _this->event.db.mouse.animationMouseOver )
 			{
-				
 				PT_SpriteChangeAnimation((void*)_this->pSprite, 
 				(char*) _this->event.db.mouse.animationMouseOver->utf8_string);
 			}
 		}
 		else if ( _this->event.db.mouse.type == PT_SCREENBUTTON_MOUSE_OUT )
 		{
+			//change animation
 			if ( _this->event.db.mouse.animationMouseOut )
 			{
 				PT_SpriteChangeAnimation((void*)_this->pSprite, 
 				(char*) _this->event.db.mouse.animationMouseOut->utf8_string);
 			}
 		}
-		
-		
-		/*
-		if ( _this->event.type & PT_SCREENBUTTON_EVENT_MOUSE_CLICK )
-		{
-			if ( _this->event.mouse.changeScreen )
-			{
-				//Change screen
-				if ( PT_ScreenManagerLoadScreen((char*)_this->event.mouse.changeScreen->utf8_string) )
-				{
-					PT_ScreenManagerSetFirstScreen((char*)_this->event.mouse.changeScreen->utf8_string);
-				}
-			}
-		}*/
 	}
 
 }//PT_ScreenButtonUpdate
@@ -204,6 +214,30 @@ void PT_ScreenButtonDraw( void* _data ) {
 
 
 //===================================== PRIVATE Functions
+
+PT_ScreenButton* PT_ScreenButtonAlloc( ) {
+
+	PT_ScreenButton* _this = (PT_ScreenButton*)malloc(sizeof(struct pt_screen_button));
+	if ( !_this )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonAlloc: Not enough memory\n");
+		return NULL;
+	}
+	SDL_memset(_this, 0, sizeof(struct pt_screen_button));
+	
+	return _this;
+}//PT_ScreenButtonAlloc
+
+void PT_ScreenButtonAddSpriteCallbacks( PT_Sprite* pSprite ) {
+	if ( !pSprite )
+	{
+		return;
+	}
+	
+	PT_SpriteAddUpdateCallback(pSprite, PT_ScreenButtonUpdate);
+	PT_SpriteAddDrawCallback(pSprite, PT_ScreenButtonDraw);
+	PT_SpriteAddDestroyCallback(pSprite, PT_ScreenButtonDestroy);
+}//PT_ScreenButtonAddSpriteCallbacks
 
 SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonValue ) {
 	/*
@@ -333,6 +367,7 @@ void PT_ScreenButtonListenEvent( PT_ScreenButton* _this ) {
 					PT_MouseGetButtonByString((char*)_this->event.db.mouse.button->utf8_string)) )
 				{
 					_this->event.db.mouse.type = PT_SCREENBUTTON_MOUSE_CLICK;
+					break;
 				}
 			}
 		}

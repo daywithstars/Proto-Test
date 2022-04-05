@@ -22,9 +22,12 @@ typedef struct pt_screen_button PT_ScreenButton;
 
 
 PT_Sprite* PT_ScreenButtonCreate( const char* utf8_spriteTemplate );
-PT_Sprite* PT_ScreeenButtonCreateFromStringTemplate( const char* utf8_stringTemplate );
+PT_Sprite* PT_ScreenButtonCreateFromJsonValue( json_value* jsonValue );
+PT_Sprite* PT_ScreenButtonCreateFromStringTemplate( const char* utf8_stringTemplate );
 
 void PT_ScreenButtonDestroy( void* _data ); 
+
+SDL_bool PT_ScreenButtonGetEventPress( void* _data );
 
 void PT_ScreenButtonUpdate( void* _data, Sint32 elapsedTime );
 void PT_ScreenButtonDraw( void* _data );

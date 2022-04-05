@@ -186,6 +186,12 @@ void PT_ApplicationUpdate( Sint32 elapsedTime ) {
 			for ( unsigned int i = 0; i < pList->numValues; i++ )
 			{
 				PT_SpriteUpdate(pList->values[i], elapsedTime);
+				
+				if ( PT_ScreenButtonGetEventPress((void*)pList->values[i]->_data) )
+				{
+					PT_ApplicationLoadGame((char*)pList->index->utf8_string);
+					return;
+				}
 			}
 			
 			pList = pList->next;
@@ -335,10 +341,20 @@ SDL_bool PT_ApplicationCreate( ) {
 	else {
 	
 		PT_GameList* pGameList = ptApplication->gameList;
+		int i = 0;
 		while ( pGameList )
 		{
+			/* Button position */
+			json_object_entry entry = PT_ParseGetObjectEntry(buttonsParse, "dstRect");
+			if ( entry.value )
+			{
+				PT_ParseChangeValue_Double(entry.value->u.array.values[0],
+					150 * i
+				);
+			}
 			
-			PT_Sprite* button = PT_ScreeenButtonCreateFromStringTemplate(defaultButtonTemplate);
+			PT_Sprite* button =
+			PT_ScreenButtonCreateFromJsonValue(PT_ParseGetJsonValuePointer(buttonsParse));
 			if ( button )
 			{
 				ptApplication->spriteList = 
@@ -351,6 +367,7 @@ SDL_bool PT_ApplicationCreate( ) {
 			}
 		
 			pGameList = pGameList->next;
+			i ++;
 		}
 	}
 	PT_ParseDestroy(buttonsParse);

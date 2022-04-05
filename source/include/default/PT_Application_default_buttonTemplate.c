@@ -5,7 +5,7 @@ const char* defaultButtonTemplate =
 	\"speedX\": 0.0,\n\
 	\"speedY\": 0.0,\n\
 	\"srcRect\": [0, 0, 96, 64],\n\
-	\"dstRect\": [100.0, 20.0, 96.0, 64.0],\n\
+	\"dstRect\": [100.0, 50.0, 96.0, 64.0],\n\
 	\"animations\": [\n\
 		{\n\
 			\"name\": \"idle\",\n\
@@ -34,7 +34,7 @@ const char* defaultButtonTemplate =
 	],\n\
 	\"colliders\": [\n\
 		{\n\
-			\"visible\": true,\n\
+			\"visible\": false,\n\
 			\"type\": \"PT_COLLIDER_TYPE_RECTANGLE\",\n\
 			\"name\": \"collider\",\n\
 			\n\
@@ -42,7 +42,7 @@ const char* defaultButtonTemplate =
 				\"red\": 120,\n\
 				\"green\": 220,\n\
 				\"blue\": 60,\n\
-				\"alpha\": 100,\n\
+				\"alpha\": 200,\n\
 			},\n\
 			\"fields\": {\n\
 				\"x\": 0,\n\
