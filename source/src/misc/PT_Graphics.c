@@ -292,7 +292,7 @@ SDL_bool PT_GraphicsParseSettings( ) {
 		A default settings.json will be created in the current game folder");
 		
 		
-		#include <PT_Graphics_default_settings.c>
+		#include <PT_Graphics_default_settings.h>
 		if ( !PT_ParseLoadTemplate(parse, defaultSettingsTemplate) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsParseSettings!\n");
@@ -532,7 +532,7 @@ SDL_bool PT_GraphicsLoadImages() {
 		"* Cannot find folders.json in assets/img/ directory\n\
 		* A default folders.json will be created in that directory");
 		
-		#include <PT_Graphics_default_imgFolders.c>
+		#include <PT_Graphics_default_imgFolders.h>
 		if ( !PT_ParseLoadTemplate(parseFolders, defaultImgFoldersTemplate) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
@@ -610,7 +610,7 @@ SDL_bool PT_GraphicsLoadImages() {
 						PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Proto-Test",
 						"* Cannot find img-list.json in a image directory\n* A default img-list.json will be created on directory");
 						
-						#include <PT_Graphics_default_imgList.c>
+						#include <PT_Graphics_default_imgList.h>
 						if ( !PT_ParseLoadTemplate(parseList, defaultImgListTemplate) )
 						{
 							SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadImages!\n");
@@ -699,7 +699,7 @@ SDL_bool PT_GraphicsLoadFonts( ) {
 		"* Cannot find font-list.json in assets/font/ directory\n\
 		* A default font-list.json will be created in that directory");
 		
-		#include <PT_Graphics_default_fontList.c>
+		#include <PT_Graphics_default_fontList.h>
 		if ( !PT_ParseLoadTemplate(parse, defaultFontListTemplate) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadFonts!\n");

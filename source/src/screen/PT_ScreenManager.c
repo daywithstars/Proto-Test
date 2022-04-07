@@ -145,7 +145,7 @@ void PT_ScreenManagerSetup( ) {
 		A default screen-list.json will be created.");
 		
 		
-		#include <PT_ScreenManager_default_screenList.c>
+		#include <PT_ScreenManager_default_screenList.h>
 		if ( !PT_ParseLoadTemplate(parseList, defaultScreenListTemplate) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenManagerSetup!\n");

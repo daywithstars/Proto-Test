@@ -97,7 +97,7 @@ SDL_bool PT_LevelManagerSetup() {
 		"* Cannot find level-list.json in assets/level/ directory\n\
 		* A default level-list.json will be created in that directory");
 		
-		#include <PT_LevelManager_default_levelList.c>
+		#include <PT_LevelManager_default_levelList.h>
 		if ( !PT_ParseLoadTemplate(parse, defaultLevelListTemplate) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_LevelManagerSetup!\n");

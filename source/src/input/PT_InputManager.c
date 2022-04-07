@@ -196,7 +196,7 @@ void PT_InputManagerParse( ) {
 		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Proto-Test",
 		"Cannot find input-list.json in input folder, a default input-list.json will be created\n");
 		
-		#include <PT_InputManager_default_inputList.c>
+		#include <PT_InputManager_default_inputList.h>
 		if ( !PT_ParseLoadTemplate(parse, defaultInputListTemplate) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputManagerParse!\n");

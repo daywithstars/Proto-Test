@@ -27,6 +27,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 typedef struct pt_parse PT_Parse;
 
+typedef enum {	
+	PT_PARSE_CAT_TYPE_START,
+	PT_PARSE_CAT_TYPE_MIDDLE,
+	PT_PARSE_CAT_TYPE_END,
+}PT_ParseCatType;
+
 
 
 /**
@@ -83,6 +89,9 @@ SDL_bool PT_ParseOpenFile( PT_Parse* _this, const char* utf8_filePath, SDL_bool 
 */
 SDL_bool PT_ParseLoadTemplate( PT_Parse* _this, const json_char* jsonString );
 
+//Alloc a new string based on @string
+void PT_ParseSetOriginalString( PT_Parse* _this, PT_String* string );
+
 SDL_bool PT_ParseChangeValue_Integer( json_value* jsonValue, json_int_t value );
 SDL_bool PT_ParseChangeValue_String( json_value* jsonValue, json_char* value );
 SDL_bool PT_ParseChangeValue_Double( json_value* jsonValue, double value );
@@ -106,6 +115,32 @@ SDL_bool PT_ParseSaveOriginal( PT_Parse* _this, const char* utf8_filePath, SDL_b
 
 //The same as above, but it saves the tree of jsonValue pointer. 
 SDL_bool PT_ParseSaveJsonValue( json_value* jsonValue, const char* utf8_filePath, SDL_bool defaultPath );
+
+/**
+* \brief This function will concatenate all the tree from json_value from entry value, to the @string
+*
+* @type: PT_PARSE_CAT_TYPE_START to add the basic JSON notation to the start of @string
+* @type: PT_PARSE_CAT_TYPE_MIDDLE to only add the entry to the @string
+* @type: PT_PARSE_CAT_TYPE_END to add the basic JSON notation to the end of @string
+*
+* example:
+*
+* PT_ParseCatObjectEntryToString(entry, &str, PT_PARSE_CAT_TYPE_START, SDL_FALSE);
+* PT_ParseCatObjectEntryToString(entry, &str, PT_PARSE_CAT_TYPE_MIDDLE, SDL_FALSE);
+* PT_ParseCatObjectEntryToString(entry, &str, PT_PARSE_CAT_TYPE_MIDDLE, SDL_TRUE);
+* PT_ParseCatObjectEntryToString(entry, &str, PT_PARSE_CAT_TYPE_END, SDL_FALSE);
+*
+* In the above example, entry can be modified to update its values, or it can be another entry.  
+*
+* @param entry the JSON object tree to be inserted into @string
+* @param string the pointer to pointer of PT_String, must be a valid created string with PT_StringCreate.
+* @param type one of the PT_ParseCatType.
+* @param resetShift when you want to reset the shifting from the last call to this function. 
+*
+* @return SDL_TRUE on success, or SDL_FALSE with error. 
+*/
+SDL_bool PT_ParseCatObjectEntryToString( json_object_entry entry, PT_String** string, 
+	PT_ParseCatType type, SDL_bool resetShift );
 
 /**
 * \brief Use this function to load your own json_value.

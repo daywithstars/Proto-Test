@@ -471,7 +471,7 @@ SDL_bool PT_SoundManagerParse( ) {
 			return SDL_FALSE;
 		} 
 		
-		#include <PT_SoundManager_default_sampleList.c>
+		#include <PT_SoundManager_default_sampleList.h>
 		if ( !PT_ParseLoadTemplate(parse, defaultSampleListTemplate) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SoundManagerParse!\n");
@@ -508,7 +508,7 @@ SDL_bool PT_SoundManagerParse( ) {
 			return SDL_FALSE;
 		} 
 		
-		#include <PT_SoundManager_default_musicList.c>
+		#include <PT_SoundManager_default_musicList.h>
 		if ( !PT_ParseLoadTemplate(parse, defaultMusicListTemplate) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_SoundManagerParse!\n");

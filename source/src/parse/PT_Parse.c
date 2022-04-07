@@ -34,7 +34,7 @@ struct pt_parse {
 
 //===================================== PRIVATE Functions
 
-SDL_bool PT_ParseWriteJsonValue( PT_String** str, json_value* jsonValue, const char* elementName, 
+int PT_ParseWriteJsonValue( PT_String** str, json_value* jsonValue, const char* elementName, 
 	int shift );
 
 //===================================== PUBLIC Functions
@@ -203,6 +203,24 @@ SDL_bool PT_ParseLoadTemplate( PT_Parse* _this, const json_char* jsonString ) {
 	return SDL_TRUE;
 }//PT_ParseLoadTemplate
 
+void PT_ParseSetOriginalString( PT_Parse* _this, PT_String* string ) {
+
+	if ( !string )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSetOriginalString: Invalid string\n");
+		return;
+	}
+	
+	PT_StringClear(&_this->jsonString);
+	
+	if ( !PT_StringInsert(&_this->jsonString, (char*)string->utf8_string, 0) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSetOriginalString!\n");
+		return;
+	}
+
+}//PT_ParseSetOriginalString
+
 SDL_bool PT_ParseChangeValue_Integer( json_value* jsonValue, json_int_t value ) {
 
 	if ( !jsonValue )
@@ -343,7 +361,9 @@ SDL_bool PT_ParseSaveJsonValue( json_value* jsonValue, const char* utf8_filePath
 		SDL_RWclose(file);
 		return SDL_FALSE;
 	}
-	if ( !PT_ParseWriteJsonValue(&str, jsonValue, NULL, 0) )
+	
+	int shift = PT_ParseWriteJsonValue(&str, jsonValue, NULL, 0);
+	if ( shift < 0 )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseSaveJsonValue!\n");
 		
@@ -355,10 +375,72 @@ SDL_bool PT_ParseSaveJsonValue( json_value* jsonValue, const char* utf8_filePath
 		SDL_RWwrite(file, str->utf8_string, sizeof(char), str->length);
 		PT_StringDestroy(str);
 	}
+	printf("shift: %d\n", shift);
 
 	SDL_RWclose(file);
 	return SDL_TRUE;
 }//PT_ParseSaveJsonValue
+
+SDL_bool PT_ParseCatObjectEntryToString( json_object_entry entry, PT_String** string,
+	PT_ParseCatType type, SDL_bool resetShift ) {
+
+	if ( !entry.value || !string || !(*string) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_ParseCatObjectEntryToString: Invalid string or json object entry\n");
+		return SDL_FALSE;
+	}
+
+	static int shift = 0;
+	if ( type == PT_PARSE_CAT_TYPE_START || resetShift )
+	{
+		shift = 0;
+	}
+	
+	/*
+		JSON object start {  
+	*/
+	if ( type == PT_PARSE_CAT_TYPE_START )
+	{ 
+		if ( !PT_StringInsert(string, "{\n", 0) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+			"PT: PT_ParseCatObjectEntryToString: Invalid string or json object entry\n");
+			
+			return SDL_FALSE;
+		}
+	}
+	
+	/*
+		JSON object body
+	*/
+	if ( type == PT_PARSE_CAT_TYPE_MIDDLE )
+	{
+		shift = PT_ParseWriteJsonValue(string, entry.value, entry.name, shift + 1);
+		if ( shift < 0 )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseCatObjectEntryToString!\n");
+			return SDL_FALSE;
+		}
+	}
+	
+	
+	/*
+		JSON object end }  
+	*/
+	if ( type == PT_PARSE_CAT_TYPE_END )
+	{
+		if ( !PT_StringInsert(string, "\n}", (*string)->length) )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+			"PT: PT_ParseCatObjectEntryToString: Invalid string or json object entry\n");
+			
+			return SDL_FALSE;
+		}
+	}
+
+	return SDL_TRUE;
+}//PT_ParseCatObjectEntryToString
 
 json_value* PT_ParseGetJsonValueFromFile( const char* utf8_filePath, SDL_bool defaultPath  ) {
 	
@@ -535,12 +617,24 @@ json_object_entry PT_ParseGetObjectEntry_json_value( json_value* _json_value, co
 
 //===================================== PRIVATE Functions
 
-SDL_bool PT_ParseWriteJsonValue( PT_String** str, json_value* jsonValue, 
+int PT_ParseWriteJsonValue( PT_String** str, json_value* jsonValue, 
 	const char* elementName, int shift ) {
 	
 	if ( !str || !jsonValue || jsonValue->type == json_none )
 	{
-		return SDL_FALSE;
+		return -1;
+	}
+	
+	static int numShift = 0;
+	if ( shift == 0 )
+	{
+		numShift = 0;
+	}
+	else {
+		if ( shift > numShift )
+		{
+			numShift = shift;
+		}
 	}
 	
 	const char tab[] = { 0x09, 0x0 };
@@ -566,9 +660,9 @@ SDL_bool PT_ParseWriteJsonValue( PT_String** str, json_value* jsonValue,
 				for ( unsigned int i = 0; i < jsonValue->u.object.length; i++ )
 				{	
 					if ( !PT_ParseWriteJsonValue(str, jsonValue->u.object.values[i].value, 
-						jsonValue->u.object.values[i].name, shift + 1))
+						jsonValue->u.object.values[i].name, shift + 1)) 
 					{
-						return SDL_FALSE;
+						return -2;
 					}
 				}
 			
@@ -596,7 +690,7 @@ SDL_bool PT_ParseWriteJsonValue( PT_String** str, json_value* jsonValue,
 					if ( !PT_ParseWriteJsonValue(str, jsonValue->u.object.values[i].value, 
 						jsonValue->u.object.values[i].name, shift + 2))
 					{
-						return SDL_FALSE;
+						return -3;
 					}
 				}
 				
@@ -621,7 +715,7 @@ SDL_bool PT_ParseWriteJsonValue( PT_String** str, json_value* jsonValue,
 				if ( !PT_ParseWriteJsonValue(str, jsonValue->u.object.values[i].value, 
 					jsonValue->u.object.values[i].name, shift + 1))
 				{
-					return SDL_FALSE;
+					return -4;
 				}
 			}
 			
@@ -656,14 +750,14 @@ SDL_bool PT_ParseWriteJsonValue( PT_String** str, json_value* jsonValue,
 					if ( !PT_ParseWriteJsonValue(str, jsonValue->u.array.values[i], 
 						NULL, shift))
 					{
-						return SDL_FALSE;
+						return -5;
 					}
 				}
 				else {
 					if ( !PT_ParseWriteJsonValue(str, jsonValue->u.array.values[i], 
 						NULL, shift + 1))
 					{
-						return SDL_FALSE;
+						return -6;
 					}
 				}
 			}
@@ -696,14 +790,14 @@ SDL_bool PT_ParseWriteJsonValue( PT_String** str, json_value* jsonValue,
 					if ( !PT_ParseWriteJsonValue(str, jsonValue->u.array.values[i], 
 						NULL, shift))
 					{
-						return SDL_FALSE;
+						return -7;
 					}
 				}
 				else {
 					if ( !PT_ParseWriteJsonValue(str, jsonValue->u.array.values[i], 
 						NULL, shift + 1))
 					{
-						return SDL_FALSE;
+						return -8;
 					}
 				}
 			}
@@ -791,7 +885,7 @@ SDL_bool PT_ParseWriteJsonValue( PT_String** str, json_value* jsonValue,
 		}
 	}
 	
-	return SDL_TRUE;
+	return numShift;
 }//PT_ParseWriteJsonValue
 
 

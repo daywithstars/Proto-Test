@@ -225,7 +225,7 @@ SDL_bool PT_CameraParse( ) {
 		A default settings.json will be created in the current game folder");
 		
 		
-		#include <PT_Graphics_default_settings.c>
+		#include <PT_Graphics_default_settings.h>
 		if ( !PT_ParseLoadTemplate(parse, defaultSettingsTemplate) )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_CameraParse!\n");

@@ -323,7 +323,7 @@ SDL_bool PT_ApplicationCreate( ) {
 	/*
 		Load game buttons
 	*/
-	#include <PT_Application_default_buttonTemplate.c>
+	#include <PT_Application_default_buttonTemplate.h>
 	PT_Parse* buttonsParse = PT_ParseCreate();
 	if ( !buttonsParse )
 	{
