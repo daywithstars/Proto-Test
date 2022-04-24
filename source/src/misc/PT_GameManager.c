@@ -18,7 +18,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <PT_GameManager.h>
 #include <PT_SpriteList.h>
-#include <PT_ScreenButton.h>
+#include <PT_InputButton.h>
 #include <PT_Graphics.h>
 #include <PT_ScreenManager.h>
 #include <PT_Camera.h>
@@ -102,7 +102,7 @@ SDL_bool PT_GameManagerLoadButtons( ) {
 			}
 			
 			PT_Sprite* button =
-			PT_ScreenButtonCreateFromJsonValue(PT_ParseGetJsonValuePointer(buttonsParse));
+			PT_InputButtonCreateFromJsonValue(PT_ParseGetJsonValuePointer(buttonsParse));
 			if ( button )
 			{
 				ptGameManager->buttonList = 
@@ -164,7 +164,7 @@ void PT_GameManagerUpdate( Sint32 elapsedTime ) {
 			{
 				PT_SpriteUpdate(list->values[i], elapsedTime);
 				
-				if ( PT_ScreenButtonGetEventPress((void*)list->values[i]->_data) )
+				if ( PT_InputButtonGetEventPress((void*)list->values[i]->_data) )
 				{
 					PT_GameManagerLoadGame((char*)list->index->utf8_string);
 					return;

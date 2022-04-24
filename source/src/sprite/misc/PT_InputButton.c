@@ -15,7 +15,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <SDL_log.h>
 
-#include <PT_ScreenButton.h>
+#include <PT_InputButton.h>
 #include <PT_String.h>
 #include <PT_Graphics.h>
 #include <PT_InputManager.h>
@@ -28,38 +28,38 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 typedef enum {
-	PT_SCREENBUTTON_MOUSE_OUT,
-	PT_SCREENBUTTON_MOUSE_OVER,
-	PT_SCREENBUTTON_MOUSE_CLICK
-}PT_ScreenButtonMouseEventType;
+	PT_INPUTBUTTON_MOUSE_OUT,
+	PT_INPUTBUTTON_MOUSE_OVER,
+	PT_INPUTBUTTON_MOUSE_CLICK
+}PT_InputButtonMouseEventType;
 
 
 typedef struct {
-	PT_ScreenButtonMouseEventType type;
+	PT_InputButtonMouseEventType type;
 	SDL_bool loaded;
 
 	PT_String* button;
 	PT_String* changeScreen;
 	PT_String* animationMouseOver;
 	PT_String* animationMouseOut;
-}PT_ScreenButtonEventDataBase_Mouse;
+}PT_InputButtonEventDataBase_Mouse;
 
 typedef struct  {
-	PT_ScreenButtonEventDataBase_Mouse mouse;
-}PT_ScreenButtonEventDataBase;
+	PT_InputButtonEventDataBase_Mouse mouse;
+}PT_InputButtonEventDataBase;
 
 
 
 
 
 typedef struct {
-	PT_ScreenButtonEventDataBase db;
-}PT_ScreenButtonEvent;
+	PT_InputButtonEventDataBase db;
+}PT_InputButtonEvent;
 
 
-struct pt_screen_button {
+struct pt_input_button {
 	PT_String* name;
-	PT_ScreenButtonEvent event;
+	PT_InputButtonEvent event;
 
 	PT_Sprite* pSprite;
 };
@@ -68,63 +68,63 @@ struct pt_screen_button {
 
 //===================================== PRIVATE Functions
 
-PT_ScreenButton* PT_ScreenButtonAlloc( );
-void PT_ScreenButtonAddSpriteCallbacks( PT_Sprite* pSprite );
+PT_InputButton* PT_InputButtonAlloc( );
+void PT_InputButtonAddSpriteCallbacks( PT_Sprite* pSprite );
 
-SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonValue );
+SDL_bool PT_InputButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonValue );
 
-void PT_ScreenButtonListenEvent( PT_ScreenButton* _this );
+void PT_InputButtonListenEvent( PT_InputButton* _this );
 
 
 //===================================== PUBLIC Functions
 
-PT_Sprite* PT_ScreenButtonCreate( const char* utf8_spriteTemplate ) {
+PT_Sprite* PT_InputButtonCreate( const char* utf8_spriteTemplate ) {
 
-	PT_ScreenButton* _this = PT_ScreenButtonAlloc();
+	PT_InputButton* _this = PT_InputButtonAlloc();
 	if ( !_this )
 	{
 		return NULL;
 	}
 	
-	PT_Sprite* sprite = PT_SpriteCreate(utf8_spriteTemplate, (void*)_this, PT_ScreenButtonParse);
+	PT_Sprite* sprite = PT_SpriteCreate(utf8_spriteTemplate, (void*)_this, PT_InputButtonParse);
 	if ( !sprite )
 	{
-		PT_ScreenButtonDestroy(_this);
+		PT_InputButtonDestroy(_this);
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_ScreenButtonCreate: Cannot create PT_ScreenButton\n");
+		"PT: PT_InputButtonCreate: Cannot create PT_InputButton\n");
 		return NULL;
 	}
 	
 	
-	PT_ScreenButtonAddSpriteCallbacks(sprite);
+	PT_InputButtonAddSpriteCallbacks(sprite);
 	return sprite;
-}//PT_ScreenButtonCreate
+}//PT_InputButtonCreate
 
-PT_Sprite* PT_ScreenButtonCreateFromJsonValue( json_value* jsonValue ) {
+PT_Sprite* PT_InputButtonCreateFromJsonValue( json_value* jsonValue ) {
 
-	PT_ScreenButton* _this = PT_ScreenButtonAlloc();
+	PT_InputButton* _this = PT_InputButtonAlloc();
 	if ( !_this )
 	{
 		return NULL;
 	}
 	
-	PT_Sprite* sprite = PT_SpriteCreateFromJsonValue(jsonValue, (void*)_this, PT_ScreenButtonParse);
+	PT_Sprite* sprite = PT_SpriteCreateFromJsonValue(jsonValue, (void*)_this, PT_InputButtonParse);
 	if ( !sprite )
 	{
-		PT_ScreenButtonDestroy(_this);
+		PT_InputButtonDestroy(_this);
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_ScreenButtonCreate: Cannot create PT_ScreenButton\n");
+		"PT: PT_InputButtonCreate: Cannot create PT_InputButton\n");
 		return NULL;
 	}
 	
 	
-	PT_ScreenButtonAddSpriteCallbacks(sprite);
+	PT_InputButtonAddSpriteCallbacks(sprite);
 	return sprite;
-}//PT_ScreenButtonCreateFromJsonValue
+}//PT_InputButtonCreateFromJsonValue
 
 PT_Sprite* PT_ScreeenButtonCreateFromStringTemplate( const char* utf8_stringTemplate ) {
 	
-	PT_ScreenButton* _this = PT_ScreenButtonAlloc();
+	PT_InputButton* _this = PT_InputButtonAlloc();
 	if ( !_this )
 	{
 		return NULL;
@@ -132,27 +132,27 @@ PT_Sprite* PT_ScreeenButtonCreateFromStringTemplate( const char* utf8_stringTemp
 	
 	
 	PT_Sprite* sprite = PT_SpriteCreateFromStringTemplate(utf8_stringTemplate, 
-		(void*)_this, PT_ScreenButtonParse);
+		(void*)_this, PT_InputButtonParse);
 		
 	if ( !sprite )
 	{
-		PT_ScreenButtonDestroy(_this);
+		PT_InputButtonDestroy(_this);
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_ScreeenButtonCreateFromStringTemplate: Cannot create PT_ScreenButton\n");
+		"PT: PT_ScreeenButtonCreateFromStringTemplate: Cannot create PT_InputButton\n");
 		return NULL;
 	}
 
-	PT_ScreenButtonAddSpriteCallbacks(sprite);
+	PT_InputButtonAddSpriteCallbacks(sprite);
 	return sprite;
 }//PT_ScreeenButtonCreateFromStringTemplate
 
-void PT_ScreenButtonDestroy( void* _data ) {
+void PT_InputButtonDestroy( void* _data ) {
 	if ( !_data )
 	{
 		return;
 	}
 
-	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
+	PT_InputButton* _this = (PT_InputButton*)_data;
 	
 	PT_StringDestroy(_this->name);
 	
@@ -165,27 +165,27 @@ void PT_ScreenButtonDestroy( void* _data ) {
 	}
 	
 	free(_this);
-}//PT_ScreenButtonDestroy
+}//PT_InputButtonDestroy
 
-SDL_bool PT_ScreenButtonGetEventPress( void* _data ) {
-	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
+SDL_bool PT_InputButtonGetEventPress( void* _data ) {
+	PT_InputButton* _this = (PT_InputButton*)_data;
 
-	if ( _this->event.db.mouse.type == PT_SCREENBUTTON_MOUSE_CLICK )
+	if ( _this->event.db.mouse.type == PT_INPUTBUTTON_MOUSE_CLICK )
 	{
 		return SDL_TRUE;
 	}
 
 	return SDL_FALSE;
-}//PT_ScreenButtonGetEventPress
+}//PT_InputButtonGetEventPress
 
-void PT_ScreenButtonUpdate( void* _data, Sint32 elapsedTime ) {
-	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
+void PT_InputButtonUpdate( void* _data, Sint32 elapsedTime ) {
+	PT_InputButton* _this = (PT_InputButton*)_data;
 	
-	PT_ScreenButtonListenEvent(_this);
+	PT_InputButtonListenEvent(_this);
 	
 	if ( _this->event.db.mouse.loaded )
 	{
-		if ( _this->event.db.mouse.type == PT_SCREENBUTTON_MOUSE_OVER )
+		if ( _this->event.db.mouse.type == PT_INPUTBUTTON_MOUSE_OVER )
 		{
 			//change animation
 			if ( _this->event.db.mouse.animationMouseOver )
@@ -194,7 +194,7 @@ void PT_ScreenButtonUpdate( void* _data, Sint32 elapsedTime ) {
 				(char*) _this->event.db.mouse.animationMouseOver->utf8_string);
 			}
 		}
-		else if ( _this->event.db.mouse.type == PT_SCREENBUTTON_MOUSE_OUT )
+		else if ( _this->event.db.mouse.type == PT_INPUTBUTTON_MOUSE_OUT )
 		{
 			//change animation
 			if ( _this->event.db.mouse.animationMouseOut )
@@ -205,45 +205,45 @@ void PT_ScreenButtonUpdate( void* _data, Sint32 elapsedTime ) {
 		}
 	}
 
-}//PT_ScreenButtonUpdate
+}//PT_InputButtonUpdate
 
-void PT_ScreenButtonDraw( void* _data ) {
-	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
+void PT_InputButtonDraw( void* _data ) {
+	PT_InputButton* _this = (PT_InputButton*)_data;
 
-}//PT_ScreenButtonDraw
+}//PT_InputButtonDraw
 
 
 //===================================== PRIVATE Functions
 
-PT_ScreenButton* PT_ScreenButtonAlloc( ) {
+PT_InputButton* PT_InputButtonAlloc( ) {
 
-	PT_ScreenButton* _this = (PT_ScreenButton*)malloc(sizeof(struct pt_screen_button));
+	PT_InputButton* _this = (PT_InputButton*)malloc(sizeof(struct pt_input_button));
 	if ( !_this )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonAlloc: Not enough memory\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputButtonAlloc: Not enough memory\n");
 		return NULL;
 	}
-	SDL_memset(_this, 0, sizeof(struct pt_screen_button));
+	SDL_memset(_this, 0, sizeof(struct pt_input_button));
 	
 	return _this;
-}//PT_ScreenButtonAlloc
+}//PT_InputButtonAlloc
 
-void PT_ScreenButtonAddSpriteCallbacks( PT_Sprite* pSprite ) {
+void PT_InputButtonAddSpriteCallbacks( PT_Sprite* pSprite ) {
 	if ( !pSprite )
 	{
 		return;
 	}
 	
-	PT_SpriteAddUpdateCallback(pSprite, PT_ScreenButtonUpdate);
-	PT_SpriteAddDrawCallback(pSprite, PT_ScreenButtonDraw);
-	PT_SpriteAddDestroyCallback(pSprite, PT_ScreenButtonDestroy);
-}//PT_ScreenButtonAddSpriteCallbacks
+	PT_SpriteAddUpdateCallback(pSprite, PT_InputButtonUpdate);
+	PT_SpriteAddDrawCallback(pSprite, PT_InputButtonDraw);
+	PT_SpriteAddDestroyCallback(pSprite, PT_InputButtonDestroy);
+}//PT_InputButtonAddSpriteCallbacks
 
-SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonValue ) {
+SDL_bool PT_InputButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonValue ) {
 	/*
 		see the template: games/default-templates/sprite-folder/sprite-template.json
 	*/
-	PT_ScreenButton* _this = (PT_ScreenButton*)_data;
+	PT_InputButton* _this = (PT_InputButton*)_data;
 	_this->pSprite = sprite;
 	
 	
@@ -255,14 +255,14 @@ SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonV
 	if ( !entry.value )
 	{
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_ScreenButtonParse: Unable to find \"misc button-name\" element\n");
+		"PT: PT_InputButtonParse: Unable to find \"misc button-name\" element\n");
 		return SDL_FALSE;
 	}
 	
 	_this->name = PT_ObjectEntryConverter_PT_String(entry);
 	if ( !_this->name )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputButtonParse!\n");
 		return SDL_FALSE;
 	}
 	
@@ -278,7 +278,7 @@ SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonV
 		_this->event.db.mouse.animationMouseOver = PT_ObjectEntryConverter_PT_String(entry);
 		if ( !_this->event.db.mouse.animationMouseOver )
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputButtonParse!\n");
 			return SDL_FALSE;
 		}
 		_this->event.db.mouse.loaded = SDL_TRUE;
@@ -296,7 +296,7 @@ SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonV
 		_this->event.db.mouse.animationMouseOut = PT_ObjectEntryConverter_PT_String(entry);
 		if ( !_this->event.db.mouse.animationMouseOut )
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputButtonParse!\n");
 			return SDL_FALSE;
 		}
 		_this->event.db.mouse.loaded = SDL_TRUE;
@@ -314,7 +314,7 @@ SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonV
 		_this->event.db.mouse.changeScreen = PT_ObjectEntryConverter_PT_String(entry);
 		if ( !_this->event.db.mouse.changeScreen )
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputButtonParse!\n");
 			return SDL_FALSE;
 		}
 		_this->event.db.mouse.loaded = SDL_TRUE;
@@ -332,7 +332,7 @@ SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonV
 		_this->event.db.mouse.button = PT_ObjectEntryConverter_PT_String(entry);
 		if ( !_this->event.db.mouse.button )
 		{
-			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ScreenButtonParse!\n");
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputButtonParse!\n");
 			return SDL_FALSE;
 		}
 		_this->event.db.mouse.loaded = SDL_TRUE;
@@ -340,9 +340,9 @@ SDL_bool PT_ScreenButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonV
 
 
 	return SDL_TRUE;
-}//PT_ScreenButtonParse
+}//PT_InputButtonParse
 
-void PT_ScreenButtonListenEvent( PT_ScreenButton* _this ) {
+void PT_InputButtonListenEvent( PT_InputButton* _this ) {
 	
 	if ( _this->event.db.mouse.loaded )
 	{	
@@ -353,27 +353,27 @@ void PT_ScreenButtonListenEvent( PT_ScreenButton* _this ) {
 		mouseRect.x += mx;
 		mouseRect.y += my;
 		
-		_this->event.db.mouse.type = PT_SCREENBUTTON_MOUSE_OUT;
+		_this->event.db.mouse.type = PT_INPUTBUTTON_MOUSE_OUT;
 		
 		for ( unsigned int i = 0; i < _this->pSprite->numColliders; i++ )
 		{
 			if ( PT_ColliderTestCollisionAgainstRectangle(_this->pSprite->colliders[i],  
 				_this->pSprite->dstRect.x, _this->pSprite->dstRect.y, mouseRect) )
 			{
-				_this->event.db.mouse.type = PT_SCREENBUTTON_MOUSE_OVER;
+				_this->event.db.mouse.type = PT_INPUTBUTTON_MOUSE_OVER;
 				
 				
 				if ( PT_InputManagerMouseGetButtonDown(
 					PT_MouseGetButtonByString((char*)_this->event.db.mouse.button->utf8_string)) )
 				{
-					_this->event.db.mouse.type = PT_SCREENBUTTON_MOUSE_CLICK;
+					_this->event.db.mouse.type = PT_INPUTBUTTON_MOUSE_CLICK;
 					break;
 				}
 			}
 		}
 	}
 	
-}//PT_ScreenButtonListenEvent
+}//PT_InputButtonListenEvent
 
 
 

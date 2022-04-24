@@ -1,6 +1,6 @@
 const char* defaultButtonTemplate = 
 "{\n\
-	\"type\": \"PT_ScreenButton\",\n\
+	\"type\": \"PT_InputButton\",\n\
 	\"tags\": {\n\
 		\"collider\": {\n\
 			\"group\": \"GameManager Buttons\",\n\

@@ -9,8 +9,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 */
 
-#ifndef _PT_SCREENBUTTON_H_
-#define _PT_SCREENBUTTON_H_
+#ifndef _PT_INPUTBUTTON_H_
+#define _PT_INPUTBUTTON_H_
 
 #include <json.h>
 
@@ -18,22 +18,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 
-typedef struct pt_screen_button PT_ScreenButton;
+typedef struct pt_input_button PT_InputButton;
 
 
-PT_Sprite* PT_ScreenButtonCreate( const char* utf8_spriteTemplate );
-PT_Sprite* PT_ScreenButtonCreateFromJsonValue( json_value* jsonValue );
-PT_Sprite* PT_ScreenButtonCreateFromStringTemplate( const char* utf8_stringTemplate );
+PT_Sprite* PT_InputButtonCreate( const char* utf8_spriteTemplate );
+PT_Sprite* PT_InputButtonCreateFromJsonValue( json_value* jsonValue );
+PT_Sprite* PT_InputButtonCreateFromStringTemplate( const char* utf8_stringTemplate );
 
-void PT_ScreenButtonDestroy( void* _data ); 
+void PT_InputButtonDestroy( void* _data ); 
 
-SDL_bool PT_ScreenButtonGetEventPress( void* _data );
+SDL_bool PT_InputButtonGetEventPress( void* _data );
 
-void PT_ScreenButtonUpdate( void* _data, Sint32 elapsedTime );
-void PT_ScreenButtonDraw( void* _data );
+void PT_InputButtonUpdate( void* _data, Sint32 elapsedTime );
+void PT_InputButtonDraw( void* _data );
 
 
-#endif /* _PT_SCREENBUTTON_H_ */
+#endif /* _PT_INPUTBUTTON_H_ */
 
 
 
