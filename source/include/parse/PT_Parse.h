@@ -140,7 +140,7 @@ SDL_bool PT_ParseSaveJsonValue( json_value* jsonValue, const char* utf8_filePath
 * @return SDL_TRUE on success, or SDL_FALSE with error. 
 */
 SDL_bool PT_ParseCatObjectEntryToString( json_object_entry entry, PT_String** string, 
-	PT_ParseCatType type, SDL_bool resetShift );
+	PT_ParseCatType type, int shiftStartLevel );
 
 /**
 * \brief Use this function to load your own json_value.

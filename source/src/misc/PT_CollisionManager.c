@@ -77,6 +77,14 @@ SDL_bool PT_CollisionManagerAddHandler( const char* utf8_handlerName, SDL_bool c
 	return SDL_TRUE;
 }//PT_CollisionManagerAddHandler
 
+void PT_CollisionManagerClearHandlers( ) {
+	if ( ptCollisionManager )
+	{
+		PT_CollisionHandlerListDestroy(ptCollisionManager->handlerList);
+		ptCollisionManager->currentHandler = NULL;
+	}
+}//PT_CollisionManagerClearHandlers
+
 PT_CollisionHandler* PT_CollisionManagerGetHandler( const char* utf8_handlerName ) {
 	PT_CollisionHandlerList* node = 
 	PT_CollisionHandlerListGet(ptCollisionManager->handlerList, utf8_handlerName);

@@ -22,6 +22,9 @@ void PT_CollisionManagerDestroy( );
 
 //This function add layers that are used to make containers with collision handlers.
 SDL_bool PT_CollisionManagerAddHandler( const char* utf8_handlerName, SDL_bool cameraLimits );
+
+void PT_CollisionManagerClearHandlers( );
+
 /*
 * This function return a pointer to a previous handler added, in order to update only the handler you need.
 * Use this function right after add the handler, doing this on the initialization struct holder. 

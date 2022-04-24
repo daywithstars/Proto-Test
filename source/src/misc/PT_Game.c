@@ -111,20 +111,6 @@ SDL_bool PT_GameLoad( PT_Game* _this ) {
 	
 		return SDL_FALSE;
 	}
-	/*	
-		Collision System
-	*/
-	if ( !PT_CollisionManagerCreate() )
-	{
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
-		"PT: PT_GameLoad: Cannot create PT_CollisionManager\n");
-		SDL_LogMessage(SDL_LOG_CATEGORY_ERROR, SDL_LOG_PRIORITY_WARN,
-		"PT: PT_GameLoad: FILE %s, LINE %d\n", __FILE__, __LINE__);
-		
-		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Proto-Test",
-		"Collision detection system couldn't be initialized.\n\
-		Check the console output");
-	}
 	/*
 		Camera
 	*/
@@ -214,14 +200,14 @@ void PT_GameUnload( PT_Game *_this ) {
 		return;
 	}
 	
+	PT_CollisionManagerClearHandlers();
+	
 	PT_GraphicsUnloadImages();
 	PT_GraphicsUnloadFonts();
 	
 	PT_InputManagerDestroy();
 	
 	PT_LevelManagerDestroy();
-	
-	PT_CollisionManagerDestroy();
 	
 	PT_CameraDestroy();
 	

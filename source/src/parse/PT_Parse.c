@@ -314,7 +314,7 @@ SDL_bool PT_ParseSaveOriginal( PT_Parse* _this, const char* utf8_filePath, SDL_b
 		return SDL_FALSE;
 	}
 	
-	SDL_RWwrite(file, _this->jsonString->utf8_string, sizeof(Uint8), _this->jsonString->length);
+	SDL_RWwrite(file, _this->jsonString->utf8_string, sizeof(Uint8), _this->jsonString->_size - 1);
 	
 	PT_StringDestroy(strPath);
 	SDL_RWclose(file);
@@ -372,17 +372,16 @@ SDL_bool PT_ParseSaveJsonValue( json_value* jsonValue, const char* utf8_filePath
 		return SDL_FALSE;
 	}
 	else {
-		SDL_RWwrite(file, str->utf8_string, sizeof(char), str->length);
+		SDL_RWwrite(file, str->utf8_string, sizeof(char), str->_size - 1);
 		PT_StringDestroy(str);
 	}
-	printf("shift: %d\n", shift);
 
 	SDL_RWclose(file);
 	return SDL_TRUE;
 }//PT_ParseSaveJsonValue
 
 SDL_bool PT_ParseCatObjectEntryToString( json_object_entry entry, PT_String** string,
-	PT_ParseCatType type, SDL_bool resetShift ) {
+	PT_ParseCatType type, int shiftStartLevel ) {
 
 	if ( !entry.value || !string || !(*string) )
 	{
@@ -391,10 +390,9 @@ SDL_bool PT_ParseCatObjectEntryToString( json_object_entry entry, PT_String** st
 		return SDL_FALSE;
 	}
 
-	static int shift = 0;
-	if ( type == PT_PARSE_CAT_TYPE_START || resetShift )
+	if ( type == PT_PARSE_CAT_TYPE_START || type == PT_PARSE_CAT_TYPE_END )
 	{
-		shift = 0;
+		shiftStartLevel = 0;
 	}
 	
 	/*
@@ -416,8 +414,8 @@ SDL_bool PT_ParseCatObjectEntryToString( json_object_entry entry, PT_String** st
 	*/
 	if ( type == PT_PARSE_CAT_TYPE_MIDDLE )
 	{
-		shift = PT_ParseWriteJsonValue(string, entry.value, entry.name, shift + 1);
-		if ( shift < 0 )
+		shiftStartLevel = PT_ParseWriteJsonValue(string, entry.value, entry.name, shiftStartLevel);
+		if ( shiftStartLevel < 0 )
 		{
 			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_ParseCatObjectEntryToString!\n");
 			return SDL_FALSE;
