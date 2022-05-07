@@ -56,7 +56,6 @@ typedef struct {
 	PT_InputButtonEventDataBase db;
 }PT_InputButtonEvent;
 
-
 struct pt_input_button {
 	PT_String* name;
 	PT_InputButtonEvent event;
@@ -95,7 +94,6 @@ PT_Sprite* PT_InputButtonCreate( const char* utf8_spriteTemplate ) {
 		return NULL;
 	}
 	
-	
 	PT_InputButtonAddSpriteCallbacks(sprite);
 	return sprite;
 }//PT_InputButtonCreate
@@ -116,7 +114,6 @@ PT_Sprite* PT_InputButtonCreateFromJsonValue( json_value* jsonValue ) {
 		"PT: PT_InputButtonCreate: Cannot create PT_InputButton\n");
 		return NULL;
 	}
-	
 	
 	PT_InputButtonAddSpriteCallbacks(sprite);
 	return sprite;
@@ -210,6 +207,32 @@ void PT_InputButtonUpdate( void* _data, Sint32 elapsedTime ) {
 void PT_InputButtonDraw( void* _data ) {
 	PT_InputButton* _this = (PT_InputButton*)_data;
 
+	if ( _this->pSprite->imageName == NULL )
+	{
+		if ( _this->event.db.mouse.type == PT_INPUTBUTTON_MOUSE_OVER )
+		{
+			PT_GraphicsSetRenderDrawColor((SDL_Color){0, 120, 230, 0XFF});
+		}
+		else {
+			PT_GraphicsSetRenderDrawColor((SDL_Color){0, 0, 230, 0XFF});
+		}
+		
+		
+		const SDL_FRect rect = { 
+			_this->pSprite->dstRect.x,
+			_this->pSprite->dstRect.y,
+			48,
+			32
+		};
+		
+		PT_GraphicsRenderFillRectF(&rect);
+		
+		PT_GraphicsDrawFontTexture(
+			(char*)_this->name->utf8_string, NULL, 
+			_this->pSprite->dstRect.x + 4, _this->pSprite->dstRect.y + 6,
+			0.0, NULL, SDL_FLIP_NONE
+		);
+	}
 }//PT_InputButtonDraw
 
 
@@ -265,6 +288,7 @@ SDL_bool PT_InputButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonVa
 		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputButtonParse!\n");
 		return SDL_FALSE;
 	}
+	PT_GraphicsRenderTextSolid("Rowdies-14", "Select", (char*)_this->name->utf8_string);
 	
 	/*
 		"actions": {

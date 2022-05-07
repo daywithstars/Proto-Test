@@ -182,6 +182,76 @@ SDL_bool PT_GraphicsParseDefaults( ) {
 			PT_TextureListAdd(ptGraphics->textureList, imgName, texture);	
 		}
 	}
+	/* default fonts */
+	assetEntry = PT_ParseGetObjectEntry(defaultAssetsParse, "fonts");
+	
+	/* default images */
+	if ( assetEntry.value )
+	{
+		for ( unsigned int i = 0; i < assetEntry.value->u.array.length; i++ )
+		{
+			json_char* fontName = NULL;
+			json_char* path = NULL;
+			int fontSize = 10;
+			
+			
+			json_object_entry font = 
+			PT_ParseGetObjectEntry_json_value(assetEntry.value->u.array.values[i], "name");
+			
+			if ( !font.value )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+				"PT: PT_GraphicsLoadDefaults: font element 'name' does not exists\n");
+				continue;
+			}
+			fontName = font.value->u.string.ptr;
+			
+			font = 
+			PT_ParseGetObjectEntry_json_value(assetEntry.value->u.array.values[i], "path");
+			
+			if ( !font.value )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+				"PT: PT_GraphicsLoadDefaults: font element 'path' does not exists\n");
+				continue;
+			}
+			path = font.value->u.string.ptr;
+			
+			font = 
+			PT_ParseGetObjectEntry_json_value(assetEntry.value->u.array.values[i], "size");
+			
+			if ( !font.value )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+				"PT: PT_GraphicsLoadDefaults: font element 'size' does not exists\n");
+				continue;
+			}
+			fontSize = font.value->u.integer;
+			
+			TTF_Font* ttf_font = PT_GraphicsLoadFont(path, fontSize, SDL_FALSE);
+			if ( !ttf_font )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+				"PT: PT_GraphicsLoadDefaults: %s\n", SDL_GetError());
+				continue;
+			}
+			
+			PT_Font* ptFont = (PT_Font*)malloc(sizeof(PT_Font));
+			if ( !ptFont )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+				"PT: PT_GraphicsLoadDefaults: Not enough memory, for PT_Font\n");
+				
+				TTF_CloseFont(ttf_font);
+				continue;
+			}
+			*ptFont = (PT_Font){ {0, 0, 0, 0xFF}, ttf_font }; 
+			
+			ptGraphics->fontList = 
+			PT_FontListAdd(ptGraphics->fontList, fontName, ptFont);
+		}
+	}
+	
 	
 	PT_ParseDestroy(defaultAssetsParse);
 	PT_ParseDestroy(parse);

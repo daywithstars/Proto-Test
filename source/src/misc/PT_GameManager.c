@@ -14,7 +14,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <malloc.h>
 #include <time.h>
 
-#include <SDL_log.h>
+#include <SDL_log.h> 
 
 #include <PT_GameManager.h>
 #include <PT_SpriteList.h>
@@ -122,6 +122,7 @@ SDL_bool PT_GameManagerLoadButtons( ) {
 	
 	return SDL_TRUE;
 }//PT_GameManagerLoadButtons
+
 void PT_GameManagerDestroy( ) {
 	if ( !ptGameManager )
 	{
@@ -174,6 +175,7 @@ void PT_GameManagerUpdate( Sint32 elapsedTime ) {
 		}
 	}
 }
+
 void PT_GameManagerDraw( ) {
 	if ( ptGameManager->currentGame.loaded )
 	{
