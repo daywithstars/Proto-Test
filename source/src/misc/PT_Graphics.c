@@ -46,6 +46,34 @@ static PT_Graphics* ptGraphics = NULL;
 
 //===================================== PRIVATE Functions
 
+SDL_Texture* PT_GraphicsLoadSDL_Texture( const char* path ) {
+
+	SDL_Surface* loadedSurface = IMG_Load(path);
+	if ( !loadedSurface )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_GraphicsLoadSDL_Texture: Unable to load texture: %s\n", path);
+
+		return NULL;
+	}
+	if ( SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 255, 0, 255)) < 0 )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadSDL_Texture: %s\n", SDL_GetError());
+	}
+	
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(ptGraphics->renderer, loadedSurface);
+	if ( !texture )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadSDL_Texture: %s\n", SDL_GetError());
+		
+		SDL_FreeSurface(loadedSurface);
+		return NULL;
+	}
+	
+	SDL_FreeSurface(loadedSurface);
+	return texture;
+}//PT_GraphicsLoadSDL_Texture
+
 SDL_bool PT_GraphicsUpdateSettings( ) {
 	if ( !ptGraphics )
 	{
@@ -107,68 +135,55 @@ SDL_bool PT_GraphicsParseDefaults( ) {
 	}
 	
 	/* Load default assets */
-	PT_FileDataHandler* handler = PT_FileDataHandler_Create();
-	if ( !handler )
+	PT_Parse* defaultAssetsParse = PT_ParseCreate();
+	if ( !defaultAssetsParse )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadDefaults: Not enough memory\n");
-		
-		PT_ParseDestroy(parse);
-		return SDL_FALSE;
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+		"PT: PT_GraphicsLoadDefaults!\n");
 	}
-	if ( !PT_FileDataHandler_LoadBlock(handler, "default-assets.bin") )
-	{		
-		PT_GraphicsShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Proto-Test: Graphics", 
-		"PT: PT_GraphicsLoadDefaults: Cannot load default-assets.bin\nCopy an default-assets.bin into the executable folder and try again.");
+	if ( !PT_ParseOpenFile(defaultAssetsParse, "default_assets/list.json", SDL_FALSE) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+		"PT: PT_GraphicsLoadDefaults!\n");
 	}
-	else {
-		PT_FileDataList* pList = PT_FileDataHandler_GetFileDataList(handler);
-		while ( pList )
+	json_object_entry assetEntry = PT_ParseGetObjectEntry(defaultAssetsParse, "images");
+	
+	/* default images */
+	if ( assetEntry.value )
+	{
+		for ( unsigned int i = 0; i < assetEntry.value->u.array.length; i++ )
 		{
-			for ( unsigned int i = 0; i < pList->numValues; i++ )
+			json_char* imgPath = NULL;
+			json_char* imgName = NULL;
+			
+			json_object_entry img = 
+			PT_ParseGetObjectEntry_json_value(assetEntry.value->u.array.values[i], "name");
+			if ( !img.value )
 			{
-				/* Images */
-				if ( pList->values[i].label == PT_FILEDATA_LABEL_IMAGE )
-				{
-					void* buffer = (void*)pList->values[i].data;
-					int bufferSize = pList->values[i]._size;
-
-					char type[6];
-					type[5] = '\0';
-					
-					if ( PT_StringMatchFast(pList->values[i].extension, ".png") )
-					{
-						strcpy(type, "PNG");
-					}
-					else if ( PT_StringMatchFast(pList->values[i].extension, ".bmp") )
-					{
-						strcpy(type, "BMP");
-					}
-					else {
-						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-						"PT: PT_GraphicsParseDefaults: Image format is not supported by Proto-Test: %s\n",
-						pList->values[i].extension);
-						
-						continue;
-					}
-					
-					PT_GraphicsLoadTextureFromBuffer(buffer, bufferSize, type, pList->values[i].name);
-				}
-				/* Fonts */
-				else if ( pList->values[i].label == PT_FILEDATA_LABEL_TRUETYPE_FONT )
-				{
-					void* buffer = (void*)pList->values[i].data;
-					int bufferSize = pList->values[i]._size;
-					
-					
-					PT_GraphicsLoadFontFromBuffer(buffer, bufferSize, pList->values[i].name, 16); 
-				}
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+				"PT: PT_GraphicsLoadDefaults: image element 'name' does not exists\n");
+				continue;
 			}
-			pList = pList->next;
+			imgName = img.value->u.string.ptr;
+			
+			img = 
+			PT_ParseGetObjectEntry_json_value(assetEntry.value->u.array.values[i], "path");
+			if ( !img.value )
+			{
+				SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+				"PT: PT_GraphicsLoadDefaults: image element 'path' does not exists\n");
+				continue;
+			}
+			imgPath = img.value->u.string.ptr;
+			
+			SDL_Texture* texture = PT_GraphicsLoadSDL_Texture(imgPath);
+			
+			ptGraphics->textureList = 
+			PT_TextureListAdd(ptGraphics->textureList, imgName, texture);	
 		}
 	}
-
-
-	PT_FileDataHandler_Destroy(handler);	
+	
+	PT_ParseDestroy(defaultAssetsParse);
 	PT_ParseDestroy(parse);
 	
 	if ( !PT_GraphicsUpdateSettings() )
@@ -355,31 +370,13 @@ void PT_GraphicsLoadTexture( const char* utf8_filePath, const char* utf8_name ) 
 	PT_StringInsert(&path, utf8_filePath, 0);
 	PT_StringInsert(&path, (char*)gRootDir->utf8_string, 0);
 	
-	SDL_Surface* loadedSurface = IMG_Load((char*)path->utf8_string);
-	if ( !loadedSurface )
-	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
-		"PT: PT_GraphicsLoadTexture: Unable to load texture: %s\n", (char*)path->utf8_string);
-		
-		PT_StringDestroy(path);
-		return;
-	}
-	if ( SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 255, 0, 255)) < 0 )
-	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadTexture: %s\n", SDL_GetError());
-	}
-	
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(ptGraphics->renderer, loadedSurface);
+	SDL_Texture* texture = PT_GraphicsLoadSDL_Texture((char*)path->utf8_string);
 	if ( !texture )
 	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_GraphicsLoadTexture: %s\n", SDL_GetError());
-		
-		PT_StringDestroy(path);
-		SDL_FreeSurface(loadedSurface);
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_GraphicsLoadTexture!\n");
 		return;
 	}
-	
-	SDL_FreeSurface(loadedSurface);
 	
 	ptGraphics->textureList = PT_TextureListAdd(ptGraphics->textureList, utf8_name, texture);
 	

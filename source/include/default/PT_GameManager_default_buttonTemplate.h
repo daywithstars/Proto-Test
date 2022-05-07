@@ -6,7 +6,7 @@ const char* defaultButtonTemplate =
 			\"group\": \"GameManager Buttons\",\n\
 		},\n\
 	},\n\
-	\"image\": \"button-load.png\",\n\
+	\"image\": \"button-load\",\n\
 	\"speedX\": 0.0,\n\
 	\"speedY\": 0.0,\n\
 	\"srcRect\": [0, 0, 96, 64],\n\

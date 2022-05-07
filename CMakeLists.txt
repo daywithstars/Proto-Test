@@ -5,7 +5,7 @@ project(Proto-Test)
 if (MSVC)
 	add_compile_options(/W4)
 else()
-	add_compile_options(-Wall -Wextra -Wpedantic -g)
+	add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 	
 #Add the path to new folders with files and go to the folder build and call cmake ..
