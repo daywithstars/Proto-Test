@@ -1,0 +1,20 @@
+{
+	"images": [
+		{
+			"name": "button-load",
+			"path": "default_assets/button-load.png"
+		}
+	],
+	"fonts": [
+		{
+			"size": 14,
+			"name": "Rowdies-14",
+			"path": "default_assets/Rowdies-Light.ttf"
+		},
+		{
+			"size": 12,
+			"name": "Rowdies-12",
+			"path": "default_assets/Rowdies-Light.ttf"
+		}
+	]
+}

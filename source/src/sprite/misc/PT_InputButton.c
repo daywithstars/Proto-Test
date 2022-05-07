@@ -58,6 +58,7 @@ typedef struct {
 
 struct pt_input_button {
 	PT_String* name;
+	PT_String* nameTexture;
 	PT_InputButtonEvent event;
 
 	PT_Sprite* pSprite;
@@ -152,6 +153,7 @@ void PT_InputButtonDestroy( void* _data ) {
 	PT_InputButton* _this = (PT_InputButton*)_data;
 	
 	PT_StringDestroy(_this->name);
+	PT_StringDestroy(_this->nameTexture);
 	
 	if ( _this->event.db.mouse.loaded )
 	{
@@ -227,9 +229,16 @@ void PT_InputButtonDraw( void* _data ) {
 		
 		PT_GraphicsRenderFillRectF(&rect);
 		
+		
 		PT_GraphicsDrawFontTexture(
 			(char*)_this->name->utf8_string, NULL, 
 			_this->pSprite->dstRect.x + 4, _this->pSprite->dstRect.y + 6,
+			0.0, NULL, SDL_FLIP_NONE
+		);
+		
+		PT_GraphicsDrawFontTexture(
+			(char*)_this->nameTexture->utf8_string, NULL, 
+			_this->pSprite->dstRect.x + 4, _this->pSprite->dstRect.y + 38,
 			0.0, NULL, SDL_FLIP_NONE
 		);
 	}
@@ -289,6 +298,28 @@ SDL_bool PT_InputButtonParse( PT_Sprite* sprite, void* _data, json_value* jsonVa
 		return SDL_FALSE;
 	}
 	PT_GraphicsRenderTextSolid("Rowdies-14", "Select", (char*)_this->name->utf8_string);
+	
+	PT_String* nameTexture = PT_StringCreate();
+	if ( !nameTexture )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputButtonParse!\n");
+		return SDL_FALSE;
+	}
+	if ( !PT_StringInsert(&nameTexture, "-text", 0) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputButtonParse!\n");
+		PT_StringDestroy(nameTexture);
+		return SDL_FALSE;
+	}
+	if ( !PT_StringInsert(&nameTexture, (char*)_this->name->utf8_string, 0) )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputButtonParse!\n");
+		PT_StringDestroy(nameTexture);
+		return SDL_FALSE;
+	}
+	PT_GraphicsRenderTextSolid("Rowdies-12", (char*)_this->name->utf8_string, 
+		(char*)nameTexture->utf8_string);
+	_this->nameTexture = nameTexture;
 	
 	/*
 		"actions": {

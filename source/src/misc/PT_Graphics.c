@@ -245,7 +245,7 @@ SDL_bool PT_GraphicsParseDefaults( ) {
 				TTF_CloseFont(ttf_font);
 				continue;
 			}
-			*ptFont = (PT_Font){ {0, 0, 0, 0xFF}, ttf_font }; 
+			*ptFont = (PT_Font){ {255, 255, 255, 0xFF}, ttf_font }; 
 			
 			ptGraphics->fontList = 
 			PT_FontListAdd(ptGraphics->fontList, fontName, ptFont);
