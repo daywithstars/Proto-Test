@@ -100,6 +100,17 @@ SDL_bool PT_GameManagerLoadButtons( ) {
 					150 * i
 				);
 			}
+			/* Button name */
+			entry = 
+			PT_ParseGetObjectEntry(buttonsParse, "misc button-name");
+			if ( entry.value )
+			{
+				if( !PT_ParseChangeValue_String(entry.value, (json_char*)pGameList->index->utf8_string) )
+				{
+					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT_GameManagerLoadButtons!\n");
+					continue;
+				}
+			}
 			
 			PT_Sprite* button =
 			PT_InputButtonCreateFromJsonValue(PT_ParseGetJsonValuePointer(buttonsParse));
