@@ -202,6 +202,19 @@ void PT_InputButtonUpdate( void* _data, Sint32 elapsedTime ) {
 				(char*) _this->event.db.mouse.animationMouseOut->utf8_string);
 			}
 		}
+		else if ( _this->event.db.mouse.type == PT_INPUTBUTTON_MOUSE_CLICK )
+		{
+			if ( _this->event.db.mouse.changeScreen )
+			{
+				if ( !PT_ScreenManagerLoadScreen((char*)_this->event.db.mouse.changeScreen->utf8_string) )
+				{
+					SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "PT: PT_InputButtonUpdate!\n");
+				}
+				else {
+					PT_ScreenManagerSetFirstScreen((char*)_this->event.db.mouse.changeScreen->utf8_string);
+				}
+			}
+		}
 	}
 
 }//PT_InputButtonUpdate

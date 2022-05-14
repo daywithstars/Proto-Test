@@ -1,0 +1,13 @@
+{
+	"file": "screen-main-menu.json",
+
+	"settings": {
+		"name": "Screen MainMenu",
+		"tag": "first-screen",
+	},
+	
+	"sprites": [
+		"sprite-button",
+	]
+}
+

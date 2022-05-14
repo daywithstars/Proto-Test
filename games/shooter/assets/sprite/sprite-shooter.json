@@ -1,0 +1,65 @@
+{
+	"type": "PT_Sprite",
+	"tags": {
+		"collider": {
+			"group": "shooterObjects",
+		},
+	},
+	"image": "shooter-1",
+	"speedX": 0.090,
+	"speedY": 0.070,
+	"srcRect": [0, 0, 192, 128],
+	"dstRect": [120.0, 120.0, 64.0, 64.0],
+	"animations": [
+		{
+			"name": "idle-anim",
+			"frame-delay": 0,
+			"frame-width": 64,
+			"frame-height": 64,
+			"frame-column": 0,
+			"frame-column-dir": 0,
+			"frame-column-max": 0,
+			"frame-row": 0,
+			"frame-row-dir": 0,
+			"frame-row-max": 0,
+		},
+	],
+	"colliders": [
+		{
+			"visible": true,
+			"type": "PT_COLLIDER_TYPE_RECTANGLE",
+			"name": "sprite2 top collider",
+			
+			"fields": {
+				"x": 6,
+				"y": 5,
+				"w": 50,
+				"h": 10,
+			}
+		},
+		{
+			"visible": true,
+			"type": "PT_COLLIDER_TYPE_RECTANGLE",
+			"name": "sprite2 bottom collider",
+			"color": {
+				"red": 50,
+				"green": 200,
+				"blue": 220,
+				"alpha": 100
+			},
+			
+			"fields": {
+				"x": 6,
+				"y": 50,
+				"w": 50,
+				"h": 10,
+			}
+		}
+	],
+	"behavior": "shooter-behavior",
+	
+	"misc": {
+	}
+} 
+
+

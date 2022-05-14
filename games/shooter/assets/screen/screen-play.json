@@ -1,0 +1,12 @@
+{
+	"file": "screen-play.json",
+
+	"settings": {
+		"name": "Screen Play",
+	},
+	
+	"levels": [
+		"Intro Stage",
+	],
+}
+

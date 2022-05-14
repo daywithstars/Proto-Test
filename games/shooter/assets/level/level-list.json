@@ -1,4 +1,3 @@
 {
-	"none": "this-level-file-will-be-ignored",
-	"none": "also-this-level-file-will-be-ignored",
+	"Intro Stage": "intro-stage",
 }

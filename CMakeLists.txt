@@ -45,6 +45,8 @@ include_directories(
 	
 add_executable(${PROJECT_NAME} ${project_src})
 
+install(TARGETS ${PROJECT_NAME} DESTINATION bin COMPONENT binaries)
+
 set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 11)
 
 if (WIN32)
