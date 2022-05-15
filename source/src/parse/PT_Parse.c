@@ -71,11 +71,38 @@ void PT_ParseDestroy( PT_Parse* _this ) {
 SDL_bool PT_ParseLegalDirectory( const char* path, SDL_bool defaultPath ) {
 	struct stat sb = {0};
 	
+	if ( !path )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_ParseLegalDirectory: Invalid path\n");
+		return SDL_FALSE;
+	}
+	
+	unsigned int pathLength = strlen(path) ? strlen(path) : 0;
+	char* finalPath = (char*)malloc(pathLength + 1);
+	if ( !finalPath )
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+		"PT: PT_ParseLegalDirectory: Not enough memory\n");
+		return SDL_FALSE;
+	}
+	if ( finalPath[pathLength - 1] == '/' ) 
+	{
+		strncpy(finalPath, path, pathLength - 1);
+	}
+	else {
+		strcpy(finalPath, path);
+	}
+	finalPath[pathLength - 1] = '\0';
+	
 	//Successfully opened the file
 	if ( !defaultPath )
 	{
-		if ( stat(path, &sb) < 0 )
+		if ( stat(finalPath, &sb) < 0 )
 		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+			"PT: PT_ParseLegalDirectory: %s not a legal directory\n", finalPath); 
+			free(finalPath);
 			return SDL_FALSE;
 		}
 	}
@@ -83,13 +110,16 @@ SDL_bool PT_ParseLegalDirectory( const char* path, SDL_bool defaultPath ) {
 		PT_String* strPath = PT_StringCreate();
 		if ( !strPath )
 		{
+			free(finalPath);
 			return SDL_FALSE;
 		}
-		if ( !PT_StringInsert(&strPath, path, 0) )
+		if ( !PT_StringInsert(&strPath, finalPath, 0) )
 		{
 			PT_StringDestroy(strPath);
+			free(finalPath);
 			return SDL_FALSE;
 		}
+		free(finalPath);
 		if ( !PT_StringInsert(&strPath, (char*)gRootDir->utf8_string, 0) )
 		{
 			PT_StringDestroy(strPath);

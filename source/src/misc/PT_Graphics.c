@@ -651,6 +651,8 @@ SDL_bool PT_GraphicsLoadImages() {
 					
 					if ( !PT_ParseLegalDirectory((char*)imgFolderPath->utf8_string, SDL_TRUE) )
 					{
+						SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+						"PT: PT_GraphicsLoadImages: FILE %s, LINE %d\n", __FILE__, __LINE__);
 						PT_StringDestroy(imgFolderPath);
 						continue;
 					}

@@ -8,6 +8,8 @@ else()
 	add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 	
+set(sdl_include_root_dir "/usr/include/SDL2")
+	
 #Add the path to new folders with files and go to the folder build and call cmake ..
 file(GLOB project_src 
 	"source/src/behavior/*.c"
@@ -26,7 +28,7 @@ file(GLOB project_src
 	
 #Add the path to new folders with files and go to the folder build and call cmake ..
 include_directories(
-	"/usr/include/SDL2" # Here you put the path to SDL2/image/mixer include files.  
+	${sdl_include_root_dir}   
 	"source/include/behavior"
 	"source/include/default"
 	"source/include/font"

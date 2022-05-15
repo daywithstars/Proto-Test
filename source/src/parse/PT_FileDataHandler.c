@@ -263,7 +263,15 @@ SDL_bool PT_FileDataHandler_LoadBlock( PT_FileDataHandler* _this, const char* pa
 		char c = '\0';
 		//Somehow the fseek function do not work with the feof function. 
 		//So we actually read the file. 
-		fread(&c, sizeof(char), 1, file);
+		if ( fread(&c, sizeof(char), 1, file) != 1 )
+		{
+			SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, 
+			"PT: PT_FileDataHandler_LoadBlock: Wrong number of read items\n");
+		
+			free(fileData.extension);
+			free(fileData.data);
+			break;
+		}
 		
 		if ( feof(file) )
 		{
